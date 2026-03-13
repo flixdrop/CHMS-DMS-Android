@@ -1,0 +1,606 @@
+<ion-content [scrollEvents]="true" (ionScrollStart)="handleScrollStart()" (ionScrollEnd)="handleScrollEnd()"
+  (ionScroll)="handleScroll($any($event))">
+  <ion-progress-bar *ngIf="isLoading" type="indeterminate"></ion-progress-bar>
+
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content refreshing-spinner="dots" style="box-shadow: none !important;"></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="blur-bg" *ngIf="!isLoading">
+    <ion-grid class="grid-2">
+
+      <ion-row class="row-1 ion-margin">
+        <ion-col>
+
+          <ion-toolbar class="ion-padding-top card-header">
+            <ion-item lines="none">
+              <ion-img style="margin-right: 8px; height: 32px; width: 32px; aspect-ratio: 1/1;"
+                src="../../../assets/icons/favicon.png"></ion-img>
+              <ion-label color="dark" style="font-weight: bold !important;">
+                <h1 style="font-weight: bold !important;">
+                  {{'home.sections.1.title'| translate}}
+                </h1>
+              </ion-label>
+
+              <ion-button slot="end" color="dark" shape="round" id="register-cattle" expand="block"
+                style="display: flex; align-items: flex-start; justify-content: flex-start;">
+                <ion-icon color="light" name="create"></ion-icon>
+                <ion-label color="light" style="word-wrap: break-word; width: min-content; padding: 10px 0;">Register
+                  Cattle</ion-label>
+              </ion-button>
+
+              <ion-modal #registercattleform trigger="register-cattle">
+                <ng-template>
+
+
+                  <!-- <ion-toolbar *ngIf="!isLoading" class="ion-padding-vertical">
+    <ion-buttons slot="start">
+      <ion-button shape="round" fill="solid" color="dark" expand="block" (click)="registercattleform.dismiss()">
+        <ion-label> {{ 'buttons.4.label' | translate }} </ion-label>
+        <ion-icon name="close-circle" style="margin-left: 8px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button shape="round" fill="solid" color="success" expand="block" (click)="registerCattle()">
+        <ion-label> {{ 'buttons.3.label' | translate }} </ion-label>
+        <ion-icon name="create" style="margin-left: 8px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar> -->
+
+                  <ion-item *ngIf="isLoading">
+                    <ion-label>Circular</ion-label>
+                    <ion-spinner name="circular"></ion-spinner>
+                  </ion-item>
+
+                  <ion-list *ngIf="!isLoading">
+
+                    <ion-toolbar *ngIf="!isLoading" class="ion-padding-vertical">
+                      <ion-buttons slot="start">
+                        <ion-button shape="round" fill="solid" color="dark" expand="block"
+                          (click)="registercattleform.dismiss()">
+                          <ion-label> {{ 'buttons.4.label' | translate }} </ion-label>
+                          <ion-icon name="close-circle" style="margin-left: 8px;"></ion-icon>
+                        </ion-button>
+                      </ion-buttons>
+                      <ion-buttons slot="end">
+                        <ion-button shape="round" fill="solid" color="success" expand="block"
+                          (click)="registerCattle()">
+                          <ion-label> {{ 'buttons.3.label' | translate }} </ion-label>
+                          <ion-icon name="create" style="margin-left: 8px;"></ion-icon>
+                        </ion-button>
+                      </ion-buttons>
+                    </ion-toolbar>
+
+                    <ion-item>
+                      <ion-input style="display: flex; justify-content: flex-start;"
+                        label="{{'Cattle Name / Tag no.' | translate }}" labelPlacement="stacked" type="text"
+                        placeholder="e.g., Write cattle's name or Tag no."></ion-input>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-select label="{{ 'Breed' | translate }}" labelPlacement="stacked" interface="action-sheet"
+                        placeholder="{{ 'e.g., Sahiwal or Gir...' | translate }}"
+                        [okText]="'buttons.3.label' | translate" [cancelText]="'buttons.6.label' | translate"
+                        [interfaceOptions]="{ header: 'Breed' | translate }">
+                        <ion-select-option *ngFor="let option of breed_options">
+                          {{ 'list.selects.cattle-breeds.'+option | translate }}
+                        </ion-select-option>
+                      </ion-select>
+                    </ion-item>
+
+                    <!-- <ion-item>
+                      <ion-input style="display: flex; justify-content: flex-start;" label="{{'Gender' | translate }}"
+                        labelPlacement="stacked" type="text"
+                        placeholder="{{'e.g., Male or Female' | translate }}"></ion-input>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-input style="display: flex; justify-content: flex-start;" label="{{'Age' | translate }}"
+                        labelPlacement="stacked" type="text"
+                        placeholder="{{'e.g., 2 Years, 5 Months' | translate }}"></ion-input>
+                    </ion-item> -->
+
+
+                    <ion-item>
+                      <ion-input label="{{'Gender' | translate }}" labelPlacement="stacked" type="text"
+                        [(ngModel)]="cattleGender" placeholder="{{'e.g., Male or Female' | translate }}">
+                      </ion-input>
+                    </ion-item>
+
+                    <!-- <ion-item>
+                      <ion-label position="stacked" style="margin-bottom: 8px">{{ "Date of Birth" |
+                        translate}}</ion-label>
+                      <ion-datetime-button datetime="datetime">
+                      </ion-datetime-button>
+                    </ion-item>
+                    <ion-modal [keepContentsMounted]="true">
+                      <ng-template>
+                        <ion-datetime id="datetime" presentation="date" [showClearButton]="true" [showDefaultButtons]="true"></ion-datetime>
+                      </ng-template>
+                    </ion-modal>
+
+
+                    <ion-item>
+                      <ion-input label="{{'Age' | translate }}" labelPlacement="stacked" type="number"
+                        [(ngModel)]="cattleAge" placeholder="{{'e.g., 2' | translate }}">
+                      </ion-input>
+                    </ion-item> -->
+
+
+
+
+
+                    <!-- <ion-item>
+  <ion-label position="stacked" style="margin-bottom: 8px">
+    {{ "Date of Birth" | translate }}
+  </ion-label>
+  <ion-datetime-button datetime="dob-picker"></ion-datetime-button>
+</ion-item>
+
+<ion-modal [keepContentsMounted]="true">
+  <ng-template>
+    <ion-datetime 
+      id="dob-picker" 
+      presentation="date" 
+      (ionChange)="onDateChange($event)"
+      [showDefaultButtons]="true">
+    </ion-datetime>
+  </ng-template>
+</ion-modal>
+
+<ion-item>
+  <ion-input 
+    label="{{'Age' | translate }}" 
+    labelPlacement="stacked" 
+    type="number"
+    [(ngModel)]="cattleAge" 
+    placeholder="{{'e.g., 2' | translate }}">
+  </ion-input>
+</ion-item>
+
+
+                    <ion-item lines="none" *ngIf="cattleGender && cattleAge">
+                      <ion-label color="primary">
+                        <strong>Category:</strong> {{ getCattleCategory() }}
+                      </ion-label>
+                    </ion-item> -->
+
+
+
+
+
+
+                    <ion-item>
+                      <ion-label position="stacked" style="margin-bottom: 8px">{{ "Date of Birth" | translate
+                        }}</ion-label>
+                      <ion-datetime-button datetime="dob-picker"></ion-datetime-button>
+                    </ion-item>
+
+                    <ion-modal [keepContentsMounted]="true">
+                      <ng-template>
+                        <ion-datetime id="dob-picker" presentation="date" (ionChange)="onDateChange($event)"
+                          [showDefaultButtons]="true">
+                        </ion-datetime>
+                      </ng-template>
+                    </ion-modal>
+
+                    <ion-item>
+                      <ion-input label="{{'Age' | translate }}" labelPlacement="stacked" type="text"
+                        [(ngModel)]="cattleAgeDisplay" placeholder="e.g., 2 Years 2 Months">
+                      </ion-input>
+                    </ion-item>
+
+                    <ion-item lines="none" *ngIf="cattleGender && cattleAge">
+                      <ion-label color="primary">
+                        <strong>Category:</strong> {{ getCattleCategory() }}
+                      </ion-label>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-input style="display: flex; justify-content: flex-start;" label="{{'Color' | translate }}"
+                        labelPlacement="stacked" type="text"
+                        placeholder="{{'e.g., White & Black' | translate }}"></ion-input>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-input style="display: flex; justify-content: flex-start;"
+                        label="{{'Average Milk' | translate }}" labelPlacement="stacked" type="text"
+                        placeholder="{{'e.g., 5 Ltrs' | translate }}"></ion-input>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-input style="display: flex; justify-content: flex-start;"
+                        label="{{'No. of Lactations' | translate }}" labelPlacement="stacked" type="text"
+                        placeholder="{{'e.g., 2' | translate }}"></ion-input>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-input style="display: flex; justify-content: flex-start;"
+                        label="{{'No. of Inseminations' | translate }}" labelPlacement="stacked" type="text"
+                        placeholder="{{'e.g., 2' | translate }}"></ion-input>
+                    </ion-item>
+
+                    <ion-item>
+                      <ion-label position="stacked" style="margin-bottom: 8px">{{ "Last Insemination" |
+                        translate}}</ion-label>
+                      <ion-datetime-button datetime="datetime">
+                      </ion-datetime-button>
+                    </ion-item>
+                    <ion-modal [keepContentsMounted]="true">
+                      <ng-template>
+                        <ion-datetime id="datetime" presentation="date-time" [showClearButton]="true"
+                          [showDefaultButtons]="true"></ion-datetime>
+                      </ng-template>
+                    </ion-modal>
+
+                  </ion-list>
+
+                </ng-template>
+              </ion-modal>
+
+            </ion-item>
+          </ion-toolbar>
+
+          <div class="div-1">
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickHeat()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img
+                src="../../../assets/event-icons/emergency_heat_100dp_F19E39_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+              <h1 class="value">
+                <span class="count-display">
+                  {{ (counts$ | async)?.totalHeats | countUp | async }}
+                </span>
+              </h1>
+              <h4 class="label">{{'app.page3' | translate}}</h4>
+            </div>
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickHealth()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img
+                src="../../../assets/event-icons/pulse_alert_100dp_BB271A_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+              <h1 class="value">
+                <span class="count-display">
+                  {{ (counts$ | async)?.totalHealths | countUp | async }}
+                </span>
+              </h1>
+              <h4 class="label">{{'app.page2' | translate}}</h4>
+            </div>
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickAnimals()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img src="../../../assets/icons/favicon.png"></ion-img>
+              <h1 class="value">
+                <span class="count-display">
+                  {{ (counts$ | async)?.totalAnimals | countUp | async }}
+                </span>
+              </h1>
+              <h4 class="label">{{'app.page1' | translate}}</h4>
+            </div>
+
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickDairy()"
+              style="background: skyblue !important;">
+              <ion-ripple-effect></ion-ripple-effect>
+              <h1 class="value"
+                style="font-weight: bolder !important; font-size: small !important; color: var(--ion-color-light) !important;">
+                {{'home.items.1.label'| translate}}</h1>
+              <h4 class="label"
+                style="font-weight: bolder !important; font-size: small !important; color: var(--ion-color-light) !important;">
+                {{'home.items.2.label'| translate}}
+              </h4>
+            </div>
+          </div>
+
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="row-1 ion-margin">
+        <ion-col>
+
+          <ion-toolbar class="ion-padding-top card-header">
+            <ion-item lines="none">
+              <ion-img style="margin-right: 8px; height: 32px; width: 32px; aspect-ratio: 1/1;"
+                src="../../../assets/icons/cycle_24dp_5F5F5F_FILL0_wght700_GRAD0_opsz48.svg"></ion-img>
+              <ion-label color="dark" style="font-weight: bold !important;">
+                <h1 style="font-weight: bold !important;">
+                  {{'home.sections.2.title'| translate}}
+                </h1>
+              </ion-label>
+            </ion-item>
+          </ion-toolbar>
+
+          <div class="div-1">
+
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickEvent()"
+              style="background: var(--ion-color-primary) !important;">
+              <ion-ripple-effect></ion-ripple-effect>
+              <h1 class="value"
+                style="font-weight: bolder !important; font-size: small !important; color: var(--ion-color-light) !important;">
+                {{'home.items.3.label'| translate}}</h1>
+              <h4 class="label"
+                style="font-weight: bolder !important; font-size: small !important; color: var(--ion-color-light) !important;">
+                {{'home.items.4.label'| translate}}
+              </h4>
+            </div>
+
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickRecovery()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img
+                src="../../../assets/event-icons/vaccines_100dp_8C1AF6_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+              <h1 class="value">
+                <span class="count-display">
+                  {{ (counts$ | async)?.totalRecoveries | countUp | async }}
+                </span>
+              </h1>
+              <h4 class="label">{{'app.page6'| translate}}</h4>
+            </div>
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickPregnancyCheck()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img src="../../../assets/event-icons/update_100dp_78A75A_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+              <h1 class="value">
+                <span class="count-display">
+                  {{ (counts$ | async)?.totalInseminations | countUp | async }}
+                </span>
+              </h1>
+              <h4 class="label">{{'app.page7'| translate}}</h4>
+            </div>
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickPregnant()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img
+                src="../../../assets/event-icons/fertile_100dp_9B5278_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+              <h1 class="value">
+                <span class="count-display">
+                  {{ (counts$ | async)?.totalPregnancies | countUp | async }}
+                </span>
+              </h1>
+              <h4 class="label">{{'app.page8'| translate}}</h4>
+            </div>
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickDryoff()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img
+                src="../../../assets/event-icons/cool_to_dry_100dp_5F5F5F_FILL0_wght700_GRAD200_opsz48.svg"></ion-img>
+              <h1 class="value">
+                <span class="count-display">
+                  {{ (counts$ | async)?.totalDryoffEvents | countUp | async }}
+                </span>
+              </h1>
+              <h4 class="label">{{'app.page10'| translate}}</h4>
+            </div>
+            <div class="square-btn ion-activatable ripple-parent" (click)="onClickCalving()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img src="../../../assets/event-icons/cake_100dp_F9DB78_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+              <h1 class="value">
+                <span class="count-display">
+                  {{ (counts$ | async)?.totalCalvings | countUp | async }}
+                </span>
+              </h1>
+              <h4 class="label">{{'app.page9'| translate}}</h4>
+            </div>
+
+            <!-- <div class="square-btn ion-activatable ripple-parent" (click)="onClickMilking()">
+              <ion-ripple-effect></ion-ripple-effect>
+              <ion-img src="../../../assets/event-icons/scale_24dp_5F5F5F_FILL0_wght700_GRAD0_opsz48.svg"></ion-img>
+              <h1 class="value">{{milking_count}}</h1>
+              <h4 class="label">{{'Milking' | translate}}</h4>
+            </div> -->
+          </div>
+
+        </ion-col>
+      </ion-row>
+
+      <ion-row class="row-3">
+        <ion-col>
+
+          <ion-toolbar class="ion-padding-top card-header">
+            <ion-item lines="none">
+              <ion-img style="margin-right: 8px; height: 32px; width: 32px; aspect-ratio: 1/1;"
+                src="../../../assets/icons/grocery_24dp_5F5F5F_FILL0_wght700_GRAD0_opsz48.svg"></ion-img>
+              <ion-label color="dark">
+                <h1 style="font-weight: bold !important;">
+                  {{'home.sections.3.title'| translate}}
+                </h1>
+              </ion-label>
+            </ion-item>
+          </ion-toolbar>
+          <ion-toolbar>
+            <ion-item class="ion-padding-vertical" lines="none">
+              <ion-button id="open-milk-entry" size="medium" slot="start" fill="solid" color="secondary">
+                <ion-label color="light">{{'charts.2.buttons.6.label'| translate}}</ion-label>
+              </ion-button>
+              <ion-button *ngIf="milkingEvents.length > 0" size="medium" shape="round" slot="end" color="light"
+                fill="clear" (click)="onClickDairy()">
+                <ion-label color="dark" style="text-decoration: 2px solid black underline; text-underline-offset: 8px;">
+                  {{'charts.2.buttons.1.label'| translate}}
+                </ion-label>
+              </ion-button>
+            </ion-item>
+          </ion-toolbar>
+
+          <ion-modal id="example-modal" ref="modal" #modal trigger="open-milk-entry" show-backdrop="true">
+            <ng-template>
+
+              <ion-header>
+                <form [formGroup]="milkEntryForm" (ngSubmit)="onSubmitMilkEntry()">
+                  <ion-toolbar>
+                    <ion-buttons slot="start">
+                      <ion-button color="none" fill="clear" strong="true" routerDirection="back"
+                        (click)="modal.dismiss() && clearEntries()">
+                        <ion-icon slot="icon-only" aria-hidden="true" name="arrow-back"></ion-icon>
+                      </ion-button>
+                    </ion-buttons>
+
+                    <ion-title>{{'charts.2.title'| translate}}</ion-title>
+
+                    <!-- <ion-buttons slot="end">
+                      <ion-button *ngIf="milkingEvents.length > 0" size="medium" shape="round" color="light"
+                        fill="clear" (click)="onClickDairy()">
+                        <ion-label color="dark"
+                          style="text-decoration: 2px solid black underline; text-underline-offset: 8px;">History</ion-label>
+                      </ion-button>
+                    </ion-buttons> -->
+
+                  </ion-toolbar>
+                </form>
+              </ion-header>
+
+              <ion-content class="ion-padding">
+
+                <form [formGroup]="milkEntryForm" (ngSubmit)="onSubmitMilkEntry()">
+                  <ion-list>
+
+                    <ion-item>
+                      <ion-label position="stacked" style="margin-bottom: 8px">{{'datetime.3.label'|
+                        translate}}</ion-label>
+                      <ion-datetime-button datetime="datetime">
+                      </ion-datetime-button>
+                    </ion-item>
+                    <ion-modal [keepContentsMounted]="true">
+                      <ng-template>
+                        <ion-datetime presentation="date" id="datetime" (ionChange)="onSelectMilkingDate($event)"
+                          [showClearButton]="true" [showDefaultButtons]="true" [max]="maxDate"></ion-datetime>
+                      </ng-template>
+                    </ion-modal>
+
+                    <ion-item>
+                      <ion-input label="{{'list.inputs.8.label'| translate}}" labelPlacement="stacked"
+                        placeholder="{{'list.inputs.8.placeholder'| translate}}" type="text"
+                        [value]="selectedCattle['collar']?.['collarId']"
+                        (ionInput)="handleMilkEntryInput($event)"></ion-input>
+                    </ion-item>
+
+                    <ion-list *ngIf="!isLoading && results.length > 0" style="max-height: 300px; overflow: scroll;">
+                      <ion-item *ngFor="let data of results" (click)="selectOption(data)">
+                        <ion-label>
+                          <h3>{{'Tag no.'| translate}} {{ data.name }}</h3>
+                          <h3>{{'Collar no.'| translate}} {{ data.collar.collarId }}</h3>
+                        </ion-label>
+                      </ion-item>
+                    </ion-list>
+
+                    <ion-item lines="none">
+                      <div class="milk-inputs-section">
+                        <ion-input color="dark" label="{{'charts.2.inputs.1.label'| translate}}"
+                          labelPlacement="stacked" formControlName="morningVolume" type="number"
+                          inputmode="number"></ion-input>
+                        <ion-input color="dark" label="{{'charts.2.inputs.2.label'| translate}}"
+                          labelPlacement="stacked" formControlName="noonVolume" type="number"
+                          inputmode="number"></ion-input>
+                        <ion-input color="dark" label="{{'charts.2.inputs.3.label'| translate}}"
+                          labelPlacement="stacked" formControlName="eveningVolume" type="number" inputmode="number">
+                        </ion-input>
+                      </div>
+                    </ion-item>
+
+                    <ion-item lines="none">
+                      <div slot="end" style="display: flex; align-items: center; justify-content: flex-end; gap: 1rem;">
+                        <ion-label>{{'charts.2.inputs.4.label'| translate}}</ion-label>
+                        <ion-chip class="ion-padding-horizontal" style="border-radius: 6px;">
+                          <ion-label>{{ totalMilkVolume$ | async}} </ion-label>
+                        </ion-chip>
+                        <ion-label>{{'charts.2.inputs.5.label'| translate}}</ion-label>
+
+                        <ion-button color="light" expand="block" fill="clear" (click)="clearEntries()">
+                          <ion-label color="dark">{{'buttons.7.label'| translate}}</ion-label>
+                          <ion-icon name="refresh-circle" aria-hidden="true" style="margin-left: 8px"
+                            color="dark"></ion-icon>
+                        </ion-button>
+                      </div>
+                    </ion-item>
+
+                  </ion-list>
+
+                  <!-- <ion-toolbar>
+                    <ion-item lines="none">
+                      <ion-button slot="start" fill="clear" expand="block" (click)="clearEntries()">
+                        <ion-label> Reset </ion-label>
+                        <ion-icon name="refresh-circle" aria-hidden="true" style="margin-left: 8px"></ion-icon>
+                      </ion-button>
+                    </ion-item>
+                  </ion-toolbar> -->
+
+                </form>
+              </ion-content>
+
+              <ion-footer>
+                <form [formGroup]="milkEntryForm" (ngSubmit)="onSubmitMilkEntry()">
+                  <ion-item lines="none">
+                    <ion-button slot="end" color="success" expand="block" shape="round" fill="solid" type="submit">
+                      <ion-label color="light"> {{'buttons.5.label'| translate}} </ion-label>
+                      <ion-icon name="create" aria-hidden="true" style="margin-left: 8px" color="light"></ion-icon>
+                    </ion-button>
+                  </ion-item>
+                </form>
+              </ion-footer>
+            </ng-template>
+          </ion-modal>
+
+          <div class="div-3">
+            <div style="width: 100%; height: auto; grid-column: 1/ span 2; padding: 0 1rem;">
+              <canvas id="myChart" #myChart>{{ chart }}</canvas>
+            </div>
+
+            <div class="milk-production-dashboard">
+              <ion-chip class="ion-padding" style="background: #eee;">
+                <ion-label>
+                  <h2>
+                    {{'charts.2.inputs.6.label'| translate}}
+                  </h2>
+                  <h3 style="font-weight: bolder;">
+                    {{ milk_target.totalMilk +" Liters"}}
+                  </h3>
+                </ion-label>
+              </ion-chip>
+              <ion-chip class="ion-padding" style="background: #eee;">
+                <ion-label>
+                  <h2>
+                    {{'charts.2.inputs.7.label'| translate}}
+                  </h2>
+                  <h3 style="font-weight: bolder;">
+                    {{ milk_target.numCows }}
+                  </h3>
+                </ion-label>
+              </ion-chip>
+              <ion-chip class="ion-padding" style="background: #eee;">
+                <ion-label>
+                  <h2>
+                    {{'charts.2.inputs.8.label'| translate}}
+                  </h2>
+                  <h3 style="font-weight: bolder;">
+                    {{ milk_target.avgMilkPerCow +" Liters"}}
+                  </h3>
+                </ion-label>
+              </ion-chip>
+              <ion-chip class="ion-padding" style="background: #eee;">
+                <ion-label>
+                  <h2>
+                    {{'charts.2.inputs.9.label'| translate}}
+                  </h2>
+                  <h3 style="font-weight: bolder;">
+                    {{ milk_target.efficiency | number:'1.2-2'}}%
+                  </h3>
+                </ion-label>
+              </ion-chip>
+            </div>
+          </div>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col>
+          <ion-toolbar color="light">
+            <ion-item color="light" class="ion-padding" lines="none">
+              <ion-chip class="ion-padding" color="dark"
+                style="padding: 1rem; width: 100%; display: flex; align-items: center; justify-content: flex-start; gap: 1rem;">
+                <ion-avatar>
+                  <ion-img aria-hidden="true" src="../../assets/icons/fd.png"
+                    style="height: auto; width: auto; aspect-ratio: 1/1 !important;"></ion-img>
+                </ion-avatar>
+                <ion-label color="dark" style="font-weight: bolder;">{{ 'app.welcome-msg' | translate }}</ion-label>
+              </ion-chip>
+            </ion-item>
+          </ion-toolbar>
+
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+</ion-content>

@@ -1,0 +1,175 @@
+<ion-header>
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false" menu="left-menu">
+        <ion-icon size="large" [name]="isMenuOpen ? 'arrow-undo' : 'menu'" color="dark"></ion-icon>
+      </ion-menu-button>
+    </ion-buttons>
+
+   <ion-item lines="none">
+      <ion-chip style="width: 100%; border-radius: 6px;" color="dark">
+        <ion-label style="text-transform: capitalize; font-weight: bold; color: var(--ion-color-dark-shade);">
+          <h2>
+            {{user['role'] !== 'SUPER_ADMIN' ? 'Farm :': 'User :' }} {{user['username']}} {{user['role'] === 'SUPER_ADMIN' ? '': 'Farm' }}
+          </h2>
+          <h3 style="font-weight: bolder;">{{user['role']}}</h3>
+        </ion-label>
+      </ion-chip>
+    </ion-item>
+
+    <ion-buttons slot="end">
+      <ion-button shape="round" fill="clear" id="chatbot">
+        <ion-icon size="large" name="logo-ionitron" color="dark"></ion-icon>
+      </ion-button>
+
+       <ion-button shape="round" fill="clear" (click)="onClickProfile()">
+        <ion-icon size="large" name="person-circle" color="dark"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+
+  </ion-toolbar>
+</ion-header>
+
+<ion-content id="main">
+  <ion-router-outlet></ion-router-outlet>
+</ion-content>
+
+<ion-menu #leftmenu class="left-menu" side="start" swipeGesture="true" type="push" menuId="left-menu" contentId="main">
+  <ion-content class="ion-padding" [fullscreen]="true">
+    <div style="display: flex; align-items: center; justify-content: center; margin-top: 50px; " class="ion-activatable ripple-parent">
+                    <ion-ripple-effect></ion-ripple-effect>
+
+      <ion-img aria-hidden="true" src="../../assets/icons/fd.png"
+        style="height: auto; width: 40%; aspect-ratio: 1/1 !important;"></ion-img>
+    </div>
+
+    <ion-list class="left-menu-list">
+      <ion-item>
+        <ion-icon name="language" color="light"></ion-icon>
+        <ion-select class="never-flip" [okText]="'buttons.5.label' | translate"
+          [cancelText]="'buttons.6.label'| translate" title="{{'landing.items.1.label' | translate}}" label="Language"
+          label-placement="stacked" [ngModel]="language" (ionChange)="changeLanguageTo($event)"
+          interface="action-sheet">
+          <ion-select-option value="en" selected-text="language == 'en'">ENGLISH</ion-select-option>
+          <ion-select-option value="hi" selected-text="language == 'hi'">हिंदी</ion-select-option>
+          <ion-select-option value="ka" selected-text="language == 'ka'">ಕನ್ನಡ</ion-select-option>
+          <ion-select-option value="ml" selected-text="language == 'ml'">മലയാളം</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item routerLink="/landing/tabs/home" routerLinkActive="router-link-active" button>
+        <ion-icon name="home" color="light"></ion-icon>
+        <ion-menu-toggle autoHide="false">
+          <ion-label>
+            <p>
+              {{'landing.items.2.label' | translate}}
+            </p>
+          </ion-label>
+        </ion-menu-toggle>
+      </ion-item>
+
+      <ion-item disabled="true" routerLink="/landing/payment" routerLinkActive="router-link-active" button>
+        <ion-img src="../assets/icons/eos-icons_activate-subscriptions.svg"></ion-img>
+        <ion-menu-toggle autoHide="false">
+          <ion-label>
+            <p>
+              {{'landing.items.3.label' | translate}}
+            </p>
+          </ion-label>
+        </ion-menu-toggle>
+      </ion-item>
+
+      <ion-item disabled="true" routerLink="/landing/new-purchase" routerLinkActive="router-link-active" button>
+        <ion-img src="../assets/icons/Group.svg"></ion-img>
+        <ion-menu-toggle autoHide="false">
+          <ion-label>
+            <p>
+              {{'landing.items.4.label' | translate}}
+            </p>
+          </ion-label>
+        </ion-menu-toggle>
+      </ion-item>
+
+      <ion-item disabled="true" routerLink="/landing/customer-support" routerLinkActive="router-link-active" button>
+        <ion-img src="../assets/icons/ri_customer-service-2-fill.svg"></ion-img>
+        <ion-menu-toggle autoHide="false">
+          <ion-label>
+            <p>
+              {{'landing.items.5.label' | translate}}
+            </p>
+          </ion-label>
+        </ion-menu-toggle>
+      </ion-item>
+
+      <ion-item disabled="true" routerLink="/landing/user-feedback" routerLinkActive="router-link-active" button>
+        <ion-img src="../../assets/icons/fluent_person-feedback-16-filled.svg"></ion-img>
+        <ion-menu-toggle autoHide="false">
+          <ion-label>
+            <p>
+              {{'landing.items.6.label' | translate}}
+            </p>
+          </ion-label>
+        </ion-menu-toggle>
+      </ion-item>
+
+      <ion-item disabled="true" routerLink="/landing/refer-others" routerLinkActive="router-link-active" button>
+        <ion-img src="../assets/icons/camera-reverse-outline.svg"></ion-img>
+        <ion-menu-toggle disabled="true" autoHide="false">
+          <ion-label>
+            <p>
+              {{'landing.items.7.label' | translate}}
+            </p>
+          </ion-label>
+        </ion-menu-toggle>
+      </ion-item>
+    </ion-list>
+  </ion-content>
+
+  <ion-footer>
+
+    <div *ngIf="!isLoading" style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
+      <ion-label>
+        <p style="padding: 0; margin: 0;">{{'app.account-name'| translate}} :</p>
+        <ion-note>
+          <b>
+            {{user['email']}}
+          </b>
+        </ion-note>
+      </ion-label>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
+      <ion-button size="small" expand="block" style=" background-color: #dc143c70 !important;
+      background: #dc143c70 !important;
+      --background: #dc143c70 !important; color: white !important;" (click)="onLogout()">
+        <ion-label>
+          <b>
+            {{'buttons.2.label'| translate}}
+          </b>
+        </ion-label>
+        <ion-icon aria-hidden="true" name="log-out-outline" style="margin-left: 8px;"></ion-icon>
+      </ion-button>
+    </div>
+
+    <ion-toolbar>
+      <ion-item lines="none">
+        <ion-note slot="end" color="medium">Flixdrop-CHMS 1.1.0</ion-note>
+      </ion-item>
+    </ion-toolbar>
+  </ion-footer>
+
+</ion-menu>
+
+<ion-modal [isOpen]="isChatbotOpen" #chatbot [keepContentsMounted]="true" trigger="chatbot" [initialBreakpoint]="1"
+  [breakpoints]="[0,1]">
+  <ng-template>
+    <ion-toolbar>
+      <ion-item>
+        <ion-icon slot="end" name="close" (click)="chatbot.dismiss()"></ion-icon>
+      </ion-item>
+    </ion-toolbar>
+    <iframe style="border: none; width: 100%; height: 100%;" src="https://farmgpt.flixdrop.com/"></iframe>
+  </ng-template>
+</ion-modal>

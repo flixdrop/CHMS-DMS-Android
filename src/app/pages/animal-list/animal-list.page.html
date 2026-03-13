@@ -1,0 +1,66 @@
+<app-custom-header title="{{ 'app.page1' | translate }}" [count]="results.length.toString()" [isLoading]="isLoading"
+  (close)="goBack()" (clear)="onBlurSearchBar()" (ionInput)="handleInput($event)">
+</app-custom-header>
+
+<ion-content class="custom-content">
+  <ion-grid class="top-level-grid">
+    <ion-row class="top-level-row" *ngIf="!isLoading && results.length > 0">
+      <ion-col class="top-level-col">
+        <ion-card *ngFor="let animal of results | paginate: { 
+            id: 'animals_pagination',
+            itemsPerPage: pageSize, 
+            currentPage: p, 
+            totalItems: totalCount 
+          }">
+          <ion-row class="row-2" [routerLink]="['/', 'animal-list', animal.collar?.collarId]"
+            routerLinkActive="router-link-active">
+            <ion-col>
+              <ion-item lines="none">
+
+                <ion-img src="assets/icons/favicon.png" slot="start" style="width: 40px;"></ion-img>
+
+                <ion-label
+                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
+                  <h2>
+                    {{'list.col1'| translate}} {{animal.name }}
+                  </h2>
+                  <ion-chip color="dark">
+                    <h2>
+                      {{'list.col3'| translate}} {{animal.collar.name }}
+                    </h2>
+                  </ion-chip>
+                  <ion-note>{{ animal.farm?.organization?.parentOrganization?.name }}</ion-note>
+                </ion-label>
+
+              </ion-item>
+
+            </ion-col>
+          </ion-row>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="!isLoading && results.length === 0">
+      <ion-col>
+        <ion-toolbar>
+          <ion-item>
+            <ion-chip>
+              <ion-icon name="alert-circle"></ion-icon>
+              <ion-label color="medium">{{ 'list.placeholder' | translate }}</ion-label>
+            </ion-chip>
+          </ion-item>
+        </ion-toolbar>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>
+
+
+<ion-footer>
+  <ion-toolbar>
+    <pagination-controls id="animals_pagination" (pageChange)="onPageChange($event)" previousLabel="Prev"
+      nextLabel="Next">
+    </pagination-controls>
+  </ion-toolbar>
+</ion-footer>

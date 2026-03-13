@@ -1,0 +1,25 @@
+<ion-content class="ion-padding" [fullscreen]="true">
+
+  <ion-toolbar>
+    <ion-item>
+      <ion-label>
+        <ion-icon name="wifi" color="medium"></ion-icon>
+        <h4>No Internet</h4>
+        <ion-note>Check your connection, then refresh your page</ion-note>
+      </ion-label>
+    </ion-item>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-item lines="none">
+      Try re-loading, tap this <ion-icon name="arrow-forward-outline" class="ion-margin-horizontal"></ion-icon> 
+      <ion-buttons slot="end">
+        <ion-button expand="block" color="success" fill="clear" (click)="retryConnecting()">
+          <ion-label style="text-decoration: 1px solid var(--ion-color-success) underline; text-underline-offset: 4px;">Reload</ion-label>
+          <ion-icon name="reload-circle" style="margin-left: 8px;"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-toolbar>
+
+</ion-content>

@@ -1,0 +1,323 @@
+<app-custom-header title="{{ 'app.page3' | translate }}" [count]="results.length.toString()" [isLoading]="isLoading"
+  (close)="goBack()" (clear)="onBlurSearchBar()" (ionInput)="handleInput($event)">
+</app-custom-header>
+
+<ion-content class="custom-content">
+
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-buttons slot="start">
+        <ion-button shape="round" color="secondary" id="open-filter-modal" fill="solid">
+          <ion-icon color="light" name="options" style="margin-right: 8px;"></ion-icon>
+          <ion-label color="light">Filter</ion-label>
+        </ion-button>
+      </ion-buttons>
+    </ion-item>
+
+    <ion-modal class="ion-padding" #filtermodal trigger="open-filter-modal" (willDismiss)="filtermodal.dismiss()"
+      show-backdrop="false" [initialBreakpoint]="1" [breakpoints]="[0, 0.75, 1]" handleBehavior="cycle">
+      <ng-template>
+
+        <app-custom-footer (close)="onCloseFilter()" (submit)="onApplyFilter()"></app-custom-footer>
+
+        <ion-content class="ion-padding">
+
+          <ion-grid>
+
+            <ion-toolbar>
+              <ion-title>Date Filter</ion-title>
+            </ion-toolbar>
+
+            <ion-row>
+
+              <ion-col>
+                <ion-item lines="none" class="date-item">
+                  <ion-label position="stacked">{{'datetime.1.label'| translate}}</ion-label>
+                  <ion-datetime-button datetime="fromDate"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <!-- <ion-datetime id="fromDate" presentation="date" [(ngModel)]="fromDate"
+                        (ionChange)="filterEvents()" showDefaultButtons="true">
+                      </ion-datetime> -->
+
+                      <ion-datetime id="fromDate" presentation="date" [(ngModel)]="fromDate"
+                        (ionChange)="onDateChange()" showDefaultButtons="true">
+                      </ion-datetime>
+
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+
+              <ion-col>
+                <ion-item lines="none" class="date-item">
+                  <ion-label position="stacked">{{'datetime.2.label'| translate}}</ion-label>
+                  <ion-datetime-button datetime="toDate"></ion-datetime-button>
+                  <ion-modal [keepContentsMounted]="true">
+                    <ng-template>
+                      <!-- <ion-datetime id="toDate" presentation="date" [(ngModel)]="toDate" [max]="maxDate"
+                        (ionChange)="filterEvents()" showDefaultButtons="true">
+                      </ion-datetime> -->
+
+                      <ion-datetime id="toDate" presentation="date" [(ngModel)]="toDate" [max]="maxDate"
+                        (ionChange)="onDateChange()" showDefaultButtons="true">
+                      </ion-datetime>
+                    </ng-template>
+                  </ion-modal>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+
+        </ion-content>
+      </ng-template>
+    </ion-modal>
+  </ion-toolbar>
+
+  <ion-grid class="top-level-grid">
+
+    <ion-row class="top-level-row" *ngIf="!isLoading && heats.length > 0">
+      <ion-col class="top-level-col">
+        <ion-card *ngFor="let heat of results | paginate: { 
+    id: 'heats_pager',
+    itemsPerPage: pageSize, 
+    currentPage: p, 
+    totalItems: totalCount 
+  }; let i = index">
+
+          <ion-row>
+            <ion-col>
+              <ion-item lines="full">
+                <ion-radio-group #radioGroup [allowEmptySelection]="true" value="{{ heat }}"
+                  (ionChange)="onSelectOption($event, heat)">
+                  <ion-label>
+                    <h4>{{'list.cards.1.title' | translate}}</h4>
+                  </ion-label>
+                  <ion-item lines="none">
+                    <ion-radio slot="start" value="confirm">
+                      <ion-label>
+                        <h4>
+                          {{'list.radios.1.label' | translate }}
+                        </h4>
+                      </ion-label>
+                    </ion-radio>
+                    <ion-radio slot="start" value="cancel">
+                      <ion-label>
+                        <h4>
+                          {{'list.radios.2.label' | translate }}
+                        </h4>
+                      </ion-label>
+                    </ion-radio>
+                  </ion-item>
+                </ion-radio-group>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row class="row-2" [routerLink]="[
+              '/',
+              'animal-list',
+              heat.animal.collar.name
+            ]" routerLinkActive="router-link-active">
+            <ion-col>
+              <ion-row>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{'list.col3' | translate}}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{'list.col4' | translate}}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{'list.col5' | translate}}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h2>{{ heat["animal"]["collar"]["collarId"] }}</h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label class="datetime">
+                      <h2>{{ heat["detectedAt"] | utcToIst }}</h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h2>
+                        {{ heat["heatStrength"]+"%" }}
+                      </h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+          </ion-row>
+
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="!isLoading && results.length === 0">
+      <ion-col>
+        <ion-toolbar>
+          <ion-item>
+            <ion-chip>
+              <ion-icon name="alert-circle"></ion-icon>
+              <ion-label color="medium">{{ "list.placeholder" | translate }}</ion-label>
+            </ion-chip>
+          </ion-item>
+        </ion-toolbar>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>
+
+<ion-modal #childModal show-backdrop="false" [initialBreakpoint]="1" [breakpoints]="[0, 0.75, 1]" handleBehavior="cycle"
+  (onblur)="closeChildModal()">
+  <ng-template>
+
+     <app-custom-footer [customForm]="inseminationForm" (close)="closeChildModal()"
+      (submit)="reportInsemination()"></app-custom-footer>
+
+    <ion-content class="ion-padding">
+      <ion-grid>
+        <ion-row>
+          <ion-col sizeMd="6" offsetMd="3">
+            <form *ngIf="formType === 'confirm'" [formGroup]="inseminationForm" (ngSubmit)="reportInsemination()">
+              <ion-toolbar>
+                <ion-item>
+                  <ion-label>
+                    <h4>{{'list.modals.3.title' | translate}}</h4>
+                  </ion-label>
+                </ion-item>
+              </ion-toolbar>
+
+              <ion-list>
+                <ion-item>
+                  <ion-label position="stacked" style="margin-bottom: 8px">{{ "list.inputs.3.label" |
+                    translate}}</ion-label>
+                  <ion-datetime-button datetime="datetime">
+                  </ion-datetime-button>
+                </ion-item>
+                <ion-modal [keepContentsMounted]="true">
+                  <ng-template>
+                    <ion-datetime id="datetime" (ionChange)="onSelectInseminationDate($event)" [showClearButton]="true"
+                      [showDefaultButtons]="true"></ion-datetime>
+                  </ng-template>
+                </ion-modal>
+
+                <ion-item>
+                  <ion-select label="{{'list.selects.2.title' | translate}}" labelPlacement="stacked"
+                    interface="action-sheet" formControlName="process"
+                    placeholder="{{'list.selects.2.placeholder' | translate}}" [okText]="'buttons.3.label' | translate"
+                    [cancelText]="'buttons.6.label' | translate"
+                    [interfaceOptions]="{ header: 'list.selects.2.title' | translate }"
+                    (ionChange)="onSelectInseminationProcessType($event)">
+                    <ion-select-option value="artificial">{{ "list.selects.2.options.1" | translate
+                      }}</ion-select-option>
+                    <ion-select-option value="natural">{{ "list.selects.2.options.2" | translate
+                      }}</ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-list>
+
+              <ion-list *ngIf="inseminationForm.value.process === 'natural'">
+                <ion-item>
+                  <ion-input label="{{ 'list.inputs.4.label' | translate }}" labelPlacement="stacked" type="text"
+                    formControlName="bull_name" placeholder="{{ 'list.inputs.4.placeholder' | translate }}"></ion-input>
+                </ion-item>
+              </ion-list>
+
+              <ion-list *ngIf="inseminationForm.value.process === 'artificial'">
+                <ion-item>
+                  <ion-select label="{{ 'list.selects.3.title' | translate }}" labelPlacement="stacked"
+                    interface="action-sheet" formControlName="semen_type"
+                    placeholder="{{ 'list.selects.3.placeholder' | translate }}"
+                    [okText]="'buttons.3.label' | translate" [cancelText]="'buttons.6.label' | translate"
+                    [interfaceOptions]="{ header: 'list.selects.3.title' | translate  }"
+                    (ionChange)="onSelectSemenType($event)">
+                    <ion-select-option value="sexed semen">{{ "list.selects.3.options.1" | translate
+                      }}</ion-select-option>
+                    <ion-select-option value="non-sexed semen">{{ "list.selects.3.options.2" | translate
+                      }}</ion-select-option>
+                  </ion-select>
+                </ion-item>
+
+                <ion-item>
+                  <ion-input label="{{ 'list.inputs.5.label' | translate }}" labelPlacement="stacked" type="text"
+                    formControlName="semen_company"
+                    placeholder="{{ 'list.inputs.5.placeholder' | translate }}"></ion-input>
+                </ion-item>
+
+                <ion-item>
+                  <ion-select label="{{ 'list.inputs.6.label' | translate }}" labelPlacement="stacked"
+                    interface="action-sheet" formControlName="semen_breed"
+                    placeholder="{{ 'list.inputs.6.placeholder' | translate }}" [okText]="'buttons.3.label' | translate"
+                    [cancelText]="'buttons.6.label' | translate"
+                    [interfaceOptions]="{ header: 'list.inputs.6.label' | translate }"
+                    (ionChange)="onSelectSemenBreed($event)">
+                    <ion-select-option *ngFor="let option of breed_options">
+                      {{ 'list.selects.cattle-breeds.'+option | translate }}
+                    </ion-select-option>
+                  </ion-select>
+                </ion-item>
+              </ion-list>
+
+            </form>
+
+            <form *ngIf="formType === 'cancel'" [formGroup]="inseminationForm" (ngSubmit)="reportInsemination()">
+              <ion-toolbar>
+                <ion-item>
+                  <ion-label>
+                    <h4>{{ "list.modals.4.title" | translate }}</h4>
+                  </ion-label>
+                </ion-item>
+              </ion-toolbar>
+
+              <ion-list>
+                <ion-radio-group (ionChange)="handleChange($event)">
+                  <ion-item>
+                    <ion-radio value="Is it a Wrong Heat/Estrus ?">{{ "list.radios.3.label" | translate
+                      }}</ion-radio>
+                  </ion-item>
+                  <ion-item>
+                    <ion-radio value="Not Inseminated ?">{{ "list.radios.4.label" | translate }}</ion-radio>
+                  </ion-item>
+
+                </ion-radio-group>
+              </ion-list>
+            </form>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-content>
+
+   
+  </ng-template>
+</ion-modal>
+
+<ion-footer>
+  <ion-toolbar>
+    <pagination-controls id="heats_pager" (pageChange)="onPageChange($event)">
+    </pagination-controls>
+  </ion-toolbar>
+</ion-footer>

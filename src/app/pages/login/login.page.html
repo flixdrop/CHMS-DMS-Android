@@ -1,0 +1,133 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-item>
+      <ion-icon name="language" color="light"></ion-icon>
+      <ion-select class="never-flip" [okText]="'Select' | translate" [cancelText]="'Cancel' | translate"
+        title="Language" label="Language" label-placement="stacked" [ngModel]="language"
+        (ionChange)="changeLanguageTo($event)" interface="action-sheet">
+        <ion-select-option value="en" selected-text="language == 'en'">ENGLISH</ion-select-option>
+        <ion-select-option value="hi" selected-text="language == 'hi'">हिंदी</ion-select-option>
+        <ion-select-option value="ka" selected-text="language == 'ka'">ಕನ್ನಡ</ion-select-option>
+        <ion-select-option value="ml" selected-text="language == 'ml'">മലയാളം</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content slot="fixed" [fullscreen]="false">
+
+  <div class="outer-div">
+
+    <!-- <picture class="background-picture">
+      <img src="../../assets/images/login-background.jpg" alt="login-background">
+    </picture> -->
+
+    <!-- <picture class="background-picture">
+      <source srcset="../../assets/images/login-background.jpg" media="(max-width: 767px)">
+      <source srcset="../../assets/images/login-background.jpg" media="(min-width: 768px) and (max-width: 1023px)">
+      <img src="../../assets/images/login-background.jpg" alt="Login Background">
+    </picture> -->
+
+    <ion-grid>
+      <ion-row>
+        <ion-col>
+          <form [formGroup]="loginForm" (ngSubmit)="onClickSubmit()">
+            <div class="brand-logo">
+              <ion-avatar class="ion-margin">
+                <img style="transform: scale(2);" alt="Flixdrop-Logo" src="../../assets/icons/fd.png" />
+              </ion-avatar>
+            </div>
+            <ion-list lines="none">
+              <ion-item class="ion-margin-vertical">
+                <ion-input class="custom" id="username" label="{{ 'login.inputs.1.label' | translate }}"
+                  label-placement="stacked" fill="solid" placeholder="{{ 'login.inputs.1.placeholder' | translate }}"
+                  formControlName="username" [clearInput]="true" [counter]="true" [maxlength]="25"
+                  [helperText]="'login.inputs.1.helper-text' | translate"
+                  [errorText]="'login.inputs.1.error-text' | translate">
+                  <ion-icon color="medium" size="large" slot="start" name="id-card" aria-hidden="true"></ion-icon>
+                </ion-input>
+              </ion-item>
+              <ion-item class="ion-margin-vertical">
+                <ion-input type="{{passwordVisible? 'text': 'password'}}" class="custom" id="password"
+                  label="{{ 'login.inputs.2.label' | translate }}" label-placement="stacked" fill="solid"
+                  placeholder="{{ 'login.inputs.2.placeholder' | translate }}" formControlName="password"
+                  [counter]="true" [maxlength]="25" [helperText]="'login.inputs.2.helper-text' | translate"
+                  [errorText]="'login.inputs.2.error-text' | translate">
+                  <ion-icon color="medium" size="large" slot="start" name="key" aria-hidden="true"></ion-icon>
+                  <ion-icon size="small" color="medium" slot="end" (click)="showPassword()"
+                    name="{{passwordVisible ? 'eye': 'eye-off'}}"></ion-icon>
+                </ion-input>
+              </ion-item>
+              <ion-toolbar class="ion-margin-horizontal">
+                <ion-checkbox slot="start" justify="start" [checked]="rememberUser === true"
+                  (ionChange)="onClickRememberMe($event)" style="font-weight: bold;">
+                  {{ 'login.radios.1.label' | translate }}
+                </ion-checkbox>
+              </ion-toolbar>
+               <ion-toolbar>
+                <ion-button id="forgot-pwd" color="primary" fill="clear" slot="start"
+                  (click)="presentForgotPasswordAlert()">
+                  <ion-label style="text-transform: capitalize; font-weight: bold; text-decoration: 2px solid #212121 underline; text-underline-offset: 4px;">
+                    {{ 'Forgot Password' | translate }}
+                  </ion-label>
+                </ion-button>
+              </ion-toolbar>
+
+              <!-- <ion-toolbar class="ion-padding">
+                <ion-button slot="end" type="submit" color="success" fill="solid">
+                  <ion-label style="color: var(--ion-color-light);">{{ 'login.buttons.1.label' | translate
+                    }}</ion-label>
+                  <ion-icon name="log-in" style="color: var(--ion-color-light);"></ion-icon>
+                </ion-button>
+              </ion-toolbar>
+
+              <ion-toolbar class="ion-margin-horizontal">
+                <ion-button id="forgot-pwd" color="primary" fill="clear" slot="end"
+                  (click)="presentForgotPasswordAlert()">
+                  <ion-label>
+                    {{ 'Forgot Password' | translate }}
+                  </ion-label>
+                </ion-button>
+              </ion-toolbar> -->
+
+              <!-- <ion-alert
+  trigger="forgot-pwd"
+  header="Account Verification"
+  [buttons]="forgotPassworddAlertButtons"
+  [inputs]="forgotPasswordAlertInputs"
+></ion-alert> -->
+
+            </ion-list>
+          </form>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+</ion-content>
+
+<ion-footer>
+<form [formGroup]="loginForm" (ngSubmit)="onClickSubmit()">
+  <ion-toolbar class="ion-padding-horizontal">
+    <ion-button slot="end" type="submit" color="success" fill="solid">
+      <ion-label style="color: var(--ion-color-light);">{{ 'login.buttons.1.label' | translate
+                    }}</ion-label>
+                  <ion-icon name="log-in" style="color: var(--ion-color-light);"></ion-icon>
+                </ion-button>
+              </ion-toolbar>
+            </form>
+
+
+  <!-- <ion-toolbar>
+    <ion-item>
+      <ion-icon name="language" color="light"></ion-icon>
+      <ion-select class="never-flip" [okText]="'Select' | translate" [cancelText]="'Cancel' | translate"
+        title="Language" label="Language" label-placement="stacked" [ngModel]="language"
+        (ionChange)="changeLanguageTo($event)" interface="action-sheet">
+        <ion-select-option value="en" selected-text="language == 'en'">ENGLISH</ion-select-option>
+        <ion-select-option value="hi" selected-text="language == 'hi'">हिंदी</ion-select-option>
+        <ion-select-option value="ka" selected-text="language == 'ka'">ಕನ್ನಡ</ion-select-option>
+        <ion-select-option value="ml" selected-text="language == 'ml'">മലയാളം</ion-select-option>
+      </ion-select>
+    </ion-item>
+  </ion-toolbar> -->
+</ion-footer>

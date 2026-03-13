@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "549813245391",
+    "firebase_url": "https://flixdropchms-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "flixdropchms",
+    "storage_bucket": "flixdropchms.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:549813245391:android:0d2b815bf41f55266e6eba",
+        "android_client_info": {
+          "package_name": "com.flixdrop.chms"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBX_gLI2O2Dz1gtZDxnnD3zuJXYhTmfipg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:549813245391:android:9ad686854b2944d26e6eba",
+        "android_client_info": {
+          "package_name": "com.flixdrop.imuzz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBX_gLI2O2Dz1gtZDxnnD3zuJXYhTmfipg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

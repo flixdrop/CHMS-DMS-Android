@@ -1,0 +1,570 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+
+    <ion-progress-bar *ngIf="isLoading" type="indeterminate"></ion-progress-bar>
+
+    <ion-buttons slot="start">
+      <ion-button color="none" fill="clear" strong="true" routerDirection="back" (click)="goBack()">
+        <ion-icon slot="icon-only" aria-hidden="true" name="arrow-back"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+    <ion-title>
+      {{'list.col1' | translate}} {{animalObject['name']}}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" [scrollEvents]="true">
+
+  <div class="outer-div-1" *ngIf="!isLoading">
+    <div class="div-1">
+
+       <ion-row class="animal-detail-section" *ngIf="animal === '37A7' || animal === '294D'">
+      <ion-col>
+        <ion-accordion-group animated="false" value="first">
+          <ion-accordion value="first">
+            <ion-item class="ion-margin-top" slot="header" color="none" lines="full">
+              <ion-title style="padding-left: 0 !important;">
+                {{'detail.items.1.label' | translate}}
+              </ion-title>
+            </ion-item>
+
+            <div slot="content">
+              <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Animal no.' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['name'] }}</ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Device no.' | translate}}</ion-note><br />
+                  <ion-note>{{ animal}}</ion-note>
+                </ion-label>
+              </ion-item>
+
+               <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Breed' | translate}}</ion-note><br />
+                  <ion-note>
+                    {{animal === '37A7' ? 'Gir' : animalObject['breed']}}
+                  </ion-note>
+                </ion-label>
+              </ion-item>
+              
+              <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Age' | translate}}</ion-note><br />
+                  <ion-note>4</ion-note>
+                </ion-label>
+              </ion-item>
+              <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'No. of Lactations' | translate}}</ion-note><br />
+                  <ion-note>3</ion-note>
+                </ion-label>
+              </ion-item>
+              
+              <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Color' | translate}}</ion-note><br />
+                  <ion-note>
+                    White
+                  </ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="location"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.2.label' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['farm'].organization.parentOrganization.name }}</ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="person"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.3.label' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['farm'].organization.user.username}}</ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="call"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.4.label' | translate}}</ion-note><br />
+                  <ion-note>
+                    <a
+                      href="tel:{{ animalObject['farm'].organization.user.phoneNumber}}">{{animalObject['farm'].organization.user.phoneNumber}}</a>
+                  </ion-note>
+                </ion-label>
+              </ion-item>
+             
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </ion-col>
+    </ion-row>
+
+
+      <ion-row class="animal-detail-section" *ngIf="animal === '7344' || animal === 'B9AB'">
+      <ion-col>
+        <ion-accordion-group animated="false" value="first">
+          <ion-accordion value="first">
+            <ion-item class="ion-margin-top" slot="header" color="none" lines="full">
+              <ion-title style="padding-left: 0 !important;">
+                {{'detail.items.1.label' | translate}}
+              </ion-title>
+            </ion-item>
+
+            <div slot="content">
+              <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Animal no.' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['name'] }}</ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Device no.' | translate}}</ion-note><br />
+                  <ion-note>{{ animal}}</ion-note>
+                </ion-label>
+              </ion-item>
+
+                <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Breed' | translate}}</ion-note><br />
+                  <ion-note>
+                    {{ animal === '7344' ? 'Gir' : animalObject['breed']}}
+                  </ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Age' | translate}}</ion-note><br />
+                  <ion-note>2</ion-note>
+                </ion-label>
+              </ion-item>
+               <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'No. of Lactations' | translate}}</ion-note><br />
+                  <ion-note>2</ion-note>
+                </ion-label>
+              </ion-item>
+             
+               <ion-item lines="none">
+                <ion-icon slot="start" name="checkmark"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'Color' | translate}}</ion-note><br />
+                  <ion-note>
+                    Black & White
+                  </ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="location"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.2.label' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['farm'].organization.parentOrganization.name }}</ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="person"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.3.label' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['farm'].organization.user.username}}</ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="call"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.4.label' | translate}}</ion-note><br />
+                  <ion-note>
+                    <a
+                      href="tel:{{ animalObject['farm'].organization.user.phoneNumber}}">{{animalObject['farm'].organization.user.phoneNumber}}</a>
+                  </ion-note>
+                </ion-label>
+              </ion-item>
+
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </ion-col>
+    </ion-row>
+
+    
+
+      <div class="div-1-1">
+        <div>
+          <ion-chip>
+            <p class="label">
+              {{'list.col15' | translate}}</p>
+            </ion-chip>
+        </div>
+        <div style="width: 100%;">
+          <p class="value counter">
+            {{ getLastHealthIndex() ? "Health Index:
+            "+getLastHealthIndex().healthIndex+"%" : "None" }}</p>
+          <p class="value">
+            {{daysSince( getLastHealthIndex().detectedAt)}}
+          </p>
+          <p class="time" *ngIf="getLastHealthIndex()">
+            <ion-icon color="success" name="time"></ion-icon>
+            - {{getLastHealthIndex().detectedAt | date: 'MMM d, y, h:mm a' }}
+          </p>
+        </div>
+      </div>
+      <div class="div-1-1">
+        <div>
+          <ion-chip>
+            <p class="label">{{'list.col16'| translate}}</p>
+            </ion-chip>
+        </div>
+        <div style="width: 100%;">
+          <p class="value counter">{{ getLastHeatStrength() ? "Heat Intensity:
+            "+getLastHeatStrength().heatStrength+"%" : "None"}}</p>
+          <p class="value" *ngIf="getLastHeatStrength()">
+            {{daysSince(getLastHeatStrength().detectedAt)}}
+          </p>
+          <p class="time" *ngIf="getLastHeatStrength()">
+            <ion-icon color="success" name="time"></ion-icon>
+            - {{getLastHeatStrength().detectedAt | date: 'MMM d, y, h:mm a' }}
+          </p>
+
+        </div>
+      </div>
+      <div class="div-1-1">
+        <div>
+          <ion-chip>
+            <p class="label">{{'list.col17'| translate}}</p>
+            </ion-chip>
+        </div>
+        <div style="width: 100%;">
+         
+          <p class="value" *ngIf="getLastInsemination()">
+            {{daysSince(getLastInsemination().eventDateTime) }}
+          </p>
+          <p class="value counter">
+            {{ getLastInsemination() ? (getLastInsemination().eventDateTime |
+            date: 'MMM d, y, h:mm a') : "None"}}</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="outer-div-2">
+    <ion-toolbar>
+      <ion-title>
+        {{"charts.1.title" | translate}}
+      </ion-title>
+    </ion-toolbar>
+    <div class="div-1">
+
+      <ion-segment color="medium" [(ngModel)]="selectedPreset" (ionChange)="onPresetChange($event.detail.value)">
+        <ion-segment-button value="1day">
+          <ion-label>{{'buttons.8.label'| translate}}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="7days">
+          <ion-label>{{'buttons.9.label'| translate}}</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="30days">
+          <ion-label>{{'buttons.10.label'| translate}}</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-popover #datepopover trigger="dateinput">
+        <ng-template>
+          <ion-item>
+            <ion-icon slot="start" name="arrow-undo-circle-sharp" (click)="datepopover.dismiss()"></ion-icon>
+          </ion-item>
+          <ion-item class="date-input">
+            <ion-label>{{'datetime.1.label'| translate}}</ion-label>
+            <ion-datetime-button color="medium" datetime="startDatePicker"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="startDatePicker" presentation="date" displayFormat="MMM DD, YYYY"
+                  pickerFormat="MMM DD, YYYY" [value]="startDate | date:'yyyy-MM-dd'" [max]="maxStartDate"
+                  (ionChange)="onDateRangeChange(true, $event.detail.value); selectedPreset = 'custom'"
+                  [showDefaultButtons]="true">
+                </ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+
+          <ion-item class="date-input">
+            <ion-label>{{'datetime.2.label'| translate}}</ion-label>
+            <ion-datetime-button color="medium" datetime="endDatePicker"></ion-datetime-button>
+            <ion-modal [keepContentsMounted]="true">
+              <ng-template>
+                <ion-datetime id="endDatePicker" presentation="date" displayFormat="MMM DD, YYYY"
+                  pickerFormat="MMM DD, YYYY" [value]="endDate | date:'yyyy-MM-dd'" [min]="startDate"
+                  [max]="fixedMaxDate"
+                  (ionChange)="onDateRangeChange(false, $event.detail.value); selectedPreset = 'custom'"
+                  [showDefaultButtons]="true">
+                </ion-datetime>
+              </ng-template>
+            </ion-modal>
+          </ion-item>
+        </ng-template>
+      </ion-popover>
+
+      <div class="legend-section">
+        <button [ngClass]="{'heat': activeDatasets[0]}" (click)="toggleDataset(0)">
+          <label>{{'app.page3'| translate}}</label>
+        </button>
+        <button [ngClass]="{'health': activeDatasets[1]}" (click)="toggleDataset(1)">
+          <label>{{'app.page2'| translate}}</label>
+        </button>
+        <button [ngClass]="{'rumination': activeDatasets[2]}" (click)="toggleDataset(2)">
+          <label>{{'charts.1.buttons.1.label'| translate}}</label>
+        </button>
+        <button [ngClass]="{'feeding': activeDatasets[3]}" (click)="toggleDataset(3)">
+          <label>{{'charts.1.buttons.2.label'| translate}}</label>
+        </button>
+        <button [ngClass]="{'resting': activeDatasets[4]}" (click)="toggleDataset(4)">
+          <label>{{'charts.1.buttons.3.label'| translate}}</label>
+        </button>
+        <button [ngClass]="{'others': activeDatasets[5]}" (click)="toggleDataset(5)">
+          <label>{{'charts.1.buttons.4.label'| translate}}</label>
+        </button>
+        <button [ngClass]="{'standing': activeDatasets[6]}" (click)="toggleDataset(6)">
+          <label>{{'charts.1.buttons.5.label'| translate}}</label>
+        </button>
+      </div>
+
+      <canvas [hidden]="isLoading" id="myChart1" #myChart1>{{ chart1 }}</canvas>
+
+    </div>
+  </div>
+
+
+  <div class="outer-div-2">
+    <ion-toolbar>
+      <ion-title>
+        {{"charts.2.title" | translate}}
+      </ion-title>
+    </ion-toolbar>
+
+    <div class="div-1">
+      <div>
+        <canvas id="myChart2" #myChart2>{{ chart2 }}</canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="outer-div-3" *ngIf="!isLoading">
+    <ion-toolbar>
+      <ion-title>
+        {{'charts.2.buttons.1.label' | translate}}
+      </ion-title>
+
+      <ion-chip slot="end" *ngIf="allEvents.length > 5" color="none">
+        <ion-label>
+          <ion-note style="font-weight: bold; color: var(--ion-color-medium);" (click)="onClickShowMoreHistory()">
+            {{ (showFullHistory
+    ? 'charts.2.buttons.2.label'
+    : 'charts.2.buttons.3.label') | translate }}
+          </ion-note>
+        </ion-label>
+      </ion-chip>
+    </ion-toolbar>
+
+    <ion-row *ngFor="let event of showFullHistory ? allEvents : allEvents.slice(0, 5);">
+      <ion-col>
+
+        <ion-grid>
+          <ion-row>
+            <ion-col>
+              <ion-item class="history-item">
+
+                <ion-img slot="start" *ngIf="event.eventType === 'HEAT'"
+                  src="../../../assets/event-icons/emergency_heat_100dp_F19E39_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+                <ion-img slot="start" *ngIf="event.eventType === 'HEALTH'"
+                  src="../../../assets/event-icons/pulse_alert_100dp_BB271A_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+                <ion-img slot="start" *ngIf="event.eventType === 'INSEMINATION'"
+                  src="../../../assets/event-icons/vaccines_100dp_8C1AF6_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+                <ion-img slot="start" *ngIf="event.eventType === 'PREGNANCY'"
+                  src="../../../assets/event-icons/fertile_100dp_9B5278_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+                <ion-img slot="start" *ngIf="event.eventType === 'DRY_OFF'"
+                  src="../../../assets/event-icons/cool_to_dry_100dp_5F5F5F_FILL0_wght700_GRAD200_opsz48.svg"></ion-img>
+                <ion-img slot="start" *ngIf="event.eventType === 'CALVING'"
+                  src="../../../assets/event-icons/cake_100dp_F9DB78_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+
+                <ion-label style="font-weight: bold; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
+                  <h3 style="font-weight: bold;">
+                    {{event.eventType | translate}}
+                  </h3>
+                  <ion-note style="font-weight: bold;" *ngIf="event.eventType === 'HEAT'">
+                    Instensity: {{ event.heatStrength }} %
+                  </ion-note>
+                  <ion-note style="font-weight: bold;" *ngIf="event.eventType === 'HEALTH'">
+                    Health: {{ event.healthIndex }} / 100
+                  </ion-note>
+                  <ion-note style="font-weight: bold;" *ngIf="event.eventType === 'INSEMINATION'">
+                    {{"Inseminated by: "+event?.['inseminator']?.username }}
+                  </ion-note>
+                  <ion-note color="medium" style="font-size: small; font-weight: bold;">
+                    {{ event.eventDate | date: 'MMM d, y, h:mm a' }}
+                  </ion-note>
+                   <ion-note color="medium" style="font-size: small; font-weight: bold;">
+                    {{ daysSince(event.eventDate)}}
+                  </ion-note>
+                </ion-label>
+                <ion-label style="text-align: end;">
+                  <ion-note *ngIf="event.eventType === 'HEAT'" style="font-size: small; font-weight: bold;"
+                    color='{{event.isActive ? "success": "medium"}}'>
+                    {{event.isActive ? "Active": "Inactive"}}
+                  </ion-note><br />
+                  <ion-note *ngIf="event.eventType === 'HEALTH'" style="font-size: small; font-weight: bold;"
+                    color='{{event.treatmentDetails !== null ? "medium": "danger"}}'>
+                    {{event.treatmentDetails !== null ? "Treatment Done" : "No Treatment Yet"}}
+                  </ion-note><br />
+                </ion-label>
+
+              </ion-item>
+
+            </ion-col>
+          </ion-row>
+
+          <ion-row *ngIf="event.treatmentDetails?.prescriptionRef !== null">
+            <ion-col>
+              <ion-accordion-group>
+                <ion-accordion value="first" toggleIconSlot="end" toggleIcon="document-attach">
+
+                  <ion-item slot="header" color="none">
+
+                    <ion-img slot="start" *ngIf="event.eventType === 'HEALTH'"
+                      src="../../../assets/event-icons/pulse_alert_100dp_BB271A_FILL1_wght700_GRAD200_opsz48.svg"></ion-img>
+
+                    <ion-label style="font-weight: bold;">
+                      <h3 style="font-weight: bold;">
+                        {{event.eventType}}
+                      </h3>
+                      <ion-note style="font-weight: bold;" *ngIf="event.eventType === 'HEALTH'">
+                        Health Index: {{ event.healthIndex }} / 100
+                      </ion-note>
+                    </ion-label>
+
+                    <ion-label style="text-align: end;">
+                      <ion-note *ngIf="event.eventType === 'HEALTH'" style="font-size: small; font-weight: bold;"
+                        color='{{event.treatmentDetails !== null ? "medium": "danger"}}'>
+                        {{event.treatmentDetails !== null ? "Treatment Done" : "No Treatment Yet"}}
+                      </ion-note><br />
+                    </ion-label>
+
+                  </ion-item>
+
+                  <div slot="content">
+                    <ion-card>
+                      <img [src]="event.treatmentDetails.prescriptionRef"
+                        style="width: 100% !important; aspect-ratio: 1/1.4;" />
+                    </ion-card>
+
+                      <ion-item button>
+                <ion-label
+                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
+                  <h2 style="font-weight: bolder;">
+                    {{'Medicine'| translate}}
+                  </h2>
+                    <h2>
+                      {{event.treatmentDetails.medicine}}
+                    </h2>
+                </ion-label>
+              </ion-item>
+
+                <ion-item button>
+                <ion-label
+                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
+                  <h2 style="font-weight: bolder;">
+                    {{'Nutrition'| translate}}
+                  </h2>
+                    <h2>
+                      {{event.treatmentDetails.nutrition}}
+                    </h2>
+                </ion-label>
+              </ion-item>
+
+                  </div>
+                </ion-accordion>
+              </ion-accordion-group>
+
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+      </ion-col>
+    </ion-row>
+
+  <!--  <ion-row>
+      <ion-col>
+        <ion-accordion-group animated="false" value="first">
+          <ion-accordion value="first">
+            <ion-item class="ion-margin-top" slot="header" color="none" lines="full">
+              <ion-title style="padding-left: 0 !important;">
+                {{'detail.items.1.label' | translate}}
+              </ion-title>
+            </ion-item>
+
+            <div *ngIf="animalObject" slot="content">
+              <ion-item lines="none">
+                <ion-icon slot="start" name="location"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.2.label' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['farm'].organization.parentOrganization.name }}</ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="person"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.3.label' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['farm'].organization.user.username}}</ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="call"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'detail.items.4.label' | translate}}</ion-note><br />
+                  <ion-note>
+                    <a
+                      href="tel:{{ animalObject['farm'].organization.user.phoneNumber}}">{{animalObject['farm'].organization.user.phoneNumber}}</a>
+                  </ion-note>
+                </ion-label>
+              </ion-item>
+
+              <ion-item lines="none">
+                <ion-icon slot="start" name="id-card"></ion-icon>
+                <ion-label>
+                  <ion-note>{{'list.col3' | translate}}</ion-note><br />
+                  <ion-note>{{ animalObject['name'] }}</ion-note>
+                </ion-label>
+              </ion-item>
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+      </ion-col>
+    </ion-row> -->
+  </div>
+
+</ion-content>

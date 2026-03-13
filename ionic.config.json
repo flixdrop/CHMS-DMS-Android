@@ -1,0 +1,7 @@
+{
+  "name": "Flixdrop CHMS",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}

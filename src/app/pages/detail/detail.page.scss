@@ -1,0 +1,186 @@
+.outer-div-1 {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #D9593D;
+
+    .div-1 {
+        padding: 1rem 0;
+        background: transparent;
+        border-radius: 7px;
+
+        .div-1-1 {
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 1rem;
+
+            ion-chip{
+                background: var(--ion-color-light);
+                border-radius: 6px;
+            }
+
+            ion-icon{
+                margin-right: 8px;
+            }
+            .value {
+                display: flex;
+                align-items: flex-start;
+                justify-content: flex-start;
+                margin: 0 !important;
+                padding-left: 1rem;
+                font-size: larger !important;
+                font-weight: bold;
+                color: var(--ion-color-light) !important;
+            }
+
+             .time {
+                display: flex;
+                align-items: flex-end;
+                justify-content: flex-end;
+                margin: 0 !important;
+                padding-left: 1rem;
+                font-weight: normal;
+                color: gold !important;
+            }
+
+            .label {
+                padding: 0 !important;
+                margin: 0 !important;
+                font-size: larger !important;
+                font-weight: bold;
+                color: var(--ion-color-dark) !important;
+            }
+        }
+    }
+}
+
+.outer-div-2 {
+    .div-1 {
+
+        padding: 1rem 0;
+
+        .legend-section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 1rem;
+            gap: 1rem;
+
+            button {
+                cursor: pointer;
+                padding: 0.2rem 0.5rem;
+                border: 2px solid #ddd;
+                border-radius: 4px;
+                border-color: transparent;
+                background: white;
+                color: var(--ion-color-medium);
+
+                label {
+                    cursor: pointer;
+                }
+            }
+
+            .heat {
+                background: #72A603;
+                color: white;
+            }
+
+            .health {
+                background: #D90404;
+                color: white;
+            }
+
+            .rumination {
+                background: #DA22FF;
+                color: white;
+            }
+
+            .feeding {
+                background: #101820;
+                color: white;
+            }
+
+            .resting {
+                background: #ff6319;
+                color: white;
+            }
+
+            .others {
+                background: #996633;
+                color: white;
+            }
+
+            .standing {
+                background: #0039a6;
+                color: white;
+            }
+
+            .chart-legend:hover {
+                opacity: 100%;
+                transform: scale(1.01);
+                transition: 0.2s ease-in-out;
+            }
+
+            .chart-legend:active {
+                transform: scale(1);
+                transition: 1s ease;
+            }
+        }
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            padding: 1rem 0;
+            font-weight: bold !important;
+        }
+    }
+}
+
+.outer-div-3 {
+    margin: 1rem 0;
+
+    ion-item {
+        ion-img {
+            padding: 4px;
+            border-radius: 6px;
+            border: 2px solid var(--ion-color-light-shade) !important;
+        }
+    }
+}
+
+ion-grid {
+    padding: 0 !important;
+    margin: 0 !important;
+
+    ion-row {
+        padding: 0 !important;
+        margin: 0 !important;
+
+        ion-col {
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    }
+}
+
+ion-item {
+    padding: 0 !important;
+    margin: 0 !important;
+    padding: 10px 0 !important;
+}
+
+.animal-detail-section{
+    ion-col{
+        ion-item{
+          ion-label{
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+          }
+        }
+    }
+}
