@@ -14,9 +14,9 @@ export const environment = {
     measurementId: "G-LLH8C1Q5KJ",
   },
   server: {
-    url: "https://reluctantly-waveless-milagros.ngrok-free.dev",
+    // url: "https://reluctantly-waveless-milagros.ngrok-free.dev",
     // url: "http://localhost:9000",
-    // url: "https://chms-backend.flixdrop.com"
+    url: "https://chms-backend.flixdrop.com"
   },
 };
 /*

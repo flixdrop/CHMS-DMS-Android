@@ -63,7 +63,7 @@ export class AppComponent implements OnInit {
      await this.platform.ready()
 
      // 2. Only init FCM on native platforms to avoid Web errors
-    if (this.platform.is('android')) {
+    if (this.platform.is('hybrid')) {
       this.fcmService.initPush();
     }
 
