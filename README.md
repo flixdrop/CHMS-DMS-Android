@@ -1,1 +1,0 @@
-# CHMS-DMS-Android

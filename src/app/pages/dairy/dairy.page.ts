@@ -61,6 +61,10 @@ export class DairyPage implements OnDestroy {
   startDate: string = "";
   endDate: string = "";
 
+  fromDate: string;
+  toDate: string;
+  maxDate: string;
+
   constructor(
     private authService: AuthService,
     private dataService: DataService,
@@ -124,6 +128,25 @@ export class DairyPage implements OnDestroy {
     return this.loadMilkEntries();
   }
 
+     private getFormattedDate(
+  dateStr: string,
+  isEndOfDay: boolean | null = null, // Change to nullable
+): string {
+  if (!dateStr) return '';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return '';
+
+  // Only override hours if isEndOfDay is explicitly true or false
+  if (isEndOfDay === true) {
+    date.setHours(23, 59, 59, 999);
+  } else if (isEndOfDay === false) {
+    date.setHours(0, 0, 0, 0);
+  }
+  // If null, it keeps the original time (e.g. 14:30:00)
+
+  return date.toISOString();
+}
+
   loadMilkEntries(): Promise<void> {
     if (!this.userId) {
       console.error("loadMilkEntries aborted: userId is missing");
@@ -133,10 +156,16 @@ export class DairyPage implements OnDestroy {
     return new Promise((resolve) => {
       this.isLoading = true;
       const offset = (this.p - 1) * this.pageSize;
-      const defaultStart = new Date(
-        Date.now() - 30 * 24 * 60 * 60 * 1000,
-      ).toISOString();
-      const defaultEnd = new Date().toISOString();
+
+      // const defaultStart = new Date(
+      //   Date.now() - 30 * 24 * 60 * 60 * 1000,
+      // ).toISOString();
+      // const defaultEnd = new Date().toISOString();
+
+
+          // Pass null to keep the specific time calculated in the constructor
+    const start = this.getFormattedDate(this.fromDate, null); 
+    const end = this.getFormattedDate(this.toDate, null);
 
       this.fetchDataSub = this.dataService
         .getMilkEntries(
@@ -144,8 +173,8 @@ export class DairyPage implements OnDestroy {
           this.pageSize,
           offset,
           this.searchTerm,
-          this.startDate || defaultStart,
-          this.endDate || defaultEnd,
+          start, 
+          end
         )
         .pipe(first())
         .subscribe({

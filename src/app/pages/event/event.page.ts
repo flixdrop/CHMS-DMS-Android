@@ -285,10 +285,10 @@ export class EventPage implements OnInit, OnDestroy {
       const start = this.getFormattedDate(this.fromDate, false);
       const end = this.getFormattedDate(this.toDate, true);
 
-      const eventType = this.selectedEvent === 'ALL' ? 'ALL' : this.selectedEvent;
+      // const eventType = this.selectedEvent === 'ALL' ? 'ALL' : this.selectedEvent;
 
       console.log('Selected Event Type: ', this.selectedEvent);
-      console.log('Event Type: ', eventType);
+      // console.log('Event Type: ', eventType);
 
       this.fetchDataSub = this.dataService
         .getAllEvents(
@@ -298,26 +298,26 @@ export class EventPage implements OnInit, OnDestroy {
           this.searchTerm,
           start,
           end,
-          eventType // <--- Pass this to your backend
+          // eventType // <--- Pass this to your backend
         )
         .pipe(first())
         .subscribe({
           next: (res: any) => {
             let items = res?.items || [];
 
-            // if (
-            //   this.selectedEvent !== 'ALL'
-            // ) {
-            //   const filterMap = {
-            //     Heat: 'HEAT',
-            //     Health: 'HEALTH',
-            //   };
-            //   const targetType = filterMap[this.selectedEvent] || this.selectedEvent;
-            //   items = items.filter((item) => item.eventType === targetType);
+            if (
+              this.selectedEvent !== 'ALL'
+            ) {
+              const filterMap = {
+                Heat: 'HEAT',
+                Health: 'HEALTH',
+              };
+              const targetType = filterMap[this.selectedEvent] || this.selectedEvent;
+              items = items.filter((item) => item.eventType === targetType);
 
-            //   // Inside loadAllEvents subscription
-            //   items = items.filter((item) => item.eventType === targetType);
-            // }
+              // Inside loadAllEvents subscription
+              items = items.filter((item) => item.eventType === targetType);
+            }
 
             this.results = items;
             this.totalCount = res?.totalCount || 0;

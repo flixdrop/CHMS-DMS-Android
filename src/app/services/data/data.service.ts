@@ -963,14 +963,14 @@ export class DataService {
     search: string,
     startDate?: string,
     endDate?: string,
-    eventType? : string
+    // eventType? : string
   ): Observable<any> {
 
-      console.log('Event Type in Service: ', eventType);
+      console.log('Event Type in Service: ');
 
     return this.watchApolloQuery(
       GET_ALL_EVENTS,
-      { userId, limit, offset, search, startDate, endDate, eventType },
+      { userId, limit, offset, search, startDate, endDate },
       'getAllEvents',
     );
   }

@@ -340,8 +340,8 @@ export const GET_MILK_ENTRIES = gql`
 `;
 
 export const GET_ALL_EVENTS = gql`
-  query GetAllEvents($userId: String!, $limit: Int, $offset: Int, $search: String, $startDate: String, $endDate: String, $eventType: String) {
-    getAllEvents(userId: $userId, limit: $limit, offset: $offset, search: $search, startDate: $startDate, endDate: $endDate, eventType: $eventType) {
+  query GetAllEvents($userId: String!, $limit: Int, $offset: Int, $search: String, $startDate: String, $endDate: String) {
+    getAllEvents(userId: $userId, limit: $limit, offset: $offset, search: $search, startDate: $startDate, endDate: $endDate) {
       totalCount
       items {
         id

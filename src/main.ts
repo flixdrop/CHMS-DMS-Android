@@ -177,7 +177,7 @@ export function HttpLoaderFactory(http: HttpClient) {
 bootstrapApplication(AppComponent, {
   providers: [
     // 1. Ionic Core Providers
-    provideIonicAngular({ mode: 'md' }), 
+    provideIonicAngular(), 
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     // { provide: LocationStrategy, useClass: HashLocationStrategy },
 
