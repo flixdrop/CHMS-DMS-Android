@@ -393,6 +393,18 @@ export const GET_ANIMAL_DETAILS = gql`
         name
         tagNo
         breed
+        age
+        color
+        gender
+        avg_milk
+        lactation_no
+        no_of_vaccination
+        last_vaccination
+        no_of_deliveries
+        last_delivery
+        no_of_insemination
+        last_insemination
+
         collar { name }
          farm{
             name
