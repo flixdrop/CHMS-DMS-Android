@@ -7,7 +7,18 @@
       </ion-menu-button>
     </ion-buttons>
 
-   <ion-item lines="none">
+   <!-- <ion-item lines="none">
+      <ion-chip style="width: 100%; border-radius: 6px;" color="dark">
+        <ion-label style="text-transform: capitalize; font-weight: bold; color: var(--ion-color-dark-shade);">
+          <h2>
+            {{user['role'] !== 'SUPER_ADMIN' ? 'Farm :': 'User :' }} {{user['username']}} {{user['role'] === 'SUPER_ADMIN' ? '': 'Farm' }}
+          </h2>
+          <h3 style="font-weight: bolder;">{{user['role']}}</h3>
+        </ion-label>
+      </ion-chip>
+    </ion-item> -->
+
+    <ion-item lines="none">
       <ion-chip style="width: 100%; border-radius: 6px;" color="dark">
         <ion-label style="text-transform: capitalize; font-weight: bold; color: var(--ion-color-dark-shade);">
           <h2>
