@@ -1,0 +1,120 @@
+<app-custom-header title="{{ 'app.page6' | translate }}" [count]="treatmentEvents.length.toString()"
+  [isLoading]="isLoading" (close)="goBack()" (clear)="onBlurSearchBar()"
+  (ionInput)="handleInput($event)"></app-custom-header>
+
+<ion-content class="custom-content">
+  <ion-grid class="top-level-grid">
+    <ion-row class="top-level-row" *ngIf="!isLoading && treatmentEvents.length > 0">
+      <ion-col class="top-level-col">
+        <ion-card *ngFor="let treatmentEvent of results | paginate: { 
+    id: 'recovered_pager',
+    itemsPerPage: pageSize, 
+    currentPage: p, 
+    totalItems: totalCount 
+  }; let i = index">
+
+          <ion-row class="row-2" [routerLink]="[
+            '/',
+            'animal-list',
+            treatmentEvent.animal.collar.name
+          ]" routerLinkActive="router-link-active">
+            <ion-col>
+              <ion-row>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{ 'list.col3' | translate }}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{ 'list.col7' | translate }}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{ 'list.col8' | translate }}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h2>{{ treatmentEvent["animal"]["collar"]["collarId"] }}</h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label class="datetime">
+                      <h2>{{ treatmentEvent["endedAt"] | utcToIst}}</h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h2>
+                        {{ treatmentEvent["isActive"] ? " Under Care " : " Healthy "+treatmentEvent.healthIndex }}
+                      </h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+          </ion-row>
+          <!-- <ion-row *ngIf="treatmentEvent.treatmentDetails !== null">
+            <ion-col>
+              <ion-accordion-group>
+                <ion-accordion value="first" toggleIconSlot="start" toggleIcon="chevron-down-circle">
+                  
+                  <ion-item slot="header" color="none">
+                    <ion-label>
+                      <ion-note>
+                      View priscription
+                      </ion-note>
+                    </ion-label>
+                  </ion-item>
+
+                  <div slot="content">
+                    <ion-card>
+                      <img [src]="treatmentEvent.treatmentDetails.prescriptionRef"
+                        style="width: 100% !important; aspect-ratio: 1/1.4;" />
+                    </ion-card>
+                  </div>
+                </ion-accordion>
+              </ion-accordion-group>
+            </ion-col>
+          </ion-row> -->
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="!isLoading && treatmentEvents.length === 0">
+      <ion-col>
+        <ion-toolbar>
+          <ion-item>
+            <ion-chip>
+              <ion-icon name="alert-circle"></ion-icon>
+              <ion-label color="medium">{{ 'list.placeholder' | translate }}</ion-label>
+            </ion-chip>
+          </ion-item>
+        </ion-toolbar>
+      </ion-col>
+    </ion-row>
+
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <pagination-controls id="recovered_pager" (pageChange)="onPageChange($event)">
+    </pagination-controls>
+  </ion-toolbar>
+</ion-footer>

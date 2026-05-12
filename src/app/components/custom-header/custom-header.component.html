@@ -1,0 +1,21 @@
+<ion-header class="ion-no-border">
+  <ion-toolbar>
+    <ion-progress-bar *ngIf="isLoading" type="indeterminate"></ion-progress-bar>
+
+    <ion-buttons slot="start">
+      <ion-button color="none" fill="clear" strong="true" routerDirection="back" (click)="goBack()">
+        <ion-icon slot="icon-only" aria-hidden="true" name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+
+    <ion-title>{{title | translate}}</ion-title>
+
+  </ion-toolbar>
+  <ion-toolbar class="custom-searchbar">
+    <ion-item lines="none">
+      <ion-searchbar class="searchbar" #searchbar placeholder="{{'searchbars.1.placeholder' | translate}}"
+        cancel-button-icon="arrow-back-circle" showCancelButton="focus" clearIcon="backspace" searchIcon="search"
+        (ionInput)="clearInput()" (ionBlur)="searchItem()"></ion-searchbar>
+    </ion-item>
+  </ion-toolbar>
+</ion-header>

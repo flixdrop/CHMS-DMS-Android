@@ -1,0 +1,125 @@
+<app-custom-header title="{{ 'app.page7' | translate }}" [count]="inseminations.length.toString()"
+  [isLoading]="isLoading" (close)="goBack()" (clear)="onBlurSearchBar()"
+  (ionInput)="handleInput($event)"></app-custom-header>
+
+<ion-content class="custom-content">
+
+  <ion-grid class="top-level-grid">
+    <ion-row class="top-level-row" *ngIf="!isLoading && inseminations.length > 0">
+      <ion-col class="top-level-col">
+        <ion-card *ngFor="let insemination of results | paginate: { 
+    id: 'insemination_pager',
+    itemsPerPage: pageSize, 
+    currentPage: p, 
+    totalItems: totalCount 
+  }; let i = index">
+          <ion-row>
+            <ion-col>
+              <ion-item lines="full">
+                <ion-radio-group #radioGroup [allowEmptySelection]="true" value="{{ insemination }}"
+                  (ionChange)="onClickSubmit($event, insemination)">
+                  <ion-label>
+                    <h4>{{ 'list.cards.2.title' | translate }}</h4>
+                  </ion-label>
+                  <ion-item lines="none">
+                    <ion-radio slot="start" value="yes">
+                      <ion-label>
+                        <h4>
+                          {{ "list.radios.1.label" | translate}}
+                        </h4>
+                      </ion-label>
+                    </ion-radio>
+                    <ion-radio slot="start" value="no">
+                      <ion-label>
+                        <h4>
+                          {{ "list.radios.2.label" | translate}}
+                        </h4>
+                      </ion-label>
+                    </ion-radio>
+                  </ion-item>
+                </ion-radio-group>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+
+          <ion-row class="row-2" [routerLink]="[
+            '/',
+            'animal-list',
+            insemination.animal.collar.name
+          ]" routerLinkActive="router-link-active">
+            <ion-col>
+              <ion-row>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{ 'list.col3' | translate }}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{ 'list.col10' | translate }}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h4>{{ 'list.col11' | translate }}</h4>
+                    </ion-label>
+                  </div>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h2>{{ insemination["animal"]["collar"]["collarId"] }}</h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label>
+                      <h2>
+                        {{ daysSince(insemination["eventDateTime"]) }}
+                      </h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+                <ion-col>
+                  <div>
+                    <ion-label class="datetime">
+                      <h2>{{ insemination["eventDateTime"] | utcToIst }}</h2>
+                    </ion-label>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-col>
+          </ion-row>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+
+    <ion-row *ngIf="!isLoading && inseminations.length === 0">
+      <ion-col>
+        <ion-toolbar>
+          <ion-item>
+            <ion-chip>
+              <ion-icon name="alert-circle"></ion-icon>
+              <ion-label color="medium">{{ "list.placeholder" | translate }}</ion-label>
+            </ion-chip>
+          </ion-item>
+        </ion-toolbar>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <pagination-controls id="insemination_pager" (pageChange)="onPageChange($event)">
+    </pagination-controls>
+  </ion-toolbar>
+</ion-footer>

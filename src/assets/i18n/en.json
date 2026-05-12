@@ -1,0 +1,413 @@
+{
+  "entities": {
+    "1": "User",
+    "2": "Organization",
+    "3": "Farm",
+    "4": "Animal",
+    "5": "Collars",
+    "6": ""
+  },
+
+  "login": {
+    "inputs": {
+      "1": {
+        "label": "Username",
+        "placeholder": "e.g., FlixDrop",
+        "helper-text": "Enter your username",
+        "error-text": "Please enter a valid username"
+      },
+      "2": {
+        "label": "Password",
+        "placeholder": "e.g., P@$$wOrd123",
+        "helper-text": "Enter your password",
+        "error-text": "Please enter a valid password"
+      }
+    },
+    "radios": {
+      "1": {
+        "label": "Stay Signed In"
+      }
+    },
+    "buttons": {
+      "1": {
+        "label": "Login"
+      }
+    }
+  },
+
+  "app": {
+    "title": "Flixdrop",
+    "account-name": "Account's Name",
+    "language": "Language",
+
+    "page1": "Animals",
+    "page2": "Health",
+    "page3": "Heat",
+    "page4": "Dairy Management",
+    "page5": "All Alerts",
+    "page6": "Illness Recovery",
+    "page7": "Pregnancy Awaited",
+    "page8": "Pregnant",
+    "page9": "Calving",
+    "page10": "Dryoff",
+    "page11": "Milking Logs",
+
+    "welcome-msg": "Welcome to Flixdrop"
+  },
+
+  "landing": {
+    "header": {
+      "1": "Farm"
+    },
+
+    "items": {
+      "1": {
+        "label": "Language"
+      },
+      "2": {
+        "label": "Home"
+      },
+      "3": {
+        "label": "Pay Subscription"
+      },
+      "4": {
+        "label": "New Purchase"
+      },
+      "5": {
+        "label": "Customer Support"
+      },
+      "6": {
+        "label": "User Feedback"
+      },
+      "7": {
+        "label": "Refer & Earn"
+      }
+    }
+  },
+
+  "home": {
+    "sections": {
+      "1": {
+        "title": "Animal Insights"
+      },
+      "2": {
+        "title": "More Events"
+      },
+      "3": {
+        "title": "Milking"
+      }
+    },
+
+    "items": {
+      "1": {
+        "label": "Manage"
+      },
+      "2": {
+        "label": "Dairy"
+      },
+      "3": {
+        "label": "All"
+      },
+      "4": {
+        "label": "Alerts"
+      }
+    }
+  },
+
+  "list": {
+    "placeholder": "No Animals Available",
+
+    "col1": "Animal No.",
+    "col2": "Tag No.",
+    "col3": "Device No.",
+    "col4": "Detected On",
+    "col5": "Intensity",
+    "col6": "Health Index",
+    "col7": "Time",
+    "col8": "Status",
+    "col9": "Total Milk",
+    "col10": "Days Passed",
+    "col11": "Insemination On",
+    "col12": "Reported On",
+    "col13": "Calved On",
+    "col14": "Dried On",
+    "col15": "Last Health",
+    "col16": "Last Heat",
+    "col17": "Last Insemination",
+
+    "cards": {
+      "1": {
+        "title": "Insemination done ?"
+      },
+      "2": {
+        "title": "Action Initiated ?"
+      }
+    },
+
+    "radios": {
+      "1": {
+        "label": "Yes"
+      },
+      "2": {
+        "label": "No"
+      },
+      "3": {
+        "label": "Is it a Wrong Heat/Estrus ?"
+      },
+      "4": {
+        "label": "Not Inseminated ?"
+      }
+    },
+
+    "modals": {
+      "1": {
+        "title": "Treatment Details"
+      },
+      "2": {
+        "title": "Untreated"
+      },
+      "3": {
+        "title": "Insemination Details"
+      },
+      "4": {
+        "title": "Insemination Failure"
+      },
+      "5": {
+        "title": "Miscarriage Information"
+      }
+    },
+
+    "selects": {
+      "1": {
+        "title": "Treatment Type",
+        "placeholder": "Select method of treatment.",
+        "options": {
+          "1": "Home Remedies",
+          "2": "Veterynary Doctor"
+        }
+      },
+      "2": {
+        "title": "Type of Insemination",
+        "placeholder": "Select a Insemination Type.",
+        "options": {
+          "1": "Artificial Insemination",
+          "2": "Organic Insemination"
+        }
+      },
+      "3": {
+        "title": "Semen Type",
+        "placeholder": "Select a Semen Type.",
+        "options": {
+          "1": "Sexed",
+          "2": "Non-Sexed"
+        }
+      },
+
+      "cattle-breeds": {
+        "Gir": "Gir",
+        "Red Sindhi": "Red Sindhi",
+        "Sahiwal": "Sahiwal",
+        "Jersey": "Jersey",
+        "HF": "HF",
+        "Hallikar": "Hallikar",
+        "Amritmahal": "Amritmahal",
+        "Khillari": "Khillari",
+        "Tharparkar": "Tharparkar",
+        "Hariana": "Hariana",
+        "Kankrej": "Kankrej",
+        "Ongole": "Ongole",
+        "Krishna Valley": "Krishna Valley",
+        "Deoni": "Deoni",
+        "Cross Breed": "Cross Breed"
+      }
+    },
+
+    "inputs": {
+      "1": {
+        "label": "Prescription",
+        "placeholder": "Upload"
+      },
+      "2": {
+        "label": "Note",
+        "placeholder": "Write a note."
+      },
+      "3": {
+        "label": "Date-Time of Insemination"
+      },
+      "4": {
+        "label": "Bull's Name/Tag No.",
+        "placeholder": "Enter Bull's Name or Tag no."
+      },
+      "5": {
+        "label": "Semen Company",
+        "placeholder": "Enter a Semen Company."
+      },
+      "6": {
+        "label": "Semen Breed",
+        "placeholder": "Enter a Semen Breed."
+      },
+      "7": {
+        "label": "Notes",
+        "placeholder": "Give a note"
+      },
+      "8": {
+        "label": "Animal No. / Tag No.",
+        "placeholder": "Enter Animal No. / Tag No."
+      }
+    }
+  },
+
+  "event": {
+    "col1": "Event",
+    "col2": "Intensity",
+    "col3": "Health",
+    "col4": "Action",
+    "col5": ""
+  },
+
+  "datetime": {
+    "1": {
+      "label": "From"
+    },
+    "2": {
+      "label": "Till"
+    },
+    "3": {
+      "label": "Date"
+    }
+  },
+
+  "buttons": {
+    "1": {
+      "label": "Login"
+    },
+    "2": {
+      "label": "Logout"
+    },
+    "3": {
+      "label": "Submit"
+    },
+    "4": {
+      "label": "Go Back"
+    },
+    "5": {
+      "label": "Save"
+    },
+    "6": {
+      "label": "Cancel"
+    },
+    "7": {
+      "label": "Reset"
+    },
+    "8": {
+      "label": "1 Day"
+    },
+    "9": {
+      "label": "7 Days"
+    },
+    "10": {
+      "label": "30 Days"
+    }
+  },
+
+  "searchbars": {
+    "1": {
+      "placeholder": "Search by Cow no."
+    }
+  },
+
+  "charts": {
+    "1": {
+      "title": "Animal Behaviourals",
+      "buttons": {
+        "1": {
+          "label": "Rumination"
+        },
+        "2": {
+          "label": "Feeding"
+        },
+        "3": {
+          "label": "Resting"
+        },
+        "4": {
+          "label": "Other"
+        },
+        "5": {
+          "label": "Standing"
+        }
+      }
+    },
+
+    "2": {
+      "title": "Milk Production",
+
+      "buttons": {
+        "1": {
+          "label": "History"
+        },
+        "2": {
+          "label": "Show Less"
+        },
+        "3": {
+          "label": "Show More"
+        },
+        "4": {
+          "label": "Other"
+        },
+        "5": {
+          "label": "Standing"
+        },
+        "6": {
+          "label": "New Entry"
+        }
+      },
+
+      "inputs": {
+        "1": {
+          "label": "Morning"
+        },
+        "2": {
+          "label": "Afternoon"
+        },
+        "3": {
+          "label": "Evening"
+        },
+        "4": {
+          "label": "Total"
+        },
+        "5": {
+          "label": "Liters"
+        },
+        "6": {
+          "label": "Total Milk"
+        },
+        "7": {
+          "label": "Total Cows"
+        },
+        "8": {
+          "label": "Avg Milk"
+        },
+        "9": {
+          "label": "Efficiency"
+        }
+      }
+    }
+  },
+
+  "detail": {
+    "items": {
+      "1": {
+        "label": "Animal Details"
+      },
+      "2": {
+        "label": "Farm"
+      },
+      "3": {
+        "label": "Farmer's Name"
+      },
+      "4": {
+        "label": "Farmer's phone no."
+      }
+    }
+  }
+}

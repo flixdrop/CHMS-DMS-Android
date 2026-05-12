@@ -1,0 +1,49 @@
+<!-- <ion-toolbar class="ion-no-border">
+  <form [formGroup]="customForm ? customForm : null">
+    <ion-toolbar class="ion-padding-vertical">
+      <ion-buttons slot="start">
+        <ion-button shape="round" fill="solid" color="dark" expand="block" (click)="onClickClose()">
+          <ion-label> {{ 'buttons.4.label' | translate }} </ion-label>
+          <ion-icon name="close-circle" style="margin-left: 8px;"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button shape="round" fill="solid" color="success" expand="block" type="submit">
+          <ion-label> {{ 'buttons.3.label' | translate }} </ion-label>
+          <ion-icon name="create" style="margin-left: 8px;"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </form>
+</ion-toolbar> -->
+
+
+
+<ion-toolbar class="ion-no-border">
+  <ng-container *ngIf="customForm">
+    <form [formGroup]="customForm">
+      <ng-container *ngTemplateOutlet="toolbarContent"></ng-container>
+    </form>
+  </ng-container>
+
+  <ng-container *ngIf="!customForm">
+    <ng-container *ngTemplateOutlet="toolbarContent"></ng-container>
+  </ng-container>
+</ion-toolbar>
+
+<ng-template #toolbarContent>
+  <ion-toolbar class="ion-padding-vertical">
+    <ion-buttons slot="start">
+      <ion-button shape="round" fill="solid" color="dark" expand="block" (click)="onClickClose()">
+        <ion-label> {{ 'buttons.4.label' | translate }} </ion-label>
+        <ion-icon name="close-circle" style="margin-left: 8px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-buttons slot="end">
+      <ion-button shape="round" fill="solid" color="success" expand="block" (click)="onClickSubmit()">
+        <ion-label> {{ 'buttons.3.label' | translate }} </ion-label>
+        <ion-icon name="create" style="margin-left: 8px;"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ng-template>
