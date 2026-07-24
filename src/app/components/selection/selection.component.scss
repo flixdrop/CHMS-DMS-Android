@@ -1,0 +1,89 @@
+.selection-grid {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    gap: 1rem;
+}
+
+.select-btn {
+    transition: transform 0.2s ease;
+
+    .btn-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        text-align: left;
+    }
+
+    .btn-labels {
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .category-title {
+        text-transform: capitalize !important;
+    }
+
+    .selection-value {
+        margin-top: 4px;
+        text-transform: capitalize !important;
+    }
+}
+
+.popover-list-content {
+    // max-height: 300px;
+}
+
+
+
+
+
+// .vertical-selection-stack {
+//   display: flex;
+//   flex-direction: column;
+//   width: 100%;
+//   gap: 1rem; // Sets explicit spacing margin between the stacked buttons
+// }
+
+// .select-btn {
+//   --border-radius: 8px;
+//   --box-shadow: none;
+//   height: auto;
+//   --padding-top: 10px;
+//   --padding-bottom: 10px;
+//   width: 100%; // Make buttons fill the width of the expandable side menu
+//   transition: transform 0.2s ease;
+
+//   .btn-content {
+//     display: flex;
+//     align-items: center;
+//     justify-content: space-between;
+//     width: 100%;
+//     text-align: left;
+//   }
+
+//   .btn-labels {
+//     display: flex;
+//     flex-direction: column;
+//     overflow: hidden;
+//   }
+
+//   .category-title {
+//     text-transform: capitalize !important;
+//     font-size: 0.75rem;
+//     color: var(--ion-color-medium);
+//   }
+
+//   .selection-value {
+//     margin-top: 4px;
+//     text-transform: capitalize !important;
+//     font-weight: 500;
+//   }
+// }
+
+// .popover-list-content {
+//   max-height: 300px;
+// }

@@ -1,0 +1,151 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{ (type === 'create' ? 'Record Health Issue' : type === 'edit' ? 'Edit Health Record' : type === 'resolve' ? 'Resolve Health Condition' : 'Delete Health Record') | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)='closeModal()' [disabled]='submitting()'>
+        <ion-label><strong>{{ 'Close' | translate }}</strong></ion-label>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form *ngIf="recoveryForm" [formGroup]="recoveryForm" (ngSubmit)="onSubmit()">
+    <ion-list lines="inset">
+
+      <ion-item-group>
+        <ion-item-divider color="light">
+          <ion-label>{{ 'Livestock Structural Context' | translate }}</ion-label>
+        </ion-item-divider>
+
+        <ion-item lines="none">
+          <div class="ion-w-100 ion-padding-top ion-padding-bottom">
+            <div class="stacked-label-fallback ion-margin-bottom">{{ 'Target Livestock Record *' | translate }}</div>
+            <ion-button id="open-health-cattle-trigger" expand="block" color="medium" fill="outline" style="text-transform: none; height: 44px;" [disabled]="type !== 'create'">
+              {{ getSelectedAnimalLabel() | translate }}
+            </ion-button>
+            
+            <ion-popover trigger="open-health-cattle-trigger" #cattlePopover class="searchable-selection-popover" interface="popover">
+              <ng-template>
+                <ion-header class="ion-no-border">
+                  <ion-toolbar color="light">
+                    <ion-searchbar placeholder="{{ 'Type tag number or name...' | translate }}" (ionInput)="handleAnimalSearch($event)" debounce="200"></ion-searchbar>
+                  </ion-toolbar>
+                </ion-header>
+                <ion-content style="max-height: 300px;">
+                  <ion-list lines="inset" class="ion-no-padding">
+                    <ion-item *ngFor="let cattle of filteredAnimalInventory" button (click)="selectAnimalCattle(cattle, cattlePopover)">
+                      <ion-label>
+                        <h2>{{ cattle.tagNo }} {{ cattle.name ? '• ' + cattle.name : '' }}</h2>
+                        <p class="text-muted text-small">{{ cattle.breed }} • {{ cattle.sex | translate }} • {{ cattle.status | translate }}</p>
+                      </ion-label>
+                    </ion-item>
+                    <ion-item lines="none" *ngIf="filteredAnimalInventory.length === 0">
+                      <ion-label class="ion-text-center text-muted" style="padding: 15px 0;">
+                        {{ 'No matching records found.' | translate }}
+                      </ion-label>
+                    </ion-item>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+          </div>
+        </ion-item>
+      </ion-item-group>
+
+      <ion-item-group *ngIf="type !== 'resolve'">
+        <ion-item-divider color="light">
+          <ion-label>{{ 'Health Anomaly Indices' | translate }}</ion-label>
+        </ion-item-divider>
+
+        <ion-item>
+          <ion-input labelPlacement="stacked" type="number" min="0" max="100" formControlName="healthIndex" placeholder="e.g. 45">
+            <div slot="label">{{ 'Health Status Index Level (0-100) *' | translate }}</div>
+          </ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-input labelPlacement="stacked" type="datetime-local" [max]="maxDate" formControlName="occurredAt">
+            <div slot="label">{{ 'Diagnostic Event Identification Timestamp *' | translate }}</div>
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none" *ngIf="type === 'edit'">
+          <ion-input labelPlacement="stacked" type="datetime-local" [max]="maxDate" formControlName="startedAt">
+            <div slot="label">{{ 'Clinical Symptoms Start Date' | translate }}</div>
+          </ion-input>
+        </ion-item>
+      </ion-item-group>
+
+      <ion-item-group *ngIf="type === 'resolve'">
+        <ion-item-divider color="light">
+          <ion-label color="primary">{{ 'Actionable Resolution Dispatcher' | translate }}</ion-label>
+        </ion-item-divider>
+
+        <ion-item lines="inset">
+          <ion-select interface="popover" labelPlacement="stacked" formControlName="isTreatmentDone" (ionChange)="toggleTreatmentInputs()">
+            <div slot="label"><strong>{{ 'Was Veterinary Treatment Administered? *' | translate }}</strong></div>
+            <ion-select-option [value]="false">{{ 'No (Close Alert as Dismissed / Non-Issue)' | translate }}</ion-select-option>
+            <ion-select-option [value]="true">{{ 'Yes (Log Comprehensive Treatment & Close Vector)' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <div *ngIf="recoveryForm.get('isTreatmentDone')?.value === true" formGroupName="treatmentDetails" class="ion-padding-start ion-background-subtle">
+          
+          <ion-item>
+            <ion-input labelPlacement="stacked" type="text" formControlName="treatmentType" placeholder="e.g. Antibiotic Course, Udder Massage">
+              <div slot="label">{{ 'Treatment Protocol Type *' | translate }}</div>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input labelPlacement="stacked" type="text" formControlName="medicineDetails" placeholder="e.g. Mastitis Guard 50ml, Penicillin">
+              <div slot="label">{{ 'Administered Medicine Details' | translate }}</div>
+            </ion-input>
+          </ion-item>
+
+          <ion-item>
+            <ion-input labelPlacement="stacked" type="text" formControlName="feedDetails" placeholder="e.g. High-Calcium Ration Supplement">
+              <div slot="label">{{ 'Nutritional / Feed Adjustment Details' | translate }}</div>
+            </ion-input>
+          </ion-item>
+
+          <ion-item lines="none">
+            <div class="ion-w-100 ion-padding-top ion-padding-bottom">
+              <div class="stacked-label-fallback ion-margin-bottom">{{ 'Prescription Document Attachment' | translate }}</div>
+              <input type="file" (change)="onFileSelected($event)" accept="image/*,application/pdf" style="display: none;" #fileInput>
+              <ion-button expand="block" color="medium" fill="outline" style="text-transform: none; height: 40px;" (click)="fileInput.click()">
+                <ion-icon slot="start" name="document-attach-outline"></ion-icon>
+                {{ fileName() ? fileName() : ('Upload Medical Prescription (PDF/Img)' | translate) }}
+              </ion-button>
+            </div>
+          </ion-item>
+        </div>
+      </ion-item-group>
+
+    </ion-list>
+
+    <ion-footer class="ion-no-border ion-padding-top">
+      <ion-toolbar class="ion-no-padding">
+        <ion-buttons slot="end">
+          
+          <ion-button *ngIf="type !== 'delete'" type="submit" expand="block" [disabled]="submitting() || recoveryForm.invalid" fill="solid" [color]="type === 'edit' ? 'warning' : type === 'resolve' ? 'primary' : 'success'">
+            <ion-spinner *ngIf="submitting()" name="crescent"></ion-spinner>
+            <ion-label *ngIf="!submitting()" color="light">
+              <strong>{{ (type === 'edit' ? 'Update Health Record' : type === 'resolve' ? 'Resolve Health Condition' : 'Record Health Issue') | translate }}</strong>
+            </ion-label>
+          </ion-button>
+
+          <ion-button *ngIf="type === 'delete'" type="button" expand="block" fill="solid" color="danger" [disabled]="submitting()" (click)="onDelete()">
+            <ion-spinner *ngIf="submitting()" name="crescent"></ion-spinner>
+            <ion-label *ngIf="!submitting()" color="light"><strong>{{ 'Delete Health Record' | translate }}</strong></ion-label>
+          </ion-button>
+
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
+  </form>
+</ion-content>

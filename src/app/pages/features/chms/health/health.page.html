@@ -1,0 +1,460 @@
+<!-- <ion-header>
+  <app-custom-header title="Healths" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <ion-toolbar>
+    <ion-title>
+      <strong>{{totalCount()}}</strong> {{totalCount() === 1 ? ' Animal': ' Animals' | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+
+      <ion-button color="medium" fill="clear" (click)="toggleSort('tagNo')">
+        <ion-label>Tag no.</ion-label>
+        <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline"
+          class="sort-placeholder-icon"></ion-icon>
+        <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+          class="sort-active-icon"></ion-icon>
+      </ion-button>
+
+      <ion-button id="open-health-filter" color="medium" fill="clear">
+        <ion-icon slot="icon-only" name="options-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-modal #healthfilter trigger="open-health-filter">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ 'Apply Filters' | translate }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-label><strong>{{ 'Presets' | translate }}</strong></ion-label>
+        <ion-toolbar class="ion-padding-vertical">
+          <ion-buttons slot="start">
+            <ion-button [fill]="activeRange === -1 ? 'solid' : 'outline'" color="medium" (click)="setRange(-1)">{{ 'All'
+              | translate }}</ion-button>
+            <ion-button [fill]="activeRange === 0.033 ? 'solid' : 'outline'" color="medium" (click)="setRange(0.033)">1
+              {{ 'Day' | translate }}</ion-button>
+            <ion-button [fill]="activeRange === 0.25 ? 'solid' : 'outline'" color="medium" (click)="setRange(0.25)">7 {{
+              'Days' | translate }}</ion-button>
+            <ion-button [fill]="activeRange === 1 ? 'solid' : 'outline'" color="medium" (click)="setRange(1)">1 {{
+              'Month' | translate }}</ion-button>
+            <ion-button fill="solid" color="warning" (click)="clearDates()">{{ 'Reset' | translate}}</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <ion-label *ngIf="activeRange !== -1"><strong>{{ 'Custom Range' | translate }}</strong></ion-label>
+        <ion-toolbar class="ion-padding-vertical" *ngIf="activeRange !== -1">
+          <ion-buttons slot="start">
+            <ion-button fill="clear" color="none">
+              <ion-label><strong>From</strong></ion-label>
+              <ion-datetime-button datetime="start_dt"></ion-datetime-button>
+            </ion-button>
+            <ion-button fill="clear" color="none">
+              <ion-label><strong>Till</strong></ion-label>
+              <ion-datetime-button datetime="end_dt"></ion-datetime-button>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-content>
+      <ion-footer>
+        <ion-toolbar>
+          <ion-buttons slot="end">
+            <ion-button color="success" fill="solid" (click)="healthfilter.dismiss()">
+              <ion-label color="light">Ok</ion-label>
+            </ion-button>
+            <ion-button color="medium" fill="solid" (click)="healthfilter.dismiss()">
+              <ion-label color="light">Cancel</ion-label>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="start_dt" presentation="date" [(ngModel)]="filter.startDate"
+        [showDefaultButtons]="true" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="end_dt" presentation="date" [(ngModel)]="filter.endDate"
+        [showDefaultButtons]="true" [min]="filter.startDate" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+  <ion-list lines="true" *ngIf="!isLoading() && totalCount() > 0">
+
+    <ion-item class="ion-padding" lines="full"
+      *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      [routerLink]="['/', 'animals-insights', { id: item?.animal?.id, tagNo: item?.animal?.tagNo, deviceNo: item?.animal?.activeTag?.deviceNo }]"
+      button>
+
+      <ion-img src="../../../../../assets/icons/health.png" slot="start" style="width: 40px;"></ion-img>
+
+      <div
+        style="width: 100% !important; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 8px;">
+
+        <ion-label>
+          <strong class="ion-text-uppercase">
+            {{item.animal.tagNo}}
+          </strong>
+        </ion-label>
+
+        <ion-label color="medium" style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          <ion-icon name="time-outline" style="margin-right: 8px;"></ion-icon> {{item?.startedAt | daysSince}}
+        </ion-label>
+
+        <ion-label [color]="+item.healthIndex <= 85 ? 'danger' : 'success'"
+          style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          <ion-icon name="medkit" style="margin-right: 8px;"></ion-icon> {{item?.healthIndex+"%"}}
+        </ion-label>
+
+        <div style="display: flex; flex-wrap: wrap;">
+          <ng-container *ngIf="item.abnormalBehaviors && item.abnormalBehaviors.length > 0">
+            <ion-chip *ngFor="let behavior of item.abnormalBehaviors" color="danger">
+              <ion-label><strong style="text-transform: capitalize !important;">{{ behavior.toLowerCase()
+                  }}</strong></ion-label>
+              <ion-icon name="alert"></ion-icon>
+            </ion-chip>
+          </ng-container>
+
+          <ng-container *ngIf="item.recoveredAbnormalBehaviors && item.recoveredAbnormalBehaviors.length > 0">
+            <ion-chip *ngFor="let behavior of item.recoveredAbnormalBehaviors" color="success">
+              <ion-label><strong style="text-transform: capitalize !important;">{{ behavior.toLowerCase()
+                  }}</strong></ion-label>
+              <ion-icon name="checkmark"></ion-icon>
+            </ion-chip>
+          </ng-container>
+
+          <span *ngIf="(!item.abnormalBehaviors || item.abnormalBehaviors.length === 0) && 
+                           (!item.recoveredAbnormalBehaviors || item.recoveredAbnormalBehaviors.length === 0)">
+            -
+          </span>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;">
+          <div class="tooltip">
+            <ion-icon size="large" *ngIf="item.healthIndexTrend === 'STABLE'" color="warning"
+              name="reorder-two"></ion-icon>
+            <ion-icon size="large" *ngIf="item.healthIndexTrend === 'INCREASING'" color="success"
+              name="trending-up"></ion-icon>
+            <ion-icon size="large" *ngIf="item.healthIndexTrend === 'DECREASING'" color="danger"
+              name="trending-down"></ion-icon>
+            <span class="tooltiptext">
+              <ion-chip>
+                <ion-label>
+                  <strong style="text-transform: capitalize !important;">
+                    {{item.healthIndexTrend?.toLowerCase()}}
+                  </strong>
+                </ion-label>
+              </ion-chip>
+            </span>
+          </div>
+        </div>
+        <div style="width: 100%; height: 100px; display: inline-block; vertical-align: middle;">
+          <canvas #sparklineCanvas></canvas>
+        </div>
+
+
+        <div
+          style="width: 100%; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
+
+          <ion-label>Is treated ?</ion-label>
+
+          <div style="display: flex; align-items: flex-start; justify-content: flex-start; gap: 10px;">
+            <ion-button size="small" color="secondary" (click)="openHealthModal('confirm', item)">
+              <ion-label color="light">
+                Yes
+              </ion-label>
+            </ion-button>
+            <ion-button size="small" color="medium" (click)="openHealthModal('cancel', item)">
+              <ion-label color="light">
+                No
+              </ion-label>
+            </ion-button>
+          </div>
+        </div>
+
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <ion-item class="ion-padding" lines="none" *ngIf="!isLoading() && results().length === 0">
+    <ion-chip class="ion-padding" color="light">
+      <ion-icon name="alert-circle"></ion-icon>
+      <ion-label color="medium">
+        <strong>
+          {{ 'list.placeholder' | translate }}
+        </strong>
+      </ion-label>
+    </ion-chip>
+  </ion-item>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer> -->
+
+
+
+<ion-header>
+  <app-custom-header title="Healths" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+  <p class="ion-float-start">
+    <ion-title>
+      <strong>{{totalCount()}}</strong> {{totalCount() === 1 ? ' Animal': ' Animals' | translate }}
+    </ion-title>
+  </p>
+  <ion-buttons class="ion-float-end">
+    <ion-button fill="clear" (click)="toggleSort('tagNo')">
+      <ion-label>Tag no.</ion-label>
+      <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline"
+        class="sort-placeholder-icon"></ion-icon>
+      <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+        class="sort-active-icon"></ion-icon>
+    </ion-button>
+
+    <ion-button id="open-health-filter" fill="clear">
+      <ion-icon slot="icon-only" name="options-sharp"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-header>
+
+<ion-content>
+
+  <ion-list lines="full">
+    @if (!isLoading() && totalCount() > 0) {
+    <ion-item
+      *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      button>
+
+      <ion-thumbnail slot="start">
+        <img src="../../../../../assets/icons/health.png" />
+      </ion-thumbnail>
+
+      <ion-grid>
+        <ion-row
+          [routerLink]="['/', 'animals-insights', { id: item?.animal?.id, tagNo: item?.animal?.tagNo, deviceNo: item?.animal?.activeTag?.deviceNo }]">
+          <ion-col>
+
+            <ion-text>
+              <h4>
+                <strong class="ion-text-uppercase">
+                  {{item.animal.tagNo}}
+                </strong>
+              </h4>
+            </ion-text>
+
+            <p>
+              <ion-text>
+                <ion-icon name="timer-outline"></ion-icon>
+              </ion-text>
+              {{item?.startedAt | daysSince}}
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="medkit" [color]="+item.healthIndex <= 85 ? 'danger' : 'success'"></ion-icon>
+              </ion-text>
+              <ion-label [color]="+item.healthIndex <= 85 ? 'danger' : 'success'">
+                {{item?.healthIndex+"%"}}
+              </ion-label>
+            </p>
+
+            <div style="display: flex; flex-wrap: wrap;"
+              *ngIf="(item.abnormalBehaviors && item.abnormalBehaviors.length > 0) || (item.recoveredAbnormalBehaviors && item.recoveredAbnormalBehaviors.length > 0); else noBehaviors">
+              <ng-container *ngIf="item.abnormalBehaviors && item.abnormalBehaviors.length > 0">
+                <ion-chip *ngFor="let behavior of item.abnormalBehaviors" color="danger">
+                  <ion-label class="ion-text-capitalize">{{ behavior.toLowerCase() }}</ion-label>
+                  <ion-icon name="alert"></ion-icon>
+                </ion-chip>
+              </ng-container>
+
+              <ng-container *ngIf="item.recoveredAbnormalBehaviors && item.recoveredAbnormalBehaviors.length > 0">
+                <ion-chip *ngFor="let behavior of item.recoveredAbnormalBehaviors" color="success">
+                  <ion-label class="ion-text-capitalize">{{ behavior.toLowerCase() }}</ion-label>
+                  <ion-icon name="checkmark"></ion-icon>
+                </ion-chip>
+              </ng-container>
+            </div>
+
+            <ng-template #noBehaviors>
+              <p>-</p>
+            </ng-template>
+
+            <div class="tooltip" style="margin-top: 4px;">
+              <ion-icon size="large" *ngIf="item.healthIndexTrend === 'STABLE'" color="warning"
+                name="reorder-two"></ion-icon>
+              <ion-icon size="large" *ngIf="item.healthIndexTrend === 'INCREASING'" color="success"
+                name="trending-up"></ion-icon>
+              <ion-icon size="large" *ngIf="item.healthIndexTrend === 'DECREASING'" color="danger"
+                name="trending-down"></ion-icon>
+              <span class="tooltiptext">
+                <ion-chip>
+                  <ion-label>
+                    <strong style="text-transform: capitalize !important;">
+                      {{item.healthIndexTrend?.toLowerCase()}}
+                    </strong>
+                  </ion-label>
+                </ion-chip>
+              </span>
+            </div>
+
+            <div style="width: 100%; height: 100px; display: inline-block; vertical-align: middle; padding: 1rem 0;">
+              <canvas #sparklineCanvas></canvas>
+            </div>
+
+            <ion-text>
+              <strong>
+                Is Treated ?
+              </strong>
+            </ion-text>
+            <ion-buttons class="ion-margin-vertical">
+              <ion-button size="small" fill="solid" color="light"
+                (click)="openHealthModal('confirm', item); $event.stopPropagation()">
+                <ion-label>Yes</ion-label>
+              </ion-button>
+              <ion-button size="small" fill="solid" color="dark"
+                (click)="openHealthModal('cancel', item); $event.stopPropagation()">
+                <ion-label>No</ion-label>
+              </ion-button>
+            </ion-buttons>
+
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+
+    }
+
+    @else if (!isLoading() && results().length === 0) {
+    <ion-item class="ion-padding" style="margin: auto;">
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon slot="icon-only" name="alert-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>
+        {{ 'list.placeholder' | translate }}
+      </ion-title>
+    </ion-item>
+    }
+
+  </ion-list>
+
+  <ion-modal #healthfilter trigger="open-health-filter">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="healthfilter.dismiss()">
+              <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+
+          <ion-title>{{ 'Apply Filters' | translate }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+
+        <ion-item-group>
+
+          <ion-item-divider>
+            <ion-label>
+              <strong>Presets</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+            <ion-item lines="none">
+              <ion-buttons slot="start">
+                <ion-button [fill]="activeRange === -1 ? 'solid' : 'outline'" (click)="setRange(-1)">{{
+                  'All' | translate }}</ion-button>
+                <ion-button [fill]="activeRange === 0.033 ? 'solid' : 'outline'" (click)="setRange(0.033)">1 {{ 'Day' |
+                  translate }}</ion-button>
+                <ion-button [fill]="activeRange === 0.25 ? 'solid' : 'outline'" (click)="setRange(0.25)">7 {{ 'Days' |
+                  translate }}</ion-button>
+                <ion-button [fill]="activeRange === 1 ? 'solid' : 'outline'" (click)="setRange(1)">1 {{
+                  'Month' | translate }}</ion-button>
+              </ion-buttons>
+              <ion-buttons slot="end">
+                <ion-button fill="clear" color="warning" (click)="clearDates()">{{ 'Reset' | translate}}</ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+
+          <ion-item-divider *ngIf="activeRange !== -1">
+            <ion-label>
+              <strong>Custom Date</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+            <ion-item lines="none" *ngIf="activeRange !== -1">
+              <ion-grid>
+                <ion-row>
+                  <ion-col>
+                    <ion-buttons class="ion-float-start">
+                      <ion-label>From :</ion-label>
+                      <ion-datetime-button datetime="start_dt"></ion-datetime-button>
+                    </ion-buttons>
+
+                    <ion-buttons class="ion-float-end">
+                      <ion-label>Till :</ion-label>
+                      <ion-datetime-button datetime="end_dt"></ion-datetime-button>
+                    </ion-buttons>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-item>
+
+          </ion-list>
+
+        </ion-item-group>
+
+      </ion-content>
+      <ion-footer>
+        <ion-toolbar class="ion-padding">
+          <ion-buttons slot="end">
+            <ion-button fill="solid" (click)="healthfilter.dismiss()">
+              <ion-label>Apply</ion-label>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="start_dt" presentation="date" [(ngModel)]="filter.startDate" [showDefaultButtons]="true"
+        (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="end_dt" presentation="date" [(ngModel)]="filter.endDate" [showDefaultButtons]="true"
+        [min]="filter.startDate" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer>

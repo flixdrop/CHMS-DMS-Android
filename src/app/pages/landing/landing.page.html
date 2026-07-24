@@ -3,43 +3,46 @@
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button autoHide="false" menu="left-menu">
-        <ion-icon size="large" [name]="isMenuOpen ? 'arrow-undo' : 'menu'" color="dark"></ion-icon>
+        <ion-icon slot="icon-only" size="large" [name]="isMenuOpen ? 'arrow-undo' : 'menu'" color="dark"></ion-icon>
       </ion-menu-button>
     </ion-buttons>
 
-   <!-- <ion-item lines="none">
-      <ion-chip style="width: 100%; border-radius: 6px;" color="dark">
-        <ion-label style="text-transform: capitalize; font-weight: bold; color: var(--ion-color-dark-shade);">
-          <h2>
-            {{user['role'] !== 'SUPER_ADMIN' ? 'Farm :': 'User :' }} {{user['username']}} {{user['role'] === 'SUPER_ADMIN' ? '': 'Farm' }}
-          </h2>
-          <h3 style="font-weight: bolder;">{{user['role']}}</h3>
-        </ion-label>
-      </ion-chip>
-    </ion-item> -->
-
-    <ion-item lines="none">
-      <ion-chip style="width: 100%; border-radius: 6px;" color="dark">
-        <ion-label style="text-transform: capitalize; font-weight: bold; color: var(--ion-color-dark-shade);">
-          <h2>
-            {{user['role'] !== 'SUPER_ADMIN' ? 'Farm :': 'User :' }} {{user['username']}} {{user['role'] === 'SUPER_ADMIN' ? '': 'Farm' }}
-          </h2>
-          <h3 style="font-weight: bolder;">{{user['role']}}</h3>
-        </ion-label>
-      </ion-chip>
-    </ion-item>
-
     <ion-buttons slot="end">
-      <ion-button shape="round" fill="clear" id="chatbot">
-        <ion-icon size="large" name="logo-ionitron" color="dark"></ion-icon>
-      </ion-button>
 
-       <ion-button shape="round" fill="clear" (click)="onClickProfile()">
-        <ion-icon size="large" name="person-circle" color="dark"></ion-icon>
+      <ion-button fill="clear" (click)="onClickProfile()">
+        <ion-label color="medium">
+          <strong class="ion-text-capitalize">
+            {{user?.name}}
+          </strong>
+        </ion-label>
+
+        <ng-container slot="end" *ngIf="safeLogo(); else fallbackChipLogo">
+          <img [src]="safeLogo()"
+            style="height: 32px; width: 32px; aspect-ratio: 1/1; object-fit: cover; margin-left: 4px;">
+        </ng-container>
+
+        <ng-template slot="end" #fallbackChipLogo>
+
+          <ion-icon name="person-circle-outline" color="medium"
+            style="height: 32px; width: 32px; aspect-ratio: 1/1; object-fit: contain; margin-left: 4px;"></ion-icon>
+
+        </ng-template>
+
       </ion-button>
 
     </ion-buttons>
 
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button fill="clear" id="chatbot">
+        <ion-icon slot="icon-only" size="large" name="logo-ionitron" color="secondary"></ion-icon>
+      </ion-button>
+      <ion-button fill="clear" id="chatbot">
+        <ion-icon slot="icon-only" size="large" name="notifications" color="warning"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -47,16 +50,84 @@
   <ion-router-outlet></ion-router-outlet>
 </ion-content>
 
-<ion-menu #leftmenu class="left-menu" side="start" swipeGesture="true" type="push" menuId="left-menu" contentId="main">
+<ion-menu #leftmenu class="left-menu" side="start" menuId="left-menu" contentId="main">
+
+  <ion-header>
+    <ion-toolbar>
+      <ion-buttons slot="start">
+        <ion-menu-toggle>
+          <ion-button>
+            <ion-icon slot="icon-only" name='arrow-undo' color="medium"></ion-icon>
+          </ion-button>
+        </ion-menu-toggle>
+      </ion-buttons>
+    </ion-toolbar>
+
+    <ion-grid *ngIf="!isLoading">
+    <ion-row>
+      <ion-col size-md="6" offset-md="3">
+        <ng-container *ngIf="safeLogo(); else fallbackChipLogo">
+          <ion-thumbnail style="margin: auto; width: 100px; height: 100px; aspect-ratio: 1/1;">
+            <img [src]="safeLogo()">
+          </ion-thumbnail>
+        </ng-container>
+        <ng-template #fallbackChipLogo>
+          <ion-thumbnail style="margin: auto; width: 100px; height: 100px; aspect-ratio: 1/1;">
+            <!-- <ion-icon name="person-circle-outline" style="width: 100px; height: 100px; aspect-ratio: 1/1;"
+              color="medium"></ion-icon> -->
+                          <img src="../../../assets/icons/fd.png">
+
+          </ion-thumbnail>
+        </ng-template>
+
+      </ion-col>
+    </ion-row>
+    </ion-grid>
+
+      <!-- <ion-img style="margin: auto;" src="../../assets/icons/fd.png"
+        style="width: 100px; height: 100px; aspect-ratio: 1/1"></ion-img> -->
+
+          <ion-item>
+            <ion-input label="Account Name" label-placement="stacked" value="{{user.name}}" disabled="true">
+            </ion-input>
+            <ion-button color="warning" fill="clear">
+              <ion-label>
+                <strong>
+                  {{user.accessLevel}}
+                </strong>
+              </ion-label>
+            </ion-button>
+          </ion-item>
+          
+        
+
+  </ion-header>
+
   <ion-content class="ion-padding" [fullscreen]="true">
-    <div style="display: flex; align-items: center; justify-content: center; margin-top: 50px; " class="ion-activatable ripple-parent">
-                    <ion-ripple-effect></ion-ripple-effect>
+
+    <!-- <div style="display: flex; align-items: center; justify-content: center;"
+      class="ion-activatable ripple-parent">
+      <ion-ripple-effect></ion-ripple-effect>
 
       <ion-img aria-hidden="true" src="../../assets/icons/fd.png"
         style="height: auto; width: 40%; aspect-ratio: 1/1 !important;"></ion-img>
     </div>
 
+      <div *ngIf="!isLoading" style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
+      <ion-label>
+        <p style="padding: 0; margin: 0;">{{'app.account-name'| translate}} :</p>
+        <ion-note>
+          <b>
+            {{user['email']}}
+          </b>
+        </ion-note>
+      </ion-label>
+    </div> -->
+
     <ion-list class="left-menu-list">
+
+      <app-selection></app-selection>
+
       <ion-item>
         <ion-icon name="language" color="light"></ion-icon>
         <ion-select class="never-flip" [okText]="'buttons.5.label' | translate"
@@ -76,6 +147,28 @@
           <ion-label>
             <p>
               {{'landing.items.2.label' | translate}}
+            </p>
+          </ion-label>
+        </ion-menu-toggle>
+      </ion-item>
+
+      <ion-item routerLink="/animals" routerLinkActive="router-link-active" button>
+        <ion-icon name="list" color="light"></ion-icon>
+        <ion-menu-toggle autoHide="false">
+          <ion-label>
+            <p>
+              All Animals
+            </p>
+          </ion-label>
+        </ion-menu-toggle>
+      </ion-item>
+
+      <ion-item routerLink="/devices" routerLinkActive="router-link-active" button>
+        <ion-icon name="hardware-chip-outline" color="light"></ion-icon>
+        <ion-menu-toggle autoHide="false">
+          <ion-label>
+            <p>
+              All Devices
             </p>
           </ion-label>
         </ion-menu-toggle>
@@ -139,8 +232,9 @@
   </ion-content>
 
   <ion-footer>
+    <ion-toolbar class="ion-padding">
 
-    <div *ngIf="!isLoading" style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
+    <!-- <div *ngIf="!isLoading" style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
       <ion-label>
         <p style="padding: 0; margin: 0;">{{'app.account-name'| translate}} :</p>
         <ion-note>
@@ -149,12 +243,10 @@
           </b>
         </ion-note>
       </ion-label>
-    </div>
+    </div> -->
 
-    <div style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
-      <ion-button size="small" expand="block" style=" background-color: #dc143c70 !important;
-      background: #dc143c70 !important;
-      --background: #dc143c70 !important; color: white !important;" (click)="onLogout()">
+    <div style="display: flex; align-items: center; justify-content: center;">
+      <ion-button size="small" expand="block" color="danger" fill="clear" (click)="onClickLogout()">
         <ion-label>
           <b>
             {{'buttons.2.label'| translate}}
@@ -164,7 +256,6 @@
       </ion-button>
     </div>
 
-    <ion-toolbar>
       <ion-item lines="none">
         <ion-note slot="end" color="medium">Flixdrop-CHMS 1.1.0</ion-note>
       </ion-item>

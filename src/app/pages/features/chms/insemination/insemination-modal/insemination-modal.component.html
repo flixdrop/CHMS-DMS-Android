@@ -1,0 +1,150 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{ (type === 'create' ? 'Log Insemination Cycle' : type === 'edit' ? 'Edit Insemination Record' : type === 'resolve' ? 'Resolve Insemination Workflow' : 'Delete Insemination Record') | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)='closeModal()' [disabled]='submitting()'>
+        <ion-label><strong>{{ 'Close' | translate }}</strong></ion-label>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form *ngIf="inseminationForm" [formGroup]="inseminationForm" (ngSubmit)="onSubmit()">
+    <ion-list lines="inset">
+
+      <ion-item-group>
+        <ion-item-divider color="light">
+          <ion-label>{{ 'Livestock Structural Context' | translate }}</ion-label>
+        </ion-item-divider>
+
+        <ion-item lines="none">
+          <div class="ion-w-100 ion-padding-top ion-padding-bottom">
+            <div class="stacked-label-fallback ion-margin-bottom">{{ 'Target Female Livestock Record *' | translate }}</div>
+            <ion-button id="open-female-cattle-ins-trigger" expand="block" color="medium" fill="outline" style="text-transform: none; height: 44px;" [disabled]="type !== 'create'">
+              {{ getSelectedFemaleLabel() | translate }}
+            </ion-button>
+            
+            <ion-popover trigger="open-female-cattle-ins-trigger" #cattlePopover class="searchable-selection-popover" interface="popover">
+              <ng-template>
+                <ion-header class="ion-no-border">
+                  <ion-toolbar color="light">
+                    <ion-searchbar placeholder="{{ 'Type tag number or name...' | translate }}" (ionInput)="handleFemaleSearch($event)" debounce="200"></ion-searchbar>
+                  </ion-toolbar>
+                </ion-header>
+                <ion-content style="max-height: 300px;">
+                  <ion-list lines="inset" class="ion-no-padding">
+                    <ion-item *ngFor="let cattle of filteredFemaleInventory" button (click)="selectFemaleCattle(cattle, cattlePopover)">
+                      <ion-label>
+                        <h2>{{ cattle.tagNo }} {{ cattle.name ? '• ' + cattle.name : '' }}</h2>
+                        <p class="text-muted text-small">{{ cattle.breed }} • {{ cattle.status | translate }}</p>
+                      </ion-label>
+                    </ion-item>
+                    <ion-item lines="none" *ngIf="filteredFemaleInventory.length === 0">
+                      <ion-label class="ion-text-center text-muted" style="padding: 15px 0;">
+                        {{ 'No matching records found.' | translate }}
+                      </ion-label>
+                    </ion-item>
+                  </ion-list>
+                </ion-content>
+              </ng-template>
+            </ion-popover>
+          </div>
+        </ion-item>
+      </ion-item-group>
+
+      <ion-item-group *ngIf="type !== 'resolve'">
+        <ion-item-divider color="light">
+          <ion-label>{{ 'Breeding Service Parameters' | translate }}</ion-label>
+        </ion-item-divider>
+
+        <ion-item>
+          <ion-select interface="popover" labelPlacement="stacked" formControlName="process" (ionChange)="onProcessChange()">
+            <div slot="label">{{ 'Breeding Process Type *' | translate }}</div>
+            <ion-select-option value="Artificial">{{ 'Artificial Insemination (AI)' | translate }}</ion-select-option>
+            <ion-select-option value="Natural">{{ 'Natural Insemination (Bull Service)' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item *ngIf="inseminationForm.get('process')?.value === 'Natural'">
+          <ion-input labelPlacement="stacked" type="text" formControlName="bullName" placeholder="e.g. Registered Sire ID, Name or Tag">
+            <div slot="label">{{ 'Service Bull Identifier *' | translate }}</div>
+          </ion-input>
+        </ion-item>
+
+        <ng-container *ngIf="inseminationForm.get('process')?.value === 'Artificial'">
+          <ion-item>
+            <ion-select interface="popover" labelPlacement="stacked" formControlName="semenCompany" placeholder="{{ 'Select Brand' | translate }}">
+              <div slot="label">{{ 'Semen Distribution Firm' | translate }}</div>
+              <ion-select-option *ngFor="let company of indianSemenCompanies" [value]="company">{{ company }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-select interface="popover" labelPlacement="stacked" formControlName="semenBreed" placeholder="{{ 'Select Breed' | translate }}">
+              <div slot="label">{{ 'Semen Straw Genetic Breed' | translate }}</div>
+              <ion-select-option *ngFor="let breed of indianBreeds" [value]="breed">{{ breed }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <ion-item>
+            <ion-select interface="popover" labelPlacement="stacked" formControlName="semenType" placeholder="{{ 'Select Straw Type' | translate }}">
+              <div slot="label">{{ 'Straw Selection Category Grade' | translate }}</div>
+              <ion-select-option *ngFor="let type of semenTypes" [value]="type">{{ type }}</ion-select-option>
+            </ion-select>
+          </ion-item>
+        </ng-container>
+
+        <ion-item>
+          <ion-input labelPlacement="stacked" type="datetime-local" [max]="maxDate" formControlName="occurredAt">
+            <div slot="label">{{ 'Breeding Event Identification Timestamp *' | translate }}</div>
+          </ion-input>
+        </ion-item>
+
+        <ion-item lines="none">
+          <ion-input labelPlacement="stacked" type="text" formControlName="note" placeholder="e.g. Inseminated using imported high-yield female sexed straw batch">
+            <div slot="label">{{ 'Field Observation Notes' | translate }}</div>
+          </ion-input>
+        </ion-item>
+      </ion-item-group>
+
+      <ion-item-group *ngIf="type === 'resolve'">
+        <ion-item-divider color="light">
+          <ion-label color="primary">{{ 'Actionable Resolution Dispatcher' | translate }}</ion-label>
+        </ion-item-divider>
+
+        <ion-item lines="none">
+          <ion-select interface="popover" labelPlacement="stacked" formControlName="pregnancyVerified">
+            <div slot="label"><strong>{{ 'Has Pregnancy Verification Checked Positive? *' | translate }}</strong></div>
+            <ion-select-option value="YES">{{ 'Yes (Confirm Positive Pregnancy & Advance Lifecycle Node)' | translate }}</ion-select-option>
+            <ion-select-option value="NO">{{ 'No (Report Negative Verification Cycle & Purge Active Node)' | translate }}</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-item-group>
+
+    </ion-list>
+
+    <ion-footer class="ion-no-border ion-padding-top">
+      <ion-toolbar class="ion-no-padding">
+        <ion-buttons slot="end">
+          
+          <ion-button *ngIf="type !== 'delete'" type="submit" expand="block" [disabled]="submitting() || inseminationForm.invalid" fill="solid" [color]="type === 'edit' ? 'warning' : type === 'resolve' ? 'primary' : 'success'">
+            <ion-spinner *ngIf="submitting()" name="crescent"></ion-spinner>
+            <ion-label *ngIf="!submitting()" color="light">
+              <strong>{{ (type === 'edit' ? 'Update Insemination' : type === 'resolve' ? 'Advance Workflow Lifecycle' : 'Log Insemination Cycle') | translate }}</strong>
+            </ion-label>
+          </ion-button>
+
+          <ion-button *ngIf="type === 'delete'" type="button" expand="block" fill="solid" color="danger" [disabled]="submitting()" (click)="onDelete()">
+            <ion-spinner *ngIf="submitting()" name="crescent"></ion-spinner>
+            <ion-label *ngIf="!submitting()" color="light"><strong>{{ 'Delete Insemination Record' | translate }}</strong></ion-label>
+          </ion-button>
+
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
+  </form>
+</ion-content>

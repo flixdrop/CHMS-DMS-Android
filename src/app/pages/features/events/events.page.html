@@ -1,0 +1,414 @@
+<!-- <ion-header>
+  <app-custom-header title="All Events" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <ion-toolbar>
+    <ion-title>
+      <strong>{{totalCount()}}</strong> {{totalCount() === 1 ? ' Animal': ' Animals' | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+
+      <ion-button color="medium" fill="clear" (click)="toggleSort('tagNo')">
+        <ion-label>Tag no.</ion-label>
+        <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="link"
+          class="sort-placeholder-icon"></ion-icon>
+        <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+          class="sort-active-icon"></ion-icon>
+      </ion-button>
+
+      <ion-button id="open-event-filter" color="medium" fill="clear">
+        <ion-icon slot="icon-only" name="options-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-modal #eventfilter trigger="open-event-filter">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ 'Apply Filters' | translate }}</ion-title>
+      </ion-toolbar>
+    </ion-header>
+
+    <ion-content class="ion-padding">
+      <ion-list lines="none" class="ion-no-padding ion-margin-bottom">
+        <ion-item class="ion-no-padding">
+          <ion-select 
+            label="Event Type" 
+            label-placement="stacked" 
+            interface="popover" 
+            placeholder="Show All Events"
+            [(ngModel)]="filter.eventType"
+            (ionChange)="onEventTypeChange()">
+            <ion-select-option [value]="null">All Operational Events</ion-select-option>
+            <ion-select-option value="Heat">Heat Cycles</ion-select-option>
+            <ion-select-option value="Insemination">Insemination Breeding</ion-select-option>
+            <ion-select-option value="Pregnancy">Pregnancy Verifications</ion-select-option>
+            <ion-select-option value="Health">Health Alerts / Treatment</ion-select-option>
+            <ion-select-option value="Calving">Calving Deliveries</ion-select-option>
+            <ion-select-option value="Dryoff">Dry Off States</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+
+      <hr style="opacity: 0.15; margin: 16px 0;" />
+
+      <ion-label><strong>{{ 'Presets' | translate }}</strong></ion-label>
+      <ion-toolbar class="ion-padding-vertical">
+        <ion-buttons slot="start">
+          <ion-button [fill]="activeRange === -1 ? 'solid' : 'outline'" color="medium" (click)="setRange(-1)">
+            {{ 'All' | translate }}
+          </ion-button>
+          <ion-button [fill]="activeRange === 0.033 ? 'solid' : 'outline'" color="medium" (click)="setRange(0.033)">
+            1 {{ 'Day' | translate }}
+          </ion-button>
+          <ion-button [fill]="activeRange === 0.25 ? 'solid' : 'outline'" color="medium" (click)="setRange(0.25)">
+            7 {{ 'Days' | translate }}
+          </ion-button>
+          <ion-button [fill]="activeRange === 1 ? 'solid' : 'outline'" color="medium" (click)="setRange(1)">
+            1 {{ 'Month' | translate }}
+          </ion-button>
+          <ion-button fill="solid" color="warning" (click)="clearFilters()">{{ 'Reset' | translate }}</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+
+      <ion-label *ngIf="activeRange !== -1"><strong>{{ 'Custom Range' | translate }}</strong></ion-label>
+      <ion-toolbar class="ion-padding-vertical" *ngIf="activeRange !== -1">
+        <ion-buttons slot="start">
+          <ion-button fill="clear" color="none">
+            <ion-label><strong>From :</strong></ion-label>
+            <ion-datetime-button datetime="start_dt"></ion-datetime-button>
+          </ion-button>
+          <ion-button fill="clear" color="none">
+            <ion-label><strong>Till :</strong></ion-label>
+            <ion-datetime-button datetime="end_dt"></ion-datetime-button>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-content>
+
+    <ion-footer>
+      <ion-toolbar>
+        <ion-buttons slot="end">
+          <ion-button color="success" fill="solid" (click)="applyAndDismiss(eventfilter)">
+            <ion-label color="light">Ok</ion-label>
+          </ion-button>
+          <ion-button color="medium" fill="solid" (click)="eventfilter.dismiss()">
+            <ion-label color="light">Cancel</ion-label>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
+  </ng-template>
+</ion-modal>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="start_dt" presentation="date" [(ngModel)]="filter.startDate"
+        [showDefaultButtons]="true" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="end_dt" presentation="date" [(ngModel)]="filter.endDate"
+        [showDefaultButtons]="true" [min]="filter.startDate" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+        <ion-list lines="true">
+
+        <ion-item
+          *ngFor="let event of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+          class="ion-padding" lines="full" button
+          (click)="event.uiSelection = (event.uiSelection === 'actions' ? null : 'actions')">
+
+          <img slot="start" [src]="event?.icon" style="height: 50px; width: 50px; aspect-ratio: 1/1;" />
+
+           <div
+        style="width: 100% !important; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 8px;">
+
+<ion-label>
+  <strong>
+    {{event?.customTitle}}
+  </strong>
+</ion-label>
+
+        <ion-label class="ion-text-uppercase">
+        {{event?.tagNo}}   <ion-icon name="link" style="margin-right: 8px;"></ion-icon> {{event?.deviceNo}}
+        </ion-label>
+
+        <ion-label color="medium" style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          <ion-icon name="timer-outline" style="margin-right: 8px;"></ion-icon> {{event?.startedAt | utcToIst}}
+        </ion-label>
+
+          <ion-label color="medium" style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          <ion-icon name="time-outline" style="margin-right: 8px;"></ion-icon> {{event?.endedAt | utcToIst}}
+        </ion-label>
+          
+        </div>
+        <ion-buttons style="text-align: end;" slot="end">
+          <ion-chip color="{{event.isActive === true ? 'success':'danger'}}" fill="solid" (click)="$event.stopPropagation()">
+            <ion-label>
+              <strong>
+                {{event.isActive === true ? 'Active':'Inactive'}}
+              </strong>
+            </ion-label>
+          </ion-chip>
+        </ion-buttons>
+        </ion-item>
+        </ion-list>
+
+    <ion-item class="ion-padding" lines="none" *ngIf="!isLoading() && results().length === 0">
+    <ion-chip class="ion-padding" color="light">
+      <ion-icon name="alert-circle"></ion-icon>
+      <ion-label color="medium">
+        <strong>
+          {{ 'list.placeholder' | translate }}
+        </strong>
+      </ion-label>
+    </ion-chip>
+  </ion-item>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer> -->
+
+
+<ion-header>
+  <app-custom-header title="All Events" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <p class="ion-float-start">
+    <ion-title>
+      <strong>{{ totalCount() }}</strong> {{ totalCount() === 1 ? ' Animal' : ' Animals' | translate }}
+    </ion-title>
+  </p>
+  <ion-buttons class="ion-float-end">
+    <ion-button fill="clear" (click)="toggleSort('tagNo')">
+      <ion-label>Tag no.</ion-label>
+      <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline" class="sort-placeholder-icon">
+      </ion-icon>
+      <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+        class="sort-active-icon">
+      </ion-icon>
+    </ion-button>
+
+    <ion-button id="open-event-filter" fill="clear">
+      <ion-icon slot="icon-only" name="options-sharp"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    @if (!isLoading() && totalCount() > 0) {
+    <ion-item
+      *ngFor="let event of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      button (click)="event.uiSelection = (event.uiSelection === 'actions' ? null : 'actions')">
+
+      <ion-thumbnail slot="start">
+        <img [src]="event?.icon" />
+      </ion-thumbnail>
+
+      <ion-grid>
+        <ion-row>
+          <ion-col>
+            <ion-text>
+              <h4>
+                <strong>
+                  {{ event?.customTitle }}
+                </strong>
+                <ion-text [color]="event.isActive === true ? 'success' : 'danger'">
+                  <sub>
+                    ({{ event.isActive === true ? 'Active' : 'Inactive' }})
+                  </sub>
+                </ion-text>
+              </h4>
+            </ion-text>
+
+            <p class="ion-text-uppercase">
+              <ion-text>
+                <ion-icon name="paw-outline"></ion-icon>
+              </ion-text>
+              {{ event?.tagNo }}
+              <ion-text>
+                <ion-icon name="link-sharp"></ion-icon>
+              </ion-text>
+              {{ event?.deviceNo }}
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="calendar-outline"></ion-icon>
+              </ion-text>
+              Started: {{ event?.startedAt | utcToIst }}
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="calendar-outline"></ion-icon>
+              </ion-text>
+              Ended: {{ event?.endedAt | utcToIst }}
+            </p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    }
+
+    @else if (!isLoading() && results().length === 0) {
+    <ion-item class="ion-padding" style="margin: auto;">
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon slot="icon-only" name="alert-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>
+        {{ 'list.placeholder' | translate }}
+      </ion-title>
+    </ion-item>
+    }
+
+  </ion-list>
+
+  <!-- Filter Modal -->
+  <ion-modal #eventfilter trigger="open-event-filter">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="eventfilter.dismiss()">
+              <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+
+          <ion-title>{{ 'Apply Filters' | translate }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <ion-item-group>
+          <ion-item-divider>
+            <ion-label>
+              <strong>Event Type</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+            <ion-item lines="none">
+              <ion-select label="Event Type" label-placement="stacked" interface="popover" placeholder="Show All Events"
+                [(ngModel)]="filter.eventType" (ionChange)="onEventTypeChange()">
+                <ion-select-option [value]="null">All Operational Events</ion-select-option>
+                <ion-select-option value="Heat">Heat Cycles</ion-select-option>
+                <ion-select-option value="Insemination">Insemination Breeding</ion-select-option>
+                <ion-select-option value="Pregnancy">Pregnancy Verifications</ion-select-option>
+                <ion-select-option value="Health">Health Alerts / Treatment</ion-select-option>
+                <ion-select-option value="Calving">Calving Deliveries</ion-select-option>
+                <ion-select-option value="Dryoff">Dry Off States</ion-select-option>
+              </ion-select>
+            </ion-item>
+          </ion-list>
+
+          <ion-item-divider>
+            <ion-label>
+              <strong>Presets</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+            <ion-item lines="none">
+              <ion-buttons slot="start">
+                <ion-button [fill]="activeRange === -1 ? 'solid' : 'outline'" (click)="setRange(-1)">
+                  {{ 'All' | translate }}
+                </ion-button>
+                <ion-button [fill]="activeRange === 0.033 ? 'solid' : 'outline'" (click)="setRange(0.033)">
+                  1 {{ 'Day' | translate }}
+                </ion-button>
+                <ion-button [fill]="activeRange === 0.25 ? 'solid' : 'outline'" (click)="setRange(0.25)">
+                  7 {{ 'Days' | translate }}
+                </ion-button>
+                <ion-button [fill]="activeRange === 1 ? 'solid' : 'outline'" (click)="setRange(1)">
+                  1 {{ 'Month' | translate }}
+                </ion-button>
+              </ion-buttons>
+              <ion-buttons slot="end">
+                <ion-button fill="clear" color="warning" (click)="clearFilters()">
+                  {{ 'Reset' | translate }}
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+
+          <ion-item-divider *ngIf="activeRange !== -1">
+            <ion-label>
+              <strong>Custom Date</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+            <ion-item lines="none" *ngIf="activeRange !== -1">
+              <ion-grid>
+                <ion-row>
+                  <ion-col>
+                    <ion-buttons class="ion-float-start">
+                      <ion-label>From :</ion-label>
+                      <ion-datetime-button datetime="start_dt"></ion-datetime-button>
+                    </ion-buttons>
+
+                    <ion-buttons class="ion-float-end">
+                      <ion-label>Till :</ion-label>
+                      <ion-datetime-button datetime="end_dt"></ion-datetime-button>
+                    </ion-buttons>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+            </ion-item>
+          </ion-list>
+        </ion-item-group>
+      </ion-content>
+
+      <ion-footer>
+        <ion-toolbar class="ion-padding">
+          <ion-buttons slot="end">
+            <ion-button fill="solid" (click)="applyAndDismiss(eventfilter)">
+              <ion-label>Apply</ion-label>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Date Popovers -->
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="start_dt" presentation="date" [(ngModel)]="filter.startDate" [showDefaultButtons]="true"
+        (ionChange)="refresh()">
+      </ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="end_dt" presentation="date" [(ngModel)]="filter.endDate" [showDefaultButtons]="true"
+        [min]="filter.startDate" (ionChange)="refresh()">
+      </ion-datetime>
+    </ng-template>
+  </ion-popover>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer>

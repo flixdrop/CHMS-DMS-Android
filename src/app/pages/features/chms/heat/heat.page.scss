@@ -1,0 +1,340 @@
+@use "../../../../../assets/scss/custom-page.scss" as *;
+
+// .range-container {
+//   width: 100%;
+//   height: auto;
+//   position: relative;
+// }
+
+// .timeline-meta {
+//   display: flex;
+//   justify-content: space-between;
+//   font-size: smaller !important;
+//   margin-bottom: 10px;
+//   color: var(--ion-color-medium);
+
+//   .countdown-badge {
+//     font-weight: bold;
+//     color: var(--ion-color-dark);
+//   }
+// }
+
+// .range-interactive-wrapper {
+//   position: relative;
+//   width: 100%;
+//   height: 24px;
+// }
+
+// .hover-zone {
+//   position: absolute;
+//   top: 4px;
+//   height: 16px;
+//   z-index: 10;
+//   cursor: pointer;
+// }
+
+// .track-hover-layer {
+//   left: 0;
+//   width: 100%;
+//   background: transparent;
+// }
+
+// .optimal-hover-layer {
+//   background: transparent;
+//   z-index: 11;
+// }
+
+// .optimal-range-slider {
+//   padding: 0;
+//   height: 24px;
+//   opacity: 1 !important;
+//   position: relative;
+//   z-index: 1;
+
+//   &::part(bar) {
+//     background: var(--ion-color-light);
+//     height: 10px;
+//     border-radius: 10px;
+//   }
+
+//   &::part(bar-active) {
+//     background: var(--ion-color-success);
+//     height: 10px;
+//     border-radius: 10px;
+//   }
+
+//   &::part(knob) {
+//     width: 4px;
+//     height: 12px;
+//     border-radius: 1px;
+//     background: var(--ion-color-success-shade);
+//     box-shadow: none;
+//   }
+// }
+
+// .live-indicator-track {
+//   position: absolute;
+//   left: 0;
+//   right: 0;
+//   bottom: 0;
+//   pointer-events: none;
+//   z-index: 12;
+// }
+
+// .live-pin {
+//   position: absolute;
+//   bottom: 0;
+//   width: 2px;
+//   height: 50px;
+//   background: var(--ion-color-primary);
+//   transform: translateX(-50%);
+
+//   .pin-lbl {
+//     position: absolute;
+//     top: -14px;
+//     left: 50%;
+//     transform: translateX(-50%);
+//     font-size: 0.6rem;
+//     color: var(--ion-color-primary);
+//     font-weight: bold;
+//     text-transform: capitalize;
+//   }
+// }
+
+// // Hover State Telemetry Tooltips Layout
+// .has-tooltip {
+//   &:hover, &:active {
+//     .tooltip-box {
+//       visibility: visible;
+//       opacity: 1;
+//       transform: translateX(-50%) translateY(0);
+//     }
+//   }
+// }
+
+// .tooltip-box {
+//   position: absolute;
+//   bottom: 30px;
+//   left: 50%;
+//   transform: translateX(-50%) translateY(4px);
+//   background: var(--ion-color-medium);
+//   color: var(--ion-color-light);
+//   padding: 1rem;
+//   font-size: smaller !important;
+//   border-radius: 6px;
+//   white-space: nowrap;
+//   z-index: 999;
+//   visibility: hidden;
+//   opacity: 0;
+//   transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+//   box-shadow: 0 4px 10px var(--ion-color-medium);
+//   pointer-events: none;
+//   text-align: start;
+
+//   &::after {
+//     content: "";
+//     position: absolute;
+//     top: 100%;
+//     left: 50%;
+//     margin-left: -5px;
+//     border-width: 5px;
+//     border-style: solid;
+//     border-color: var(--ion-color-medium) transparent transparent transparent;
+//   }
+// }
+
+// .optimal-tooltip {
+//   background: var(--ion-color-success);
+//   &::after { border-color: var(--ion-color-success) transparent transparent transparent; }
+// }
+
+
+
+
+// Interactive Physiological Insemination Window Tracking Graph
+.range-container {
+  // width: 300px;
+  width: 100%;
+  height: 100px;
+  position: relative;
+  // padding: 1rem;
+}
+
+.timeline-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: smaller !important;
+  margin-bottom: 10px;
+  // color: var(--ion-color-medium);
+
+  .countdown-badge {
+    font-weight: bold;
+    // color: var(--ion-color-dark);
+  }
+}
+
+.range-interactive-wrapper {
+  position: relative;
+  width: 100%;
+  height: 24px;
+}
+
+.hover-zone {
+  position: absolute;
+  top: 4px;
+  height: 16px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.track-hover-layer {
+  left: 0;
+  width: 100%;
+  background: transparent;
+}
+
+.optimal-hover-layer {
+  background: transparent;
+  z-index: 11;
+}
+
+.optimal-range-slider {
+  // padding: 0;
+  // height: 10px;
+  // opacity: 1 !important;
+  // position: relative;
+  // z-index: 1;
+
+  // &::part(bar) {
+  //   background: var(--ion-color-light);
+  //   height: 10px;
+  // }
+
+  &::part(bar-active) {
+    background: var(--ion-color-success);
+    height: 7px;
+    border-radius: 4px;
+  }
+
+  &::part(knob) {
+    height: 14px;
+    width: 7px;
+    // width: 4px;
+    // height: 12px;
+    // border-radius: 1px;
+    background: var(--ion-color-medium);
+    // box-shadow: none;
+    border: none;
+    // outline: none;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+.live-indicator-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 12;
+}
+
+.live-pin {
+  position: absolute;
+  bottom: 0;
+  width: 2px;
+  height: 50px;
+  // background: var(--ion-color-primary);
+  transform: translateX(-50%);
+
+  .pin-lbl {
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.6rem;
+    // color: var(--ion-color-primary);
+    font-weight: bold;
+    text-transform: capitalize;
+  }
+}
+
+// Hover State Telemetry Tooltips Layout
+.has-tooltip {
+  &:hover, &:active {
+    .tooltip-box {
+      visibility: visible;
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+}
+
+.tooltip-box {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  // background: var(--ion-color-medium);
+  // color: var(--ion-color-light);
+  padding: 1rem;
+  font-size: smaller !important;
+  border-radius: 6px;
+  white-space: nowrap;
+  z-index: 999;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 0.1s ease-in-out, transform 0.1s ease-in-out;
+  // box-shadow: 0 4px 10px var(--ion-color-medium);
+  pointer-events: none;
+  text-align: start;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    // border-color: var(--ion-color-medium) transparent transparent transparent;
+  }
+}
+
+.optimal-tooltip {
+  background: var(--ion-color-success);
+  &::after { border-color: var(--ion-color-success) transparent transparent transparent; }
+}
+
+
+ion-range {
+  // --bar-background: #a2d2ff;
+  // --bar-background-active: #bde0fe;
+  // --bar-height: 8px;
+  // --bar-border-radius: 8px;
+  // --knob-background: #ffc8dd;
+  // --knob-size: 40px;
+  // --pin-background: #ffafcc;
+  // --pin-color: #fff;
+
+
+  //  --bar-background: #a2d2ff;
+  // --bar-background-active: #bde0fe;
+
+  //    --bar-background: var(--ion-color-light);
+  --bar-background-active: var(--ion-color-success);
+
+  // --bar-height: 10px;
+  // --bar-width: 2px;
+
+  // --bar-border-radius: 8px;
+  --knob-background: var(--ion-color-success) !important;
+  // --knob-size: 40px;
+  // --knob-size: 2px;
+  --knob-border-radius: "4px";
+
+  // --pin-background: #ffafcc;
+  // --pin-color: #fff;
+  
+}

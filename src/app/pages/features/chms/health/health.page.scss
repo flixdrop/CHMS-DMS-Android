@@ -1,0 +1,23 @@
+@use "../../../../../assets/scss/custom-page.scss" as *;
+
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+.tooltiptext {
+    visibility: hidden;
+    width: auto;
+    position: absolute;
+    z-index: 1;
+}
+
+.tooltiptext {
+    left: 100%;
+}
+
+/* Show the tooltip text on hover */
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+}

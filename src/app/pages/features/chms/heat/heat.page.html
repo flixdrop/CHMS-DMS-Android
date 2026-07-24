@@ -1,0 +1,246 @@
+<ion-header>
+  <app-custom-header title="Heats" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <p class="ion-float-start">
+    <ion-title>
+      <strong>{{totalCount()}}</strong> {{totalCount() === 1 ? ' Animal': ' Animals' | translate }}
+    </ion-title>
+  </p>
+  <ion-buttons class="ion-float-end">
+    <ion-button fill="clear" (click)="toggleSort('tagNo')">
+      <ion-label>Tag no.</ion-label>
+      <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline"
+        class="sort-placeholder-icon"></ion-icon>
+      <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+        class="sort-active-icon"></ion-icon>
+    </ion-button>
+
+    <ion-button id="open-heat-filter" fill="clear">
+      <ion-icon slot="icon-only" name="options-sharp"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-header>
+
+<ion-content>
+
+  <ion-list lines="full">
+
+    @if (!isLoading() && totalCount() > 0) {
+
+    <ion-item
+      *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      button>
+
+      <ion-thumbnail slot="start">
+        <img src="../../../../../assets/icons/estrus.png" />
+      </ion-thumbnail>
+
+      <ion-grid>
+        <ion-row
+          [routerLink]="['/', 'animals-insights', { id: item?.animal?.id, tagNo: item?.animal?.tagNo, deviceNo: item?.animal?.activeTag?.deviceNo }]">
+          <ion-col>
+
+            <ion-text>
+              <h4>
+                <strong class="ion-text-uppercase">
+                  {{item.animal.tagNo}}
+                </strong>
+              </h4>
+            </ion-text>
+
+            <p>
+              <ion-text>
+                <ion-icon name="time-outline"></ion-icon>
+              </ion-text>
+              {{item?.startedAt | daysSince}}
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon color="warning" name="radio-sharp"></ion-icon>
+              </ion-text>
+              <ion-label [color]="+item.heatStrength >= 75 ? 'success' : 'warning'">
+                {{item?.heatStrength+"%"}}
+              </ion-label>
+            </p>
+
+            <div class="range-container" *ngIf="item.inseminationWindow?.startedAt" style="width: 100%;">
+              <div class="timeline-meta">
+                <span class="time-txt">{{ +item.inseminationWindow.startedAt | date: 'd MMM, h:mm a' }}</span>
+                <span class="countdown-badge">{{ getOptimalRemainingText(item.inseminationWindow) }}</span>
+                <span class="time-txt">{{ +item.inseminationWindow.endedAt | date: 'd MMM, h:mm a' }}</span>
+              </div>
+
+              <div class="range-interactive-wrapper">
+                <div class="hover-zone track-hover-layer has-tooltip">
+                  <div class="tooltip-box">
+                    <strong>Window Timeline:</strong><br>
+                    {{ getWindowStartEndText(item.inseminationWindow).startText }}<br>
+                    {{ getWindowStartEndText(item.inseminationWindow).endText }}
+                  </div>
+                </div>
+
+                <div class="hover-zone optimal-hover-layer has-tooltip"
+                  [style.left]="getOptimalZoneStyles(item.inseminationWindow).left"
+                  [style.width]="getOptimalZoneStyles(item.inseminationWindow).width">
+                  <div class="tooltip-box optimal-tooltip">
+                    {{ getOptimalHoverText(item.inseminationWindow) }}
+                  </div>
+                </div>
+
+                <ion-range [dualKnobs]="true" [disabled]="true" [min]="+item.inseminationWindow.startedAt"
+                  [max]="+item.inseminationWindow.endedAt"
+                  [value]="{ lower: +item.inseminationWindow.optimalStartedAt, upper: +item.inseminationWindow.optimalEndedAt }"
+                  class="optimal-range-slider">
+                </ion-range>
+                <ion-icon style="margin-bottom: 10px;" size="medium" class="live-indicator-track" [style.left.%]="getCurrentProgress(item.inseminationWindow)"
+                  name="timer-outline" color="dark"></ion-icon>
+              </div>
+            </div>
+
+            <ion-text>
+              <strong>
+                Inseminated ?
+              </strong>
+            </ion-text>
+            <ion-buttons class="ion-margin-vertical">
+              <ion-button size="small" fill="solid" color="light"
+                (click)="openHeatModal('confirm', item); $event.stopPropagation()">
+                <ion-label>Yes</ion-label>
+              </ion-button>
+              <ion-button size="small" fill="solid" color="dark"
+                (click)="openHeatModal('cancel', item); $event.stopPropagation()">
+                <ion-label>No</ion-label>
+              </ion-button>
+            </ion-buttons>
+
+          </ion-col>
+        </ion-row>
+
+
+      </ion-grid>
+    </ion-item>
+    }
+
+    @else if (!isLoading() && results().length === 0) {
+    <ion-item class="ion-padding" style="margin: auto;">
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon slot="icon-only" name="alert-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>
+        {{ 'list.placeholder' | translate }}
+      </ion-title>
+    </ion-item>
+    }
+
+  </ion-list>
+
+  <ion-modal #heatfilter trigger="open-heat-filter">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="heatfilter.dismiss()">
+              <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+
+          <ion-title>{{ 'Apply Filters' | translate }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+
+        <ion-item-group>
+
+          <ion-item-divider>
+            <ion-label>
+              <strong>Presets</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+            <ion-item lines="none">
+              <ion-buttons slot="start">
+                <ion-button [fill]="activeRange === -1 ? 'solid' : 'outline'" (click)="setRange(-1)">{{
+                  'All' | translate }}</ion-button>
+                <ion-button [fill]="activeRange === 0.033 ? 'solid' : 'outline'" (click)="setRange(0.033)">1 {{ 'Day' |
+                  translate }}</ion-button>
+                <ion-button [fill]="activeRange === 0.25 ? 'solid' : 'outline'" (click)="setRange(0.25)">7 {{ 'Days' |
+                  translate }}</ion-button>
+                <ion-button [fill]="activeRange === 1 ? 'solid' : 'outline'" (click)="setRange(1)">1 {{
+                  'Month' | translate }}</ion-button>
+              </ion-buttons>
+              <ion-buttons slot="end">
+                <ion-button fill="clear" color="warning" (click)="clearDates()">{{ 'Reset' | translate}}</ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+
+          <ion-item-divider *ngIf="activeRange !== -1">
+            <ion-label>
+              <strong>Custom Date</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+
+            <ion-item lines="none" *ngIf="activeRange !== -1">
+              <ion-grid>
+                <ion-row>
+                  <ion-col>
+                    <ion-buttons class="ion-float-start">
+                      <ion-label>From :</ion-label>
+                      <ion-datetime-button datetime="start_dt"></ion-datetime-button>
+                    </ion-buttons>
+
+                    <ion-buttons class="ion-float-end">
+                      <ion-label>Till :</ion-label>
+                      <ion-datetime-button datetime="end_dt"></ion-datetime-button>
+                    </ion-buttons>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+            </ion-item>
+          </ion-list>
+
+        </ion-item-group>
+
+      </ion-content>
+      <ion-footer>
+        <ion-toolbar class="ion-padding">
+          <ion-buttons slot="end">
+            <ion-button fill="solid" (click)="heatfilter.dismiss()">
+              <ion-label>Apply</ion-label>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="start_dt" presentation="date" [(ngModel)]="filter.startDate" [showDefaultButtons]="true"
+        (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="end_dt" presentation="date" [(ngModel)]="filter.endDate" [showDefaultButtons]="true"
+        [min]="filter.startDate" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer>

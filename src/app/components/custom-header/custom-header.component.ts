@@ -1,68 +1,137 @@
-import { CommonModule } from "@angular/common";
-import {
-  Component,
-  Output,
-  EventEmitter,
-  Input,
-  ViewChild,
-} from "@angular/core";
-import { FormsModule, ReactiveFormsModule } from "@angular/forms";
-import { RouterModule } from "@angular/router";
-import { TranslateModule } from "@ngx-translate/core";
-import { IonHeader, IonToolbar, IonProgressBar, IonButtons, IonButton, IonIcon, IonTitle, IonItem, IonSearchbar } from "@ionic/angular/standalone";
+// import { Component, input, output } from '@angular/core';
+// import { SharedImportsModule } from 'src/app/shared/shared-imports';
+// import { IonProgressBar, IonBackButton } from "@ionic/angular/standalone";
+
+// @Component({
+//   selector: "app-custom-header",
+//   imports: [IonBackButton, IonProgressBar,  SharedImportsModule],
+//   templateUrl: "./custom-header.component.html",
+//   styleUrls: ["./custom-header.component.scss"],
+//   standalone: true,
+// })
+// export class CustomHeaderComponent {
+//   // @ViewChild("searchbar", { static: false }) searchbar: IonSearchbar | any;
+
+//   // @Input() isLoading: boolean;
+//   // @Input() title: string;
+//   // @Input() searchTerm: string;
+//   // @Input() count: string;
+
+//   // @Output() close = new EventEmitter();
+//   // @Output() clear = new EventEmitter();
+//   // @Output() search = new EventEmitter();
+
+//   // isSearchbarVisible = false;
+
+//   // searchToggle: boolean;
+
+//   // constructor() {}
+
+//   // goBack() {
+//   //   this.close.emit();
+//   // }
+
+//   // clearInput() {
+//   //   this.clear.emit();
+//   // }
+
+//   // searchItem() {
+//   //   this.search.emit();
+//   // }
+
+//   // toggleSearch() {
+//   //   this.searchToggle = !this.searchToggle;
+//   // }
+
+//   //   onClickSearchIcon(){
+//   //   if(this.isSearchbarVisible === false){
+//   //     this.isSearchbarVisible = true;
+//   //   }
+//   // }
+
+//   // onCloseSearchbar(){
+//   //   if(this.isSearchbarVisible === true){
+//   //     this.isSearchbarVisible = false;
+//   //   }
+//   // }
+
+
+//   // --- Inputs ---
+//   title = input<string>('Animals');
+//   isSearchbarVisible = input<boolean>(false);
+//   isLoading = input<boolean>(false);
+//   searchPlaceholder = input<string>('Search Animals');
+  
+//   // Pass an object with the search filter if your parent needs an initial value, otherwise this can be minimal
+//   searchValue = input<string>(''); 
+  
+//   // --- Outputs ---
+//   searchClose = output<void>();
+//   searchOpen = output<void>();
+  
+//   // Emit the CustomEvent from ionInput directly to the parent page
+//   searchEvent = output<CustomEvent>();
+
+//   // --- Methods ---
+//   onClickSearchIcon() {
+//     this.searchOpen.emit();
+//   }
+
+//   onCloseSearchbar() {
+//     this.searchClose.emit();
+//   }
+
+//   handleInput(event: any) {
+//     this.searchEvent.emit(event);
+//   }
+
+// }
+
+
+
+import { Component, inject, input, output, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule, NavController } from '@ionic/angular';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
+  selector: 'app-custom-header',
+  templateUrl: './custom-header.component.html',
+  styleUrls: ['./custom-header.component.scss'],
   standalone: true,
-  selector: "app-custom-header",
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    TranslateModule,
-    RouterModule,
-    IonHeader,
-    IonToolbar,
-    IonProgressBar,
-    IonButtons,
-    IonButton,
-    IonIcon,
-    IonTitle,
-    IonItem,
-    IonSearchbar
-],
-  inputs: ["title", "searchTerm", "searchToggle"],
-  templateUrl: "./custom-header.component.html",
-  styleUrls: ["./custom-header.component.scss"],
+  imports: [CommonModule, IonicModule, TranslateModule]
 })
 export class CustomHeaderComponent {
-  @ViewChild("searchbar", { static: false }) searchbar: IonSearchbar | any;
+  // --- Inputs ---
+  title = input<string>('Animals');
+  isLoading = input<boolean>(false);
+  searchPlaceholder = input<string>('Search Animals');
+  searchValue = input<string>(''); 
+  
+  // --- Outputs (Only the search event bubbles up to the specific page API) ---
+  searchEvent = output<CustomEvent>();
 
-  @Input() isLoading: boolean;
-  @Input() title: string;
-  @Input() searchTerm: string;
-  @Input() count: string;
-
-  @Output() close = new EventEmitter();
-  @Output() clear = new EventEmitter();
-  @Output() search = new EventEmitter();
-
-  searchToggle: boolean;
-
-  constructor() {}
+  // --- Internal Component State ---
+  isSearchbarVisible = signal<boolean>(false);
+  private navCtrl = inject(NavController);
 
   goBack() {
-    this.close.emit();
+    // Navigates back while letting Ionic fire ionViewWillEnter on the target view
+    this.navCtrl.back(); 
   }
 
-  clearInput() {
-    this.clear.emit();
+  // --- Methods managed entirely by this reusable component ---
+  onClickSearchIcon() {
+    this.isSearchbarVisible.set(true);
   }
 
-  searchItem() {
-    this.search.emit();
+  onCloseSearchbar() {
+    this.isSearchbarVisible.set(false);
+    // Optionally clear out the search string when closing
+    this.searchEvent.emit({ detail: { value: '' } } as CustomEvent);
   }
 
-  toggleSearch() {
-    this.searchToggle = !this.searchToggle;
+  handleInput(event: any) {
+    this.searchEvent.emit(event);
   }
 }

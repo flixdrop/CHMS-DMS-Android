@@ -1,0 +1,790 @@
+<!-- <ion-header>
+  <ion-toolbar>
+    <ion-back-button slot="start" icon="chevron-back" defaultHref="" text="" color="medium"></ion-back-button>
+    <ion-title>
+      {{ 'Animals No.' | translate }}
+      <strong>
+        {{tagNo.toUpperCase()}}
+      </strong>
+    </ion-title>
+    @if (isLoading) {
+    <ion-progress-bar type="indeterminate" name="lines-sharp"></ion-progress-bar>
+    }    
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true" [scrollEvents]="true" class="ion-padding-vertical">
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="albums" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Summary
+    </ion-title>
+  </ion-toolbar>
+  <ion-card class="ion-padding"
+    style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; background: radial-gradient(circle at top left, #ffa64d 0%, #ff6600 100%);">
+
+    <ion-chip
+      style="width: 100%; padding: 1rem; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 1rem;"
+      color="none">
+
+      @if (animal?.lastHealth) {
+      <ion-label color="light">
+        <h2>Last Health</h2>
+        <h2><strong>Health Index : {{ animal?.lastHealth?.healthIndex}}</strong></h2>
+        <h2><strong>{{ animal?.lastHealth?.occurredAt | date}},</strong>
+          <sub> {{ animal?.lastHealth?.daysAgo}}</sub>
+        </h2>
+      </ion-label>
+      }
+
+      @if (animal?.lastHeat) {
+      <ion-label color="light">
+        <h2>Last Heat</h2>
+        <h2><strong>Heat Intensity : {{ animal?.lastHeat?.heatStrength}} %</strong></h2>
+        <h2><strong>{{ animal?.lastHeat?.occurredAt | date}},</strong>
+          <sub> {{ animal?.lastHeat?.daysAgo}}</sub>
+        </h2>
+      </ion-label>
+      }
+
+      @if (animal?.lastInsemination) {
+      <ion-label color="light">
+        <h2>Last Insemination</h2>
+        <h2><strong>{{ animal?.lastInsemination?.occurredAt | date}},</strong>
+          <sub> {{ animal?.lastInsemination?.daysAgo}}</sub>
+        </h2>
+      </ion-label>
+      }
+    </ion-chip>
+
+
+  </ion-card>
+
+  <ion-toolbar *ngIf="isHealthActive(animal?.lastHealth)">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="bar-chart" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Animal Behaviours
+    </ion-title>
+  </ion-toolbar>
+
+  <div style="display: flex; align-items: center; justify-content: center;" *ngIf="isHealthActive(animal?.lastHealth)">
+
+    <div style="display: flex; flex-wrap: wrap; padding: 1rem;">
+      <ng-container *ngIf="animal?.lastHealth?.abnormalBehaviors && animal?.lastHealth?.abnormalBehaviors.length > 0">
+        <ion-chip *ngFor="let behavior of animal?.lastHealth?.abnormalBehaviors" color="danger">
+          <ion-label><strong style="text-transform: capitalize !important;">{{ behavior.toLowerCase()
+              }}</strong></ion-label>
+          <ion-icon name="alert"></ion-icon>
+        </ion-chip>
+      </ng-container>
+
+      <ng-container
+        *ngIf="animal?.lastHealth?.recoveredAbnormalBehaviors && animal?.lastHealth?.recoveredAbnormalBehaviors.length > 0">
+        <ion-chip *ngFor="let behavior of animal?.lastHealth?.recoveredAbnormalBehaviors" color="success">
+          <ion-label><strong style="text-transform: capitalize !important;">{{ behavior.toLowerCase()
+              }}</strong></ion-label>
+          <ion-icon name="checkmark"></ion-icon>
+        </ion-chip>
+      </ng-container>
+
+      <span
+        *ngIf="(!animal?.lastHealth?.abnormalBehaviors || animal?.lastHealth?.abnormalBehaviors.length === 0) && 
+                           (!animal?.lastHealth?.recoveredAbnormalBehaviors || animal?.lastHealth?.recoveredAbnormalBehaviors.length === 0)">
+        -
+      </span>
+    </div>
+
+  </div>
+
+  <ion-toolbar *ngIf="isWindowActive(animal?.lastHeat?.inseminationWindow)">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="timer-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Optimal Insemination Window
+    </ion-title>
+  </ion-toolbar>
+
+  <div style="display: flex; align-items: center; justify-content: center;"
+    *ngIf="isWindowActive(animal?.lastHeat?.inseminationWindow)">
+
+    <div class="range-container" *ngIf="animal?.lastHeat?.inseminationWindow?.startedAt">
+      <div class="timeline-meta">
+        <span class="time-txt">{{ +animal?.lastHeat?.inseminationWindow.startedAt | date: 'd MMM, h:mm a' }}</span>
+        <span class="countdown-badge">{{ getOptimalRemainingText(animal?.lastHeat?.inseminationWindow) }}</span>
+        <span class="time-txt">{{ +animal?.lastHeat?.inseminationWindow.endedAt | date: 'd MMM, h:mm a' }}</span>
+      </div>
+
+      <div class="range-interactive-wrapper">
+        <div class="hover-zone track-hover-layer has-tooltip">
+          <div class="tooltip-box">
+            <strong>Window Timeline:</strong><br>
+            {{ getWindowStartEndText(animal?.lastHeat?.inseminationWindow).startText }}<br>
+            {{ getWindowStartEndText(animal?.lastHeat?.inseminationWindow).endText }}
+          </div>
+        </div>
+
+        <div class="hover-zone optimal-hover-layer has-tooltip"
+          [style.left]="getOptimalZoneStyles(animal?.lastHeat?.inseminationWindow).left"
+          [style.width]="getOptimalZoneStyles(animal?.lastHeat?.inseminationWindow).width">
+          <div class="tooltip-box optimal-tooltip">
+            {{ getOptimalHoverText(animal?.lastHeat?.inseminationWindow) }}
+          </div>
+        </div>
+
+        <ion-range [dualKnobs]="true" [disabled]="true" [min]="+animal?.lastHeat?.inseminationWindow.startedAt"
+          [max]="+animal?.lastHeat?.inseminationWindow.endedAt"
+          [value]="{ lower: +animal?.lastHeat?.inseminationWindow.optimalStartedAt, upper: +animal?.lastHeat?.inseminationWindow.optimalEndedAt }"
+          color="success" class="optimal-range-slider">
+        </ion-range>
+        <ion-icon size="large" class="live-indicator-track"
+          [style.left.%]="getCurrentProgress(animal?.lastHeat?.inseminationWindow)" name="pin" color="dark"></ion-icon>
+      </div>
+    </div>
+
+  </div>
+
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="easel" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Activity Graph
+    </ion-title>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="time-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-segment [scrollable]="true" [value]="selectedPreset">
+      <ion-segment-button [class.active-btn]="selectedPreset === '1day'" value="1day" (click)="onPresetChange('1day')">
+        <strong style="text-transform: capitalize;">
+          1 day
+        </strong>
+      </ion-segment-button>
+      <ion-segment-button [class.active-btn]="selectedPreset === '7days'" value="7days"
+        (click)="onPresetChange('7days')">
+        <strong style="text-transform: capitalize;">
+          7 days
+        </strong>
+      </ion-segment-button>
+      <ion-segment-button [class.active-btn]="selectedPreset === '30days'" value="30days"
+        (click)="onPresetChange('30days')">
+        <strong style="text-transform: capitalize;">
+          30 days
+        </strong>
+      </ion-segment-button>
+    </ion-segment>
+
+  </ion-toolbar>
+
+  <div class="custom-chart-legends-grid">
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[0]" (click)="toggleDataset(0)">
+      <span class="legend-indicator" style="background-color: #72A603;"></span>
+      <span class="legend-title-text">Heat</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[1]" (click)="toggleDataset(1)">
+      <span class="legend-indicator" style="background-color: #D90404;"></span>
+      <span class="legend-title-text">Health</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[2]" (click)="toggleDataset(2)">
+      <span class="legend-indicator" style="background-color: #DA22FF;"></span>
+      <span class="legend-title-text">Rumination</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[3]" (click)="toggleDataset(3)">
+      <span class="legend-indicator" style="background-color: #101820;"></span>
+      <span class="legend-title-text">Feeding</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[4]" (click)="toggleDataset(4)">
+      <span class="legend-indicator" style="background-color: #ff6319;"></span>
+      <span class="legend-title-text">Resting</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[5]" (click)="toggleDataset(5)">
+      <span class="legend-indicator" style="background-color: #996633;"></span>
+      <span class="legend-title-text">Other</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[6]" (click)="toggleDataset(6)">
+      <span class="legend-indicator" style="background-color: #0039a6;"></span>
+      <span class="legend-title-text">Standing</span>
+    </div>
+  </div>
+
+    <div class="chart-section" style="width: 100%; position: relative; margin-bottom: 2rem;">
+    <canvas #myChartCanvas id="myChart" style="width: 100%; height: 100%;"></canvas>
+  </div>
+
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="beaker" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Milk Production History </ion-title>
+  </ion-toolbar>
+
+  <div style="position: relative; width: 100%; aspect-ratio: 1/1; background: var(--ion-color-light); padding: 2rem 0;"
+    [hidden]="isLoading || selectedSegment !== 'summary'" >
+    <canvas #milkingChartCanvas></canvas>
+  </div>
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="library" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      History
+    </ion-title>
+
+  </ion-toolbar>
+
+  @if (allEvents.length === 0) {
+  <ion-item lines="none">
+    <ion-chip class="ion-padding" color="light">
+      <ion-icon name="alert-circle"></ion-icon>
+      <ion-label color="medium">
+        <strong>
+          No history available.
+        </strong>
+      </ion-label>
+    </ion-chip>
+  </ion-item>
+
+  }
+
+
+  @if (allEvents.length > 0) {
+
+  <ion-item *ngFor="let event of (showAllEvents ? allEvents : (allEvents | slice:0:5))" lines="full" button>
+    <img slot="start" [src]="event?.icon" style="height: 50px; width: 50px; aspect-ratio: 1/1;" />
+
+    <ion-label>
+      <h3>
+        <strong>{{ event.customTitle }}</strong>
+      </h3>
+      <ion-note *ngIf="event.__typename === 'Heat'">
+        Heat Intensity : {{ event.heatStrength }}%
+      </ion-note>
+      <ion-note *ngIf="event.__typename === 'Health'">
+        Health Index Score: {{ event.healthIndex }}%
+      </ion-note>
+    </ion-label>
+
+    <ion-label style="text-align: end;" slot="end">
+      <ion-button size="small" fill="clear" color="{{event.isActive === true ? 'success':'danger'}}">
+        <ion-label>
+          <strong style="text-transform: capitalize;">
+            {{event.isActive === true ? 'Active':'Inactive'}}
+          </strong>
+        </ion-label>
+      </ion-button>
+      <br />
+      <i>
+        <strong>
+          {{ event?.occurredAt | date: 'MMM d, y, h:mm a' }}
+        </strong>
+      </i>
+      <br />
+      <sub>
+        {{ event?.daysAgo }}
+      </sub>
+    </ion-label>
+  </ion-item>
+  }
+
+  @if (allEvents.length > 5) {
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleShowMore()" color="secondary" fill="clear" size="small" shape="round">
+        <ion-label>{{ showAllEvents ? 'Show less' : 'Show more' }}</ion-label>
+        <ion-icon [name]="showAllEvents ? 'arrow-up' : 'arrow-down'" slot="end"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  }
+
+  <ion-popover trigger="custom-date-popover-trigger" triggerAction="click" dismissOnSelect="false">
+    <ng-template>
+      <div class="p-3 custom-popover-date-container" style="background-color: #ffffff; width: 320px;">
+        <h6 class="m-0 mb-3" style="font-weight: bold; color: #1E293B;">Select Custom Ranges</h6>
+        <div class="mb-3">
+          <label
+            style="font-size: 0.75rem; font-weight: 700; color: #64748B; display: block; margin-bottom: 0.4rem;">START
+            DATE</label>
+          <ion-datetime-button datetime="popover-start-date-picker"></ion-datetime-button>
+        </div>
+        <div class="mb-3">
+          <label
+            style="font-size: 0.75rem; font-weight: 700; color: #64748B; display: block; margin-bottom: 0.4rem;">END
+            DATE</label>
+          <ion-datetime-button datetime="popover-end-date-picker"></ion-datetime-button>
+        </div>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime id="popover-start-date-picker" presentation="date" [preferWheel]="false" size="cover"
+              [max]="maxStartDate" [value]="startDate.toISOString()"
+              (ionChange)="onDateRangeChange(true, $event.detail.value)">
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime id="popover-end-date-picker" presentation="date" [preferWheel]="false" size="cover"
+              [max]="fixedMaxDate" [value]="endDate.toISOString()"
+              (ionChange)="onDateRangeChange(false, $event.detail.value)">
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </div>
+    </ng-template>
+  </ion-popover>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar></ion-toolbar>
+</ion-footer> -->
+
+
+
+
+
+<ion-header>
+  <ion-toolbar>
+    <ion-back-button slot="start" icon="chevron-back" defaultHref="" text="" color="medium"></ion-back-button>
+    <ion-title>
+      {{ 'Animals No.' | translate }}
+      <strong>
+        {{tagNo.toUpperCase()}}
+      </strong>
+    </ion-title>
+    @if (isLoading) {
+    <ion-progress-bar type="indeterminate" name="lines-sharp"></ion-progress-bar>
+    }
+  </ion-toolbar>
+</ion-header>
+<ion-content [fullscreen]="true" [scrollEvents]="true" class="ion-padding-vertical">
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="albums" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Summary
+    </ion-title>
+  </ion-toolbar>
+  <ion-card class="ion-padding"
+    style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; background: radial-gradient(circle at top left, #ffa64d 0%, #ff6600 100%);">
+
+    <ion-chip
+      style="width: 100%; padding: 1rem; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 1rem;"
+      color="none">
+
+      @if (animal?.lastHealth) {
+      <ion-label color="light">
+        <h2>Last Health</h2>
+        <h2><strong>Health Index : {{ animal?.lastHealth?.healthIndex}}</strong></h2>
+        <h2><strong>{{ animal?.lastHealth?.occurredAt | date}},</strong>
+          <sub> {{ animal?.lastHealth?.daysAgo}}</sub>
+        </h2>
+      </ion-label>
+      }
+
+      @if (animal?.lastHeat) {
+      <ion-label color="light">
+        <h2>Last Heat</h2>
+        <h2><strong>Heat Intensity : {{ animal?.lastHeat?.heatStrength}} %</strong></h2>
+        <h2><strong>{{ animal?.lastHeat?.occurredAt | date}},</strong>
+          <sub> {{ animal?.lastHeat?.daysAgo}}</sub>
+        </h2>
+      </ion-label>
+      }
+
+      @if (animal?.lastInsemination) {
+      <ion-label color="light">
+        <h2>Last Insemination</h2>
+        <h2><strong>{{ animal?.lastInsemination?.occurredAt | date}},</strong>
+          <sub> {{ animal?.lastInsemination?.daysAgo}}</sub>
+        </h2>
+      </ion-label>
+      }
+    </ion-chip>
+
+
+  </ion-card>
+
+  <ion-toolbar *ngIf="isHealthActive(animal?.lastHealth)">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="bar-chart" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Animal Behaviours
+    </ion-title>
+  </ion-toolbar>
+
+  <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; padding: 1rem 0;" *ngIf="isHealthActive(animal?.lastHealth)">
+
+    <div style="display: flex; flex-wrap: wrap; padding: 1rem;">
+      <ng-container *ngIf="animal?.lastHealth?.abnormalBehaviors && animal?.lastHealth?.abnormalBehaviors.length > 0">
+        <ion-chip *ngFor="let behavior of animal?.lastHealth?.abnormalBehaviors" color="danger">
+          <ion-label><strong style="text-transform: capitalize !important;">{{ behavior.toLowerCase()
+              }}</strong></ion-label>
+          <ion-icon name="alert"></ion-icon>
+        </ion-chip>
+      </ng-container>
+
+      <ng-container
+        *ngIf="animal?.lastHealth?.recoveredAbnormalBehaviors && animal?.lastHealth?.recoveredAbnormalBehaviors.length > 0">
+        <ion-chip *ngFor="let behavior of animal?.lastHealth?.recoveredAbnormalBehaviors" color="success">
+          <ion-label><strong style="text-transform: capitalize !important;">{{ behavior.toLowerCase()
+              }}</strong></ion-label>
+          <ion-icon name="checkmark"></ion-icon>
+        </ion-chip>
+      </ng-container>
+
+      <span
+        *ngIf="(!animal?.lastHealth?.abnormalBehaviors || animal?.lastHealth?.abnormalBehaviors.length === 0) && 
+                           (!animal?.lastHealth?.recoveredAbnormalBehaviors || animal?.lastHealth?.recoveredAbnormalBehaviors.length === 0)">
+        -
+      </span>
+    </div>
+
+  </div>
+
+  <ion-toolbar *ngIf="isWindowActive(animal?.lastHeat?.inseminationWindow)">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="timer-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Optimal Insemination Window
+    </ion-title>
+  </ion-toolbar>
+
+  <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 1rem; padding: 1rem 0;"
+    *ngIf="isWindowActive(animal?.lastHeat?.inseminationWindow)">
+
+    <div class="range-container" *ngIf="animal?.lastHeat?.inseminationWindow?.startedAt">
+      <div class="timeline-meta">
+        <span class="time-txt">{{ +animal?.lastHeat?.inseminationWindow.startedAt | date: 'd MMM, h:mm a' }}</span>
+        <span class="countdown-badge">{{ getOptimalRemainingText(animal?.lastHeat?.inseminationWindow) }}</span>
+        <span class="time-txt">{{ +animal?.lastHeat?.inseminationWindow.endedAt | date: 'd MMM, h:mm a' }}</span>
+      </div>
+
+      <div class="range-interactive-wrapper">
+        <div class="hover-zone track-hover-layer has-tooltip">
+          <div class="tooltip-box">
+            <strong>Window Timeline:</strong><br>
+            {{ getWindowStartEndText(animal?.lastHeat?.inseminationWindow).startText }}<br>
+            {{ getWindowStartEndText(animal?.lastHeat?.inseminationWindow).endText }}
+          </div>
+        </div>
+
+        <div class="hover-zone optimal-hover-layer has-tooltip"
+          [style.left]="getOptimalZoneStyles(animal?.lastHeat?.inseminationWindow).left"
+          [style.width]="getOptimalZoneStyles(animal?.lastHeat?.inseminationWindow).width">
+          <div class="tooltip-box optimal-tooltip">
+            {{ getOptimalHoverText(animal?.lastHeat?.inseminationWindow) }}
+          </div>
+        </div>
+
+        <ion-range [dualKnobs]="true" [disabled]="true" [min]="+animal?.lastHeat?.inseminationWindow.startedAt"
+          [max]="+animal?.lastHeat?.inseminationWindow.endedAt"
+          [value]="{ lower: +animal?.lastHeat?.inseminationWindow.optimalStartedAt, upper: +animal?.lastHeat?.inseminationWindow.optimalEndedAt }"
+          color="success" class="optimal-range-slider">
+        </ion-range>
+        <!-- <ion-icon size="large" class="live-indicator-track"
+          [style.left.%]="getCurrentProgress(animal?.lastHeat?.inseminationWindow)" name="pin" color="dark"></ion-icon> -->
+           <ion-icon style="margin-bottom: 10px;" size="medium" class="live-indicator-track" [style.left.%]="getCurrentProgress(animal?.lastHeat?.inseminationWindow)"
+                  name="timer-outline" color="dark"></ion-icon>
+      </div>
+    </div>
+
+  </div>
+
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="easel" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Activity Graph
+    </ion-title>
+  </ion-toolbar>
+
+  <!-- Activity Chart Date Presets Segment -->
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="time-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-segment [scrollable]="true" [value]="selectedPreset" color="medium">
+      <ion-segment-button [class.active-btn]="selectedPreset === '1day'" value="1day" (click)="onPresetChange('1day')">
+        <strong style="text-transform: capitalize;">
+          1 day
+        </strong>
+      </ion-segment-button>
+      <ion-segment-button [class.active-btn]="selectedPreset === '7days'" value="7days"
+        (click)="onPresetChange('7days')">
+        <strong style="text-transform: capitalize;">
+          7 days
+        </strong>
+      </ion-segment-button>
+      <ion-segment-button [class.active-btn]="selectedPreset === '30days'" value="30days"
+        (click)="onPresetChange('30days')">
+        <strong style="text-transform: capitalize;">
+          30 days
+        </strong>
+      </ion-segment-button>
+    </ion-segment>
+
+  </ion-toolbar>
+
+  <div class="custom-chart-legends-grid">
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[0]" (click)="toggleDataset(0)">
+      <span class="legend-indicator" style="background-color: #72A603;"></span>
+      <span class="legend-title-text">Heat</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[1]" (click)="toggleDataset(1)">
+      <span class="legend-indicator" style="background-color: #D90404;"></span>
+      <span class="legend-title-text">Health</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[2]" (click)="toggleDataset(2)">
+      <span class="legend-indicator" style="background-color: #DA22FF;"></span>
+      <span class="legend-title-text">Rumination</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[3]" (click)="toggleDataset(3)">
+      <span class="legend-indicator" style="background-color: #101820;"></span>
+      <span class="legend-title-text">Feeding</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[4]" (click)="toggleDataset(4)">
+      <span class="legend-indicator" style="background-color: #ff6319;"></span>
+      <span class="legend-title-text">Resting</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[5]" (click)="toggleDataset(5)">
+      <span class="legend-indicator" style="background-color: #996633;"></span>
+      <span class="legend-title-text">Other</span>
+    </div>
+    <div class="legend-pill" [class.disabled-pill]="!activeDatasets[6]" (click)="toggleDataset(6)">
+      <span class="legend-indicator" style="background-color: #0039a6;"></span>
+      <span class="legend-title-text">Standing</span>
+    </div>
+  </div>
+
+  <div class="chart-section" style="width: 100%; position: relative; box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px; margin-bottom: 1rem; padding: 1rem 0;">
+    <canvas #myChartCanvas id="myChart" style="width: 100%; height: 100%;"></canvas>
+  </div>
+
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="beaker" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Milk Production History
+    </ion-title>
+  </ion-toolbar>
+
+  <!-- Milk Chart Dedicated Date Presets Segment -->
+  <!-- <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="time-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-segment [scrollable]="true" [value]="selectedMilkPreset">
+      <ion-segment-button [class.active-btn]="selectedMilkPreset === '7days'" value="7days" (click)="onMilkPresetChange('7days')">
+        <strong style="text-transform: capitalize;">
+          7 days
+        </strong>
+      </ion-segment-button>
+      <ion-segment-button [class.active-btn]="selectedMilkPreset === '30days'" value="30days" (click)="onMilkPresetChange('30days')">
+        <strong style="text-transform: capitalize;">
+          30 days
+        </strong>
+      </ion-segment-button>
+      <ion-segment-button [class.active-btn]="selectedMilkPreset === '90days'" value="90days" (click)="onMilkPresetChange('90days')">
+        <strong style="text-transform: capitalize;">
+          90 days
+        </strong>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar> -->
+
+  <ion-toolbar color="light">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="time-outline" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-segment [scrollable]="true" [value]="selectedMilkPreset" color="medium">
+      <ion-segment-button [class.active-btn]="selectedMilkPreset === '1day'" value="1day"
+        (click)="onMilkPresetChange('1day')">
+        <strong style="text-transform: capitalize;">
+          1 day
+        </strong>
+      </ion-segment-button>
+      <ion-segment-button [class.active-btn]="selectedMilkPreset === '7days'" value="7days"
+        (click)="onMilkPresetChange('7days')">
+        <strong style="text-transform: capitalize;">
+          7 days
+        </strong>
+      </ion-segment-button>
+      <ion-segment-button [class.active-btn]="selectedMilkPreset === '30days'" value="30days"
+        (click)="onMilkPresetChange('30days')">
+        <strong style="text-transform: capitalize;">
+          30 days
+        </strong>
+      </ion-segment-button>
+    </ion-segment>
+
+  </ion-toolbar>
+
+  <div style="position: relative; width: 100%; aspect-ratio: 1/1; background: var(--ion-color-light); padding: 2rem 0; box-shadow: rgba(0, 0, 0, 0.45) 0px 25px 20px -20px; margin-bottom: 1rem; padding: 1rem 0;">
+    <canvas #milkingChartCanvas></canvas>
+  </div>
+
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="library" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      History
+    </ion-title>
+
+  </ion-toolbar>
+
+  @if (allEvents.length === 0) {
+  <ion-item lines="none">
+    <ion-chip class="ion-padding" color="light">
+      <ion-icon name="alert-circle"></ion-icon>
+      <ion-label color="medium">
+        <strong>
+          No history available.
+        </strong>
+      </ion-label>
+    </ion-chip>
+  </ion-item>
+  }
+
+
+  @if (allEvents.length > 0) {
+
+  <ion-item *ngFor="let event of (showAllEvents ? allEvents : (allEvents | slice:0:5))" lines="full" button>
+    <img slot="start" [src]="event?.icon" style="height: 50px; width: 50px; aspect-ratio: 1/1;" />
+
+    <ion-label>
+      <h3>
+        <strong>{{ event.customTitle }}</strong>
+      </h3>
+      <ion-note *ngIf="event.__typename === 'Heat'">
+        Heat Intensity : {{ event.heatStrength }}%
+      </ion-note>
+      <ion-note *ngIf="event.__typename === 'Health'">
+        Health Index Score: {{ event.healthIndex }}%
+      </ion-note>
+    </ion-label>
+
+    <ion-label style="text-align: end;" slot="end">
+      <ion-button size="small" fill="clear" color="{{event.isActive === true ? 'success':'danger'}}">
+        <ion-label>
+          <strong style="text-transform: capitalize;">
+            {{event.isActive === true ? 'Active':'Inactive'}}
+          </strong>
+        </ion-label>
+      </ion-button>
+      <br />
+      <i>
+        <strong>
+          {{ event?.occurredAt | date: 'MMM d, y, h:mm a' }}
+        </strong>
+      </i>
+      <br />
+      <sub>
+        {{ event?.daysAgo }}
+      </sub>
+    </ion-label>
+  </ion-item>
+  }
+
+  @if (allEvents.length > 5) {
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="toggleShowMore()" color="secondary" fill="clear" size="small" shape="round">
+        <ion-label>{{ showAllEvents ? 'Show less' : 'Show more' }}</ion-label>
+        <ion-icon [name]="showAllEvents ? 'arrow-up' : 'arrow-down'" slot="end"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+  }
+
+  <ion-popover trigger="custom-date-popover-trigger" triggerAction="click" dismissOnSelect="false">
+    <ng-template>
+      <div class="p-3 custom-popover-date-container" style="background-color: #ffffff; width: 320px;">
+        <h6 class="m-0 mb-3" style="font-weight: bold; color: #1E293B;">Select Custom Ranges</h6>
+        <div class="mb-3">
+          <label
+            style="font-size: 0.75rem; font-weight: 700; color: #64748B; display: block; margin-bottom: 0.4rem;">START
+            DATE</label>
+          <ion-datetime-button datetime="popover-start-date-picker"></ion-datetime-button>
+        </div>
+        <div class="mb-3">
+          <label
+            style="font-size: 0.75rem; font-weight: 700; color: #64748B; display: block; margin-bottom: 0.4rem;">END
+            DATE</label>
+          <ion-datetime-button datetime="popover-end-date-picker"></ion-datetime-button>
+        </div>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime id="popover-start-date-picker" presentation="date" [preferWheel]="false" size="cover"
+              [max]="maxStartDate" [value]="startDate.toISOString()"
+              (ionChange)="onDateRangeChange(true, $event.detail.value)">
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
+        <ion-modal [keepContentsMounted]="true">
+          <ng-template>
+            <ion-datetime id="popover-end-date-picker" presentation="date" [preferWheel]="false" size="cover"
+              [max]="fixedMaxDate" [value]="endDate.toISOString()"
+              (ionChange)="onDateRangeChange(false, $event.detail.value)">
+            </ion-datetime>
+          </ng-template>
+        </ion-modal>
+      </div>
+    </ng-template>
+  </ion-popover>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar></ion-toolbar>
+</ion-footer>

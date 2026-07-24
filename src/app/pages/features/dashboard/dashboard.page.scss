@@ -1,0 +1,73 @@
+// /* Inside app-heat / app-health CSS files */
+// :host {
+// display: block;
+// width: 100%;
+// height: 100%;
+// }
+
+//   .parent {
+//     width: 100%;
+//     display: grid;
+//     grid-template-columns: repeat(5, 1fr);
+//     margin: 1rem auto !important;
+//     padding: 1rem !important;
+//     gap: 1rem;
+//   }
+
+//   .parent ion-item {
+//     width: 100%;
+//     display: flex;
+//     flex-direction: column;
+//     align-items: center;
+//     justify-content: center;
+//     --border-radius: 8px;
+//   }
+
+
+
+/* Ensure the total screen area flows or scrolls cleanly */
+.dashboard-scroll-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 2rem; /* Safe padding baseline at the bottom */
+}
+
+/* Your Metrics Card Layout Stays Clean */
+.parent {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  margin: 1rem auto !important;
+  padding: 0 1rem !important;
+  gap: 1rem;
+}
+
+.parent ion-item {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  --border-radius: 8px;
+}
+
+/* 📊 The Fixed Charts Layout Box */
+.charts-grid-panel {
+  display: grid;
+  grid-template-rows: repeat(2, 450px); /* Gives each tracking layout block an explicit physical height footprint */
+  gap: 1rem;
+  padding: 1rem;
+  width: 100%;
+}
+
+.chart-host-frame {
+  width: 70%;
+  height: 100%;
+  padding: 1rem;
+  // border-radius: 12px;
+  // background: var(--ion-card-background, #ffffff);
+  // box-shadow: rgba(0, 0, 0, 0.04) 0px 4px 16px;
+  overflow: hidden; /* Traps inner canvas scaling bugs cleanly */
+}

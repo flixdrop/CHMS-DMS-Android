@@ -1,0 +1,211 @@
+<!-- <ion-header>
+  <app-custom-header title="Milking" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <ion-toolbar>
+    <ion-title>
+      <strong>{{totalCount()}}</strong> {{totalCount() === 1 ? ' Animal': ' Animals' | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+
+      <ion-button color="medium" fill="clear" (click)="toggleSort('tagNo')">
+        <ion-label>Tag no.</ion-label>
+        <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline"
+          class="sort-placeholder-icon"></ion-icon>
+        <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+          class="sort-active-icon"></ion-icon>
+      </ion-button>
+      <ion-button color="medium" fill="clear" (click)="openDairyModal('create')">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list lines="true" *ngIf="!isLoading() && totalCount() > 0">
+
+    <ion-item class="ion-padding" lines="full"
+      *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      [routerLink]="['/', 'animals-insights', { id: item?.animal?.id, tagNo: item?.animal?.tagNo, deviceNo: item?.animal?.activeTag?.deviceNo }]"
+      button>
+
+      <ion-icon name="beaker" slot="start" style="width: 40px;"></ion-icon>
+
+      <div
+        style="width: 100% !important; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 8px;">
+
+        <ion-label>
+          <strong class="ion-text-uppercase">
+            {{item.animal.tagNo}}
+          </strong>
+        </ion-label>
+
+
+        <ion-label>
+          <strong>
+            <ion-icon name="cloud" color="secondary"></ion-icon>
+            {{ item.morningMilk }} Litres
+          </strong>
+        </ion-label>
+
+        <ion-label>
+          <strong>
+            <ion-icon name="partly-sunny" color="warning"></ion-icon>
+            {{ item.afternoonMilk }} Litres
+          </strong>
+        </ion-label>
+
+        <ion-label>
+          <strong>
+            <ion-icon name="cloudy-night" color="dark"></ion-icon>
+            {{ item.eveningMilk }} Litres
+          </strong>
+        </ion-label>
+
+        <ion-label color="medium" style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          <ion-icon name="scale-outline" style="margin-right: 8px;"></ion-icon> {{ item.totalMilk }} Litres
+        </ion-label>
+
+        <ion-label color="medium" style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          <ion-icon name="time-outline" style="margin-right: 8px;"></ion-icon> {{item?.occurredAt | utcToIst}}
+        </ion-label>
+
+      </div>
+    </ion-item>
+  </ion-list>
+
+  <ion-item class="ion-padding" lines="none" *ngIf="!isLoading() && results().length === 0">
+    <ion-chip class="ion-padding" color="light">
+      <ion-icon name="alert-circle"></ion-icon>
+      <ion-label color="medium">
+        <strong>
+          {{ 'list.placeholder' | translate }}
+        </strong>
+      </ion-label>
+    </ion-chip>
+  </ion-item>
+
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer> -->
+
+
+<ion-header>
+  <app-custom-header title="Milking" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <p class="ion-float-start">
+    <ion-title>
+      <strong>{{ totalCount() }}</strong> {{ totalCount() === 1 ? ' Animal' : ' Animals' | translate }}
+    </ion-title>
+  </p>
+    <ion-buttons class="ion-float-end">
+      <ion-button fill="clear" (click)="toggleSort('tagNo')">
+        <ion-label>Tag no.</ion-label>
+        <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline" class="sort-placeholder-icon">
+        </ion-icon>
+        <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+          class="sort-active-icon">
+        </ion-icon>
+      </ion-button>
+
+      <ion-button fill="clear" (click)="openDairyModal('create')">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    @if (!isLoading() && totalCount() > 0) {
+    <ion-item
+      *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      button>
+
+      <ion-thumbnail slot="start">
+        <ion-icon name="beaker" color="medium" style="font-size: 32px;"></ion-icon>
+      </ion-thumbnail>
+
+      <ion-grid>
+        <ion-row
+          [routerLink]="['/', 'animals-insights', { id: item?.animal?.id, tagNo: item?.animal?.tagNo, deviceNo: item?.animal?.activeTag?.deviceNo }]">
+          <ion-col>
+
+            <ion-text>
+              <h4>
+                <strong class="ion-text-uppercase">
+                  {{item.animal.tagNo}}
+                </strong>
+              </h4>
+            </ion-text>
+
+            <p>
+              <ion-text>
+                <ion-icon name="cloud" color="medium"></ion-icon>
+              </ion-text>
+              Morning: {{ item?.morningMilk }} Litres
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="partly-sunny" color="medium"></ion-icon>
+              </ion-text>
+              Afternoon: {{ item?.afternoonMilk }} Litres
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="cloudy-night" color="medium"></ion-icon>
+              </ion-text>
+              Evening: {{ item?.eveningMilk }} Litres
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="scale-outline"></ion-icon>
+              </ion-text>
+              Total: {{ item?.totalMilk }} Litres
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="time-outline"></ion-icon>
+              </ion-text>
+              {{ item?.occurredAt | utcToIst }}
+            </p>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </ion-item>
+    }
+    @else if (!isLoading() && results().length === 0) {
+    <ion-item class="ion-padding" style="margin: auto;">
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon slot="icon-only" name="alert-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>
+        {{ 'list.placeholder' | translate }}
+      </ion-title>
+    </ion-item>
+    }
+
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer>

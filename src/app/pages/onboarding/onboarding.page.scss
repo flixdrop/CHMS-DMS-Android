@@ -1,0 +1,54 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+/* FLEXBOX CONTAINER TO PREVENT SWIPER OVERLAP */
+.onboarding-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
+  /* Top Safe Area for notches */
+  // padding-top: max(16px, env(safe-area-inset-top));
+}
+
+/* SWIPER FLEX-GROW CONFIGURATION */
+.onboarding-swiper {
+  flex: 1;
+  /* Occupies only remaining space above footer */
+  width: 100%;
+  min-height: 0;
+  /* Prevents flex overflow bug in Safari/Chrome */
+
+  --swiper-pagination-bottom: 12px;
+  --swiper-theme-color: var(--ion-color-medium-shade);
+}
+
+.slide-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 10px;
+  height: 100%;
+  padding: 1rem 2rem;
+
+
+  .icon-bubble {
+    width: 100px;
+    height: 100px;
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    background: var(--ion-color-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+  }
+}

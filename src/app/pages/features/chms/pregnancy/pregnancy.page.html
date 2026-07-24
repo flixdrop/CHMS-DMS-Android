@@ -1,0 +1,219 @@
+<ion-header>
+  <app-custom-header title="Pregnancy" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <p class="ion-float-start">
+    <ion-title>
+      <strong>{{ totalCount() }}</strong> {{ totalCount() === 1 ? ' Animal' : ' Animals' | translate }}
+    </ion-title>
+  </p>
+    <ion-buttons class="ion-float-end">
+      <ion-button fill="clear" (click)="toggleSort('tagNo')">
+        <ion-label>Tag no.</ion-label>
+        <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline" class="sort-placeholder-icon">
+        </ion-icon>
+        <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+          class="sort-active-icon">
+        </ion-icon>
+      </ion-button>
+
+      <ion-button id="open-pregnancy-filter" fill="clear">
+        <ion-icon slot="icon-only" name="options-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    @if (!isLoading() && totalCount() > 0) {
+    <ion-item
+      *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      button>
+
+      <ion-thumbnail slot="start">
+        <img src="../../../../../assets/icons/pregnancy.png" />
+      </ion-thumbnail>
+
+      <ion-grid>
+        <ion-row
+          [routerLink]="['/', 'animals-insights', { id: item?.animal?.id, tagNo: item?.animal?.tagNo, deviceNo: item?.animal?.activeTag?.deviceNo }]">
+          <ion-col>
+            <ion-text>
+              <h4>
+                <strong class="ion-text-uppercase">
+                  {{item.animal.tagNo}}
+                </strong>
+              </h4>
+            </ion-text>
+
+            <p>
+              <ion-text>
+                <ion-icon name="timer-outline"></ion-icon>
+              </ion-text>
+              {{ item?.occurredAt | daysSince }}
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="checkmark-circle-outline"></ion-icon>
+              </ion-text>
+              Result: {{ item?.result }}
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon name="calendar-outline"></ion-icon>
+              </ion-text>
+              Expected Calving: {{ item.expectedCalvingDate | date: 'MMM d, y' }}
+            </p>
+
+            <ion-text>
+              <strong>
+                Is Calved ?
+              </strong>
+            </ion-text>
+            <ion-buttons class="ion-margin-vertical">
+              <ion-button size="small" fill="solid" color="light"
+                (click)="openCalvingModal('confirm', item); $event.stopPropagation()">
+                <ion-label>Yes</ion-label>
+              </ion-button>
+              <ion-button size="small" fill="solid" color="dark"
+                (click)="openCalvingModal('cancel', item); $event.stopPropagation()">
+                <ion-label>No</ion-label>
+              </ion-button>
+            </ion-buttons>
+
+          </ion-col>
+        </ion-row>
+
+      </ion-grid>
+    </ion-item>
+    }
+
+    @else if (!isLoading() && results().length === 0) {
+    <ion-item class="ion-padding" style="margin: auto;">
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon slot="icon-only" name="alert-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>
+        {{ 'list.placeholder' | translate }}
+      </ion-title>
+    </ion-item>
+    }
+ 
+  </ion-list>
+
+  <!-- Filter Modal -->
+  <ion-modal #pregnancyfilter trigger="open-pregnancy-filter">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="pregnancyfilter.dismiss()">
+              <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+
+          <ion-title>{{ 'Apply Filters' | translate }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="ion-padding">
+        <ion-item-group>
+          <ion-item-divider>
+            <ion-label>
+              <strong>Presets</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+            <ion-item lines="none">
+              <ion-buttons slot="start">
+                <ion-button [fill]="activeRange === -1 ? 'solid' : 'outline'" (click)="setRange(-1)">
+                  {{ 'All' | translate }}
+                </ion-button>
+                <ion-button [fill]="activeRange === 0.033 ? 'solid' : 'outline'" (click)="setRange(0.033)">
+                  1 {{ 'Day' | translate }}
+                </ion-button>
+                <ion-button [fill]="activeRange === 0.25 ? 'solid' : 'outline'" (click)="setRange(0.25)">
+                  7 {{ 'Days' | translate }}
+                </ion-button>
+                <ion-button [fill]="activeRange === 1 ? 'solid' : 'outline'" (click)="setRange(1)">
+                  1 {{ 'Month' | translate }}
+                </ion-button>
+              </ion-buttons>
+              <ion-buttons slot="end">
+                <ion-button fill="clear" color="warning" (click)="clearDates()">
+                  {{ 'Reset' | translate }}
+                </ion-button>
+              </ion-buttons>
+            </ion-item>
+          </ion-list>
+
+          <ion-item-divider *ngIf="activeRange !== -1">
+            <ion-label>
+              <strong>Custom Date</strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list lines="inset">
+            <ion-item lines="none" *ngIf="activeRange !== -1">
+              <ion-grid>
+                <ion-row>
+                  <ion-col>
+                    <ion-buttons class="ion-float-start">
+                      <ion-label>From :</ion-label>
+                      <ion-datetime-button datetime="start_dt"></ion-datetime-button>
+                    </ion-buttons>
+
+                    <ion-buttons class="ion-float-end">
+                      <ion-label>Till :</ion-label>
+                      <ion-datetime-button datetime="end_dt"></ion-datetime-button>
+                    </ion-buttons>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+
+            </ion-item>
+          </ion-list>
+        </ion-item-group>
+      </ion-content>
+
+      <ion-footer>
+        <ion-toolbar class="ion-padding">
+          <ion-buttons slot="end">
+            <ion-button fill="solid" (click)="pregnancyfilter.dismiss()">
+              <ion-label>Apply</ion-label>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <!-- Date Popovers -->
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="start_dt" presentation="date" [(ngModel)]="filter.startDate" [showDefaultButtons]="true"
+        (ionChange)="refresh()">
+      </ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="end_dt" presentation="date" [(ngModel)]="filter.endDate" [showDefaultButtons]="true"
+        [min]="filter.startDate" (ionChange)="refresh()">
+      </ion-datetime>
+    </ng-template>
+  </ion-popover>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer>

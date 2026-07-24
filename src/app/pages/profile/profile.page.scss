@@ -1,0 +1,33 @@
+ion-toggle {
+  padding: 12px;
+
+  --handle-width: 25px;
+  --handle-height: 25px;
+  --handle-max-height: auto;
+//   --handle-spacing: 6px;
+
+  contain: none;
+}
+
+ion-toggle::part(track),
+ion-toggle.toggle-checked::part(track) {
+  height: 25px;
+  width: 50px;
+
+  border-radius: 4px;
+  background: #ddd;
+
+  /* Required for iOS handle to overflow the height of the track */
+  overflow: visible;
+}
+
+ion-toggle::part(handle) {
+  background: var(--ion-color-medium);
+
+  border-radius: 4px;
+  box-shadow: none;
+}
+
+ion-toggle.toggle-checked::part(handle) {
+  background: var(--ion-color-secondary);
+}

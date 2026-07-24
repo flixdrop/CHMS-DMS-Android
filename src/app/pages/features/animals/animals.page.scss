@@ -1,0 +1,68 @@
+@use "../../../../assets/scss/custom-page.scss" as *;
+
+
+// /* Target the parent ion-thumbnail */
+// ion-thumbnail {
+//   /* Step 1: Prevent any overflow from the thumbnail itself */
+//   overflow: hidden;
+  
+//   /* Step 2: Flexbox ensures the icon is perfectly centered */
+//   display: flex;
+//   align-items: center;
+//   justify-content: center;
+// }
+
+// /* Style the custom container that holds the masked icon */
+// .cow-icon-container {
+//   /* Step 3: Define the desired icon color (this is where you make it lighter) */
+//   background-color: #666; /* Examples: #999, #666, lightgray, or a themed variable */
+
+//   /* Step 4: Map the SVG path to the mask */
+//   -webkit-mask-image: url('../../../../assets/icons/individual-cow.svg');
+//   mask-image: url('../../../../assets/icons/individual-cow.svg');
+
+//   /* Step 5: Ensure the mask doesn't repeat and is centered */
+//   -webkit-mask-repeat: no-repeat;
+//   mask-repeat: no-repeat;
+//   -webkit-mask-position: center;
+//   mask-position: center;
+
+//   /* Step 6: Critically, make the mask contain within this container */
+//   -webkit-mask-size: contain;
+//   mask-size: contain;
+
+//   /* Step 7: Size this container, which will force the mask to scale down */
+//   /* This ensures the icon stays inside the ion-thumbnail boundaries. */
+//   width: 90%;  /* Slightly smaller than 100% gives nice padding */
+//   height: 90%; /* Also slightly smaller for visual balance */
+// }
+
+
+ion-thumbnail {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cow-icon-container {
+  /* 1. Make it a nice brownish color */
+  /* Try #8B4513 (Saddle Brown) or #a67c52 for a lighter, softer brown */
+  background-color: #8B4513; 
+
+  /* 2. Flip it horizontally to face right */
+  transform: scaleX(-1);
+
+  /* Keeps your existing masking setup */
+  -webkit-mask-image: url('../../../../assets/icons/individual-cow.svg');
+  mask-image: url('../../../../assets/icons/individual-cow.svg');
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  
+  width: 90%;  
+  height: 90%; 
+}

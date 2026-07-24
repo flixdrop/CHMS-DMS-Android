@@ -1,0 +1,134 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      {{ (type === 'create' ? 'Register Telemetry Node' : type === 'edit' ? 'Modify Device Profile' : 'Decommission Hardware') | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="closeModal()" [disabled]="submitting()">
+        <ion-label><strong>{{ 'Close' | translate }}</strong></ion-label>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form *ngIf="deviceForm" [formGroup]="deviceForm" (ngSubmit)="onSubmit()">
+    <ion-list lines="inset">
+      
+      <ion-item>
+        <ion-input labelPlacement="stacked" type="text" formControlName="deviceNo" placeholder="{{ 'e.g. 61C2' | translate }}">
+          <div slot="label">{{ 'Hardware Serial Identifier / Tag No *' | translate }}</div>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input labelPlacement="stacked" type="text" formControlName="manufacturer" placeholder="{{ 'e.g. DATAMARS' | translate }}">
+          <div slot="label">{{ 'Hardware Manufacturer Vendor' | translate }}</div>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-select interface="popover" labelPlacement="stacked" formControlName="type">
+          <div slot="label">{{ 'Telemetry Node Form Factor *' | translate }}</div>
+          <ion-select-option value="COLLAR">{{ 'Smart IoT Collar Collar' | translate }}</ion-select-option>
+          <ion-select-option value="EAR_TAG">{{ 'Digital Smart Ear Tag' | translate }}</ion-select-option>
+          <ion-select-option value="ROUTER">{{ 'Base Station Gateway Routers' | translate }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <div class="ion-w-100 ion-padding-top ion-padding-bottom">
+          <div class="stacked-label-fallback ion-margin-bottom">{{ 'Structural Organizational Assignment *' | translate }}</div>
+          <ion-button id="open-device-farm-trigger" expand="block" color="medium" fill="outline" style="text-transform: none; height: 44px;" [disabled]="type === 'delete' || type === 'edit'">
+            <ion-icon slot="start" name="business-outline"></ion-icon>
+            {{ getSelectedFarmLabel() | translate }}
+          </ion-button>
+          
+          <ion-popover trigger="open-device-farm-trigger" #farmPopover class="searchable-selection-popover" interface="popover">
+            <ng-template>
+              <ion-header class="ion-no-border">
+                <ion-toolbar color="light">
+                  <ion-searchbar placeholder="{{ 'Search available entities...' | translate }}" (ionInput)="handleFarmSearch($event)" debounce="200"></ion-searchbar>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content style="max-height: 300px;">
+                <ion-list lines="inset" class="ion-no-padding">
+                  <ion-item *ngFor="let farm of filteredFarms" button (click)="selectFarm(farm, farmPopover)">
+                    <ion-label>
+                      <h2>{{ farm.name }}</h2>
+                      <p class="text-muted text-small">{{ farm.legalType | translate }}</p>
+                    </ion-label>
+                  </ion-item>
+                </ion-list>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+        </div>
+      </ion-item>
+
+      <ion-item *ngIf="type === 'create' || type === 'edit'">
+        <div class="ion-w-100 ion-padding-top ion-padding-bottom">
+          <div class="stacked-label-fallback id-margin-bottom">{{ 'Optional Livestock Host Binding' | translate }}</div>
+          
+          <ion-button id="open-animal-picker-trigger" expand="block" color="medium" fill="outline" style="text-transform: none; height: 44px;">
+            <span style="text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
+              {{ getSelectedAnimalLabel() | translate }}
+            </span>
+            <ion-icon *ngIf="deviceForm.get('animalId')?.value" 
+                      slot="end" 
+                      name="close-circle" 
+                      style="margin-left: auto; font-size: 18px; padding-left: 8px;" 
+                      (click)="clearAnimalSelection($event)">
+            </ion-icon>
+          </ion-button>
+          
+          <ion-popover trigger="open-animal-picker-trigger" #animalPopover class="searchable-selection-popover" interface="popover">
+            <ng-template>
+              <ion-header class="ion-no-border">
+                <ion-toolbar color="light">
+                  <ion-searchbar placeholder="{{ 'Search unassigned assets...' | translate }}" (ionInput)="handleAnimalSearch($event)" debounce="150"></ion-searchbar>
+                </ion-toolbar>
+              </ion-header>
+              <ion-content style="max-height: 300px;">
+                <ion-list lines="inset" class="ion-no-padding">
+                  <ion-item *ngFor="let animal of filteredAnimals" button (click)="selectAnimal(animal, animalPopover)">
+                    <ion-label>
+                      <h2>{{ 'Tag No:' | translate }} <strong>{{ animal.tagNo }}</strong></h2>
+                      <p class="text-muted text-small">{{ animal.name || 'Unnamed Cow' }} • {{ animal.breed }}</p>
+                    </ion-label>
+                  </ion-item>
+                  
+                  <ion-item lines="none" *ngIf="filteredAnimals.length === 0">
+                    <ion-label class="ion-text-center text-muted" style="padding: 15px 0;">
+                      {{ 'No available assets found.' | translate }}
+                    </ion-label>
+                  </ion-item>
+                </ion-list>
+              </ion-content>
+            </ng-template>
+          </ion-popover>
+        </div>
+      </ion-item>
+    </ion-list>
+
+    <ion-footer class="ion-no-border">
+      <ion-toolbar class="ion-no-padding">
+        <ion-buttons slot="end">
+          <ion-button *ngIf="type !== 'delete'" type="submit" expand="block" [disabled]="submitting() || deviceForm.invalid" fill="solid" [color]="type === 'edit' ? 'warning' : 'success'">
+            <ion-spinner *ngIf="submitting()" name="crescent"></ion-spinner>
+            <ion-label *ngIf="!submitting()" color="light">
+              <strong>{{ (type === 'edit' ? 'Update Device Profile' : 'Register Hardware Asset') | translate }}</strong>
+            </ion-label>
+          </ion-button>
+          
+          <ion-button *ngIf="type === 'delete'" type="button" expand="block" fill="solid" color="danger" [disabled]="submitting()" (click)="onDelete()">
+            <ion-spinner *ngIf="submitting()" name="crescent"></ion-spinner>
+            <ion-label *ngIf="!submitting()" color="light"><strong>{{ 'Decommission Hardware' | translate }}</strong></ion-label>
+          </ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-footer>
+  </form>
+
+</ion-content>

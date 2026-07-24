@@ -1,771 +1,970 @@
-import {
-  Component,
-  ElementRef,
-  OnDestroy,
-  OnInit,
-  ViewChild,
-} from '@angular/core';
-import {
-  filter,
-  first,
-  map,
-  Observable,
-  startWith,
-  Subscription,
-  tap,
-} from 'rxjs';
+// import { ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
+// import { TranslateModule } from "@ngx-translate/core";
+// import { BehaviorSubject, Subscription, Observable, firstValueFrom, catchError, finalize, forkJoin, of } from "rxjs";
+// import { take } from "rxjs/operators";
+// import { CommonModule } from "@angular/common";
+// import { IonLabel, IonItem, IonContent, IonImg, IonProgressBar, IonRow, IonRefresher, IonRefresherContent, IonGrid, IonCol, IonRippleEffect, IonCard, IonSegmentButton, IonSegment, ModalController } from "@ionic/angular/standalone";
+// import { FormsModule } from "@angular/forms";
+// import { RouterModule } from "@angular/router";
+// import { Apollo } from "apollo-angular";
+// import { EventUtilityService } from "src/app/utils/event-util/event-util.service";
+// import { DASHBOARD_ITEMS } from "src/app/graphql/queries/dashboard.queries";
+// import { CountUpPipe } from "src/app/utils/pipes/count-up/count-up-pipe";
+// import { SystemService } from "src/app/services/system/system.service";
+// import { CattleMonitoringService } from "src/app/services/chms/chms.service";
+// import { SharedImportsModule } from 'src/app/shared/shared-imports';
+// import { DairyManagementService } from "src/app/services/dms/dms.service";
 
-import {
-  FormControl,
-  FormGroup,
-  FormsModule,
-  ReactiveFormsModule,
-  Validators,
-} from '@angular/forms';
+// import { Chart, registerables } from 'chart.js';
+// import zoomPlugin from 'chartjs-plugin-zoom';
+// import 'chartjs-adapter-luxon';
+// import { DateTime } from 'luxon';
+// import { DairyModalComponent } from "../../features/dms/dairy/dairy-modal/dairy-modal.component";
 
-import 'chartjs-adapter-date-fns';
-import Chart from 'chart.js/auto';
+// Chart.register(...registerables);
+// Chart.register(zoomPlugin);
 
-import { Apollo, QueryRef } from 'apollo-angular';
-import {
-  GET_DASHBOARD_ITEMS,
-  GET_MILK_ENTRIES,
-} from 'src/app/graphql/data.queries';
-import { CommonModule, DatePipe } from '@angular/common';
-import { AuthService } from 'src/app/features/auth/auth.service';
-import { FcmService } from 'src/app/features/fcm/fcm.service';
-import { DataService } from 'src/app/services/data/data.service';
-import { TranslateModule } from '@ngx-translate/core';
-import { CountUpPipe } from 'src/app/utils/pipes/count-up/count-up-pipe';
-import {
-  IonContent,
-  IonRefresher,
-  IonProgressBar,
-  IonRefresherContent,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonToolbar,
-  IonItem,
-  IonImg,
-  IonLabel,
-  IonRippleEffect,
-  IonButton,
-  IonModal,
-  IonHeader,
-  IonButtons,
-  IonIcon,
-  IonTitle,
-  IonList,
-  IonDatetimeButton,
-  IonDatetime,
-  IonInput,
-  IonChip,
-  IonFooter,
-  IonAvatar,
-  NavController,
-  ScrollDetail,
-  ToastController,
-  IonSelect,
-  IonSelectOption,
-  IonSpinner,
-} from '@ionic/angular/standalone';
-import { CustomFooterComponent } from 'src/app/components/custom-footer/custom-footer.component';
-import { LoadingController } from '@ionic/angular';
+// @Component({
+//   selector: 'app-home',
+//   templateUrl: './home.page.html',
+//   styleUrls: ['./home.page.scss'],
+//   imports: [IonSegment, IonSegmentButton, IonCard, IonRippleEffect, IonCol, IonGrid, IonRefresherContent, IonRefresher, IonRow, IonProgressBar, IonImg, CommonModule, FormsModule, TranslateModule, RouterModule, IonLabel, IonItem, IonContent, CountUpPipe, SharedImportsModule],
+//   standalone: true,
+// })
+// export class HomePage implements OnInit, OnDestroy {
+  
+//   private modalCtrl = inject(ModalController);
+
+//   @ViewChild('milkingChartCanvas', { static: false }) milkingChartCanvas!: ElementRef<HTMLCanvasElement>;
+
+//   progress: number = 0;
+//   auth_user: any = null;
+//   isLoading = signal(false);
+
+//   startDate!: Date;
+//   endDate!: Date;
+//   today: Date = new Date();
+
+//   filter = {
+//     targetPath: '',
+//     farmId: '',
+//     search: '',
+//     startDate: '',
+//     endDate: '',
+//     eventType: null 
+//   };
+//   options = { limit: 100, offset: 0, sortBy: 'occurredAt', sortOrder: -1 };
+
+//   selectedPreset: string = '7days';
+//   public processedMilkingEvents: any[] = [];
+//   private privateMilkingChartInstance: Chart | null = null;
+
+//   private dashboardData$ = new BehaviorSubject<any>(null);
+//   counts$: Observable<any> = this.dashboardData$.asObservable();
+
+//   private globalData$ = new BehaviorSubject<any>(null);
+//   globalCounts$: Observable<any> = this.globalData$.asObservable();
+
+//   private dataFetchSub!: Subscription;
+//   private subs = new Subscription();
+
+//   constructor(
+//     private systemService: SystemService,
+//     private apollo: Apollo,
+//     private eventUtil: EventUtilityService,
+//     private chmsService: CattleMonitoringService,
+//     private dmsService: DairyManagementService,
+//     private cdr: ChangeDetectorRef,
+//   ) { }
+
+//   ngOnInit() {
+//     const auth_user = localStorage.getItem('chms-dms.mobile.user');
+//     if (auth_user) this.auth_user = JSON.parse(auth_user);
+
+//     this.syncSelections();
+    
+//     // Set parameters for 7days by default on initialization
+//     this.calculatePresetDates(this.selectedPreset);
+//     this.filter.startDate = this.startDate.toISOString();
+//     this.filter.endDate = this.endDate.toISOString();
+
+//     this.initSyncs();
+//     this.refresh();
+//   }
+
+//   ionViewDidEnter() {
+//     this.renderMilkingChartInstance();
+//   }
+
+//   setRange(months: number) {
+//     const range = this.eventUtil.calculateRange(months);
+//     this.filter.startDate = range.start;
+//     this.filter.endDate = range.end;
+
+//     this.startDate = range.start ? new Date(range.start) : new Date();
+//     this.endDate = range.end ? new Date(range.end) : new Date();
+
+//     this.refresh();
+//   }
+
+//   private initSyncs() {
+//     this.subs.add(this.systemService.selectionChanged$.subscribe(() => {
+//       this.syncSelections();
+//       this.refresh();
+//     }));
+//   }
+
+//   refresh() {
+//     this.loadManagedCounts();
+//     this.fetchChartDataPipeline();
+//   }
+
+//   fetchChartDataPipeline() {
+//     if (this.dataFetchSub) {
+//       this.dataFetchSub.unsubscribe();
+//     }
+
+//     this.isLoading.set(true);
+//     this.cdr.detectChanges(); 
+
+//     const hasFarm = this.filter.farmId && this.filter.farmId !== 'null' && this.filter.farmId !== 'undefined';
+
+//     const allEvents$ = this.dmsService.getMilkingLogs({
+//       filter: {
+//         farmId: hasFarm ? this.filter.farmId : null,
+//         targetPath: hasFarm ? null : (this.filter.targetPath || null),
+//       }
+//     }).pipe(take(1), catchError(() => of({ items: [] })));
+
+//     this.dataFetchSub = forkJoin([allEvents$]).pipe(
+//       finalize(() => {
+//         this.isLoading.set(false);
+//         this.cdr.detectChanges(); 
+//         this.renderMilkingChartInstance();
+//       })
+//     ).subscribe({
+//       next: ([eventsPayload]) => {
+//         try {
+//           console.log('All Events: ', eventsPayload);
+//           this.syncHistoryLogs(eventsPayload?.items || []);
+//         } catch (e) {
+//           console.error("Pipeline breakdown processing events details:", e);
+//         }
+//       }
+//     });
+//   }
+
+//   onPresetChange(duration: string) {
+//     this.selectedPreset = duration;
+//     this.calculatePresetDates(duration);
+//     this.fetchChartDataPipeline();
+//   }
+
+//   private calculatePresetDates(preset: string) {
+//     this.endDate = new Date();
+//     this.startDate = new Date();
+
+//     if (preset === '1day') {
+//       this.startDate.setDate(this.endDate.getDate() - 1);
+//     } else if (preset === '7days') {
+//       this.startDate.setDate(this.endDate.getDate() - 7);
+//     } else if (preset === '30days') {
+//       this.startDate.setMonth(this.endDate.getMonth() - 1);
+//       this.startDate.setHours(0, 0, 0, 0);
+//     } else if (preset === '90days') {
+//       this.startDate.setMonth(this.endDate.getMonth() - 3);
+//       this.startDate.setHours(0, 0, 0, 0);
+//     }
+//     this.endDate.setHours(23, 59, 59, 999);
+//   }
+
+//   syncHistoryLogs(rawMilkingLogs?: any[]) {
+//     if (!rawMilkingLogs || !Array.isArray(rawMilkingLogs)) {
+//       this.processedMilkingEvents = [];
+//       return;
+//     }
+
+//     // Determine current timestamp filters based on selected range parameters
+//     const startMs = DateTime.fromJSDate(this.startDate || new Date()).startOf('day').valueOf();
+//     const endMs = DateTime.fromJSDate(this.endDate || new Date()).endOf('day').valueOf();
+
+//     // 1. Keep only elements that contain valid logs and fit inside your window boundaries
+//     const filteredLogs = rawMilkingLogs.filter(log => {
+//       if (!log || !log.occurredAt) return false;
+//       const logMs = DateTime.fromISO(log.occurredAt).valueOf();
+//       return logMs >= startMs && logMs <= endMs;
+//     });
+
+//     // 2. Sort chronologically so lines map seamlessly across the time axis scale
+//     filteredLogs.sort((a, b) => DateTime.fromISO(a.occurredAt).valueOf() - DateTime.fromISO(b.occurredAt).valueOf());
+
+//     // 3. Map values directly. We leave out non-existent days entirely instead of appending zeros.
+//     this.processedMilkingEvents = filteredLogs.map(log => {
+//       const dt = DateTime.fromISO(log.occurredAt);
+//       const noonSlot = dt.set({ hour: 12, minute: 0, second: 0, millisecond: 0 });
+
+//       return {
+//         x: noonSlot.valueOf(),
+//         morningMilk: log.morningMilk || 0,
+//         afternoonMilk: log.afternoonMilk || 0,
+//         eveningMilk: log.eveningMilk || 0,
+//         totalMilk: log.totalMilk || 0
+//       };
+//     });
+
+//     console.log("🔥 Processed Milking Events (Skipped Missing Days):", this.processedMilkingEvents);
+//   }
+
+//   getProcessedPerformanceData() {
+//     const dailyTotals: { dateStr: string; timestamp: number; totalYield: number }[] = [];
+    
+//     const uniqueDays = Array.from(new Set(this.processedMilkingEvents.map(e => 
+//       DateTime.fromMillis(e.x).toFormat('yyyy-MM-dd')
+//     )));
+
+//     uniqueDays.forEach(dateStr => {
+//       const dayPoints = this.processedMilkingEvents.filter(e => 
+//         DateTime.fromMillis(e.x).toFormat('yyyy-MM-dd') === dateStr
+//       );
+      
+//       const dayTotal = dayPoints.reduce((sum, p) => sum + (p.totalMilk || 0), 0);
+      
+//       dailyTotals.push({
+//         dateStr,
+//         timestamp: DateTime.fromISO(dateStr).valueOf(),
+//         totalYield: dayTotal
+//       });
+//     });
+
+//     dailyTotals.sort((a, b) => a.timestamp - b.timestamp);
+
+//     return dailyTotals.map((currentDay, index, arr) => {
+//       // Rolling average calculation now runs across the last 7 recorded entries seamlessly
+//       const startIdx = Math.max(0, index - 6);
+//       const subset = arr.slice(startIdx, index + 1);
+//       const averageBaseline = subset.reduce((sum, d) => sum + d.totalYield, 0) / subset.length;
+
+//       const deviationThreshold = averageBaseline * 0.85;
+//       const isAnomalousDrop = currentDay.totalYield > 0 && currentDay.totalYield < deviationThreshold;
+
+//       return {
+//         ...currentDay,
+//         baseline: Math.round(averageBaseline * 10) / 10, 
+//         isAnomalousDrop
+//       };
+//     });
+//   }
+  
+//   renderMilkingChartInstance() {
+//     const canvas = this.milkingChartCanvas?.nativeElement;
+//     if (!canvas) return;
+
+//     const ctx = canvas.getContext('2d');
+//     if (!ctx) return;
+
+//     if (this.privateMilkingChartInstance) {
+//       this.privateMilkingChartInstance.destroy();
+//       this.privateMilkingChartInstance = null;
+//     }
+
+//     const chartData = this.getProcessedPerformanceData();
+//     const pointColors = chartData.map(d => d.isAnomalousDrop ? '#ff4961' : '#3880ff');
+//     const pointRadii = chartData.map(d => d.isAnomalousDrop ? 6 : 4);
+//     const pointHoverRadii = chartData.map(d => d.isAnomalousDrop ? 8 : 6);
+
+//     // Create a smooth vertical gradient under the main line for a premium look
+//     const areaGradient = ctx.createLinearGradient(0, 0, 0, 220);
+//     areaGradient.addColorStop(0, 'rgba(56, 128, 255, 0.14)');
+//     areaGradient.addColorStop(1, 'rgba(56, 128, 255, 0.00)');
+
+//     // Common typography styling to match system font stacks
+//     const systemFont = {
+//       family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+//       size: 11,
+//       weight: '500' as const
+//     };
+
+//     this.privateMilkingChartInstance = new Chart(canvas, {
+//       type: 'line',
+//       data: {
+//         datasets: [
+//           {
+//             label: 'Daily Yield',
+//             data: chartData.map(d => ({ x: d.timestamp, y: d.totalYield })),
+//             borderColor: '#3880ff',
+//             borderWidth: 3,
+//             tension: 0.35, // Smooth curves beautifully without creating unnatural loops
+//             fill: true,
+//             backgroundColor: areaGradient,
+//             pointBackgroundColor: pointColors,
+//             pointBorderColor: '#ffffff',
+//             pointBorderWidth: 1.5,
+//             pointRadius: pointRadii,
+//             pointHoverRadius: pointHoverRadii,
+//             pointHoverBackgroundColor: pointColors,
+//             pointHoverBorderColor: '#ffffff',
+//             pointHoverBorderWidth: 2,
+//             order: 1 // Layer actual data on top of baseline
+//           },
+//           {
+//             label: '7-Day Baseline',
+//             data: chartData.map(d => ({ x: d.timestamp, y: d.baseline })),
+//             borderColor: '#687484', // Neutral slate grey to de-emphasize vs main line
+//             borderWidth: 1.5,
+//             borderDash: [5, 5], // Elegant dashed indicator
+//             fill: false,
+//             pointRadius: 0, // Keeps line clean; dots are unnecessary here
+//             pointHoverRadius: 0,
+//             tension: 0.3,
+//             order: 2
+//           }
+//         ]
+//       },
+//       options: {
+//         responsive: true,
+//         maintainAspectRatio: false,
+//         layout: {
+//           // Prevents extreme high/low data points or labels from getting cut off at canvas borders
+//           padding: { top: 12, bottom: 4, left: 6, right: 14 }
+//         },
+//         scales: {
+//           x: {
+//             type: 'time',
+//             time: {
+//               unit: 'day',
+//               displayFormats: { day: 'dd MMM' }
+//             },
+//             grid: {
+//               display: false // Cleans up vertical lines to prioritize temporal flow
+//             },
+//             ticks: {
+//               // font: systemFont,
+//               color: '#8a94a6',
+//               maxRotation: 0, // Keeps dates flat and easy to scan horizontally on mobile
+//               autoSkip: true,
+//               maxTicksLimit: 6
+//             }
+//           },
+//           y: {
+//             type: 'linear',
+//             beginAtZero: true,
+//             grace: '10%', // Automatically appends 10% ceiling headroom above your highest data point
+//             grid: {
+//               color: 'rgba(0, 0, 0, 0.04)', // Ultra-faint gridlines
+//               tickLength: 0 // Removes ugly tick nubs extending from graph area
+//             },
+//             ticks: {
+//               // font: systemFont,
+//               color: '#8a94a6',
+//               padding: 8,
+//               callback: (value) => `${value}L`
+//             }
+//           }
+//         },
+//         plugins: {
+//           legend: {
+//             display: true,
+//             position: 'top',
+//             align: 'end', // Shifts legend cleanly to top-right corner
+//             labels: {
+//               boxWidth: 8,
+//               boxHeight: 8,
+//               usePointStyle: true, // Swaps out ugly square boxes for neat dots
+//               pointStyle: 'circle',
+//               // font: { ...systemFont, size: 12 },
+//               color: '#444d56',
+//               padding: 16
+//             }
+//           },
+//           tooltip: {
+//             enabled: true,
+//             mode: 'index',
+//             intersect: false,
+//             backgroundColor: 'rgba(25, 30, 40, 0.95)', // Sleek dark-mode aesthetic toast
+//             titleFont: { ...systemFont, size: 12, weight: 'bold' },
+//             // bodyFont: systemFont,
+//             padding: 12,
+//             cornerRadius: 8,
+//             caretSize: 6,
+//             displayColors: true,
+//             boxWidth: 6,
+//             boxHeight: 6,
+//             boxPadding: 6,
+//             callbacks: {
+//               title: (items) => {
+//                 if (!items.length) return '';
+//                 // Standardizes date rendering format at top of tooltips
+//                 return DateTime.fromMillis(items[0].parsed.x).toFormat('cccc, dd LLL');
+//               },
+//               label: (context) => {
+//                 const dataPoint = chartData[context.dataIndex];
+//                 const rawValue = context.parsed.y;
+                
+//                 if (context.datasetIndex === 0) {
+//                   const alertPrefix = dataPoint.isAnomalousDrop ? '⚠️ ' : '';
+//                   return ` ${alertPrefix}Yield: ${rawValue.toFixed(1)} Liters`;
+//                 }
+//                 return ` Target: ${rawValue.toFixed(1)} Liters`;
+//               }
+//             }
+//           }
+//         }
+//       }
+//     });
+//   }
+
+//   private syncSelections() {
+//     const selections = this.eventUtil.getSavedSelections();
+//     if (selections) {
+//       this.filter.targetPath = selections.targetPath || '';
+//       this.filter.farmId = selections.farmId || '';
+//     }
+//   }
+
+//   ngOnDestroy() { 
+//     if (this.privateMilkingChartInstance) {
+//       this.privateMilkingChartInstance.destroy();
+//     }
+//     this.subs.unsubscribe(); 
+//     if (this.dataFetchSub) this.dataFetchSub.unsubscribe();
+//   }
+
+//   async loadManagedCounts() {
+//     if (this.isLoading()) return;
+//     this.isLoading.set(true);
+
+//     try {
+//       const hasFarm = this.filter.farmId && this.filter.farmId !== 'null' && this.filter.farmId !== 'undefined';
+      
+//       const res = await firstValueFrom(
+//         this.apollo.query<any>({
+//           query: DASHBOARD_ITEMS,
+//           variables: {
+//             filter: {
+//               farmId: hasFarm ? this.filter.farmId : null,
+//               targetPath: hasFarm ? null : (this.filter.targetPath || null),
+//               startDate: this.filter.startDate || null,
+//               endDate: this.filter.endDate || null
+//             }
+//           },
+//           fetchPolicy: 'network-only'
+//         })
+//       );
+
+//       if (res?.data?.getDashboardCounts) {
+//         this.dashboardData$.next(res.data.getDashboardCounts);
+//       }
+//     } catch (err) {
+//       console.error("Managed Load Error:", err);
+//     } finally {
+//       this.isLoading.set(false);
+//     }
+//   }
+
+//     async openDairyModal(type: string, entry?: any) {
+//         const modal = await this.modalCtrl.create({
+//           component: DairyModalComponent,
+//           // 🌟 Pass data into the Modal component's @Input fields
+//           componentProps: {
+//             type: type,
+//             entry: entry
+//           }
+//         });
+    
+//         await modal.present();
+    
+//         // 🌟 Listen for the response data payload when modal closes
+//         const { data, role } = await modal.onDidDismiss();
+    
+//         if (role === 'confirm' && data?.updated) {
+//           console.log('Received updated data from modal:', data);
+//           this.refresh();
+//           this.renderMilkingChartInstance();
+//           // Trigger table refresh or update state here!
+//         }
+//       }
+// }
+
+
+
+import { ChangeDetectorRef, Component, ElementRef, inject, OnDestroy, OnInit, signal, ViewChild } from "@angular/core";
+import { TranslateModule } from "@ngx-translate/core";
+import { BehaviorSubject, Subscription, Observable, firstValueFrom, catchError, finalize, forkJoin, of } from "rxjs";
+import { filter, take } from "rxjs/operators";
+import { CommonModule } from "@angular/common";
+import { 
+  IonLabel, 
+  IonItem, 
+  IonContent, 
+  IonImg, 
+  IonProgressBar, 
+  IonRow, 
+  IonRefresher, 
+  IonRefresherContent, 
+  IonGrid, 
+  IonCol, 
+  IonRippleEffect, 
+  IonCard, 
+  IonSegmentButton, 
+  IonSegment, 
+  ModalController 
+} from "@ionic/angular/standalone";
+import { FormsModule } from "@angular/forms";
+import { NavigationEnd, Router, RouterModule } from "@angular/router";
+import { Apollo } from "apollo-angular";
+import { EventUtilityService } from "src/app/utils/event-util/event-util.service";
+import { DASHBOARD_ITEMS } from "src/app/graphql/queries/dashboard.queries";
+import { CountUpPipe } from "src/app/utils/pipes/count-up/count-up-pipe";
+import { SystemService } from "src/app/services/system/system.service";
+import { CattleMonitoringService } from "src/app/services/chms/chms.service";
+import { SharedImportsModule } from 'src/app/shared/shared-imports';
+import { DairyManagementService } from "src/app/services/dms/dms.service";
+
+import { Chart, registerables } from 'chart.js';
+import zoomPlugin from 'chartjs-plugin-zoom';
+import 'chartjs-adapter-luxon';
+import { DateTime } from 'luxon';
+import { DairyModalComponent } from "../../features/dms/dairy/dairy-modal/dairy-modal.component";
+
+Chart.register(...registerables);
+Chart.register(zoomPlugin);
 
 @Component({
-  standalone: true,
-  imports: [
-    CommonModule,
-    FormsModule,
-    TranslateModule,
-    ReactiveFormsModule,
-    CountUpPipe,
-    IonContent,
-    IonRefresher,
-    IonProgressBar,
-    IonRefresherContent,
-    IonGrid,
-    IonRow,
-    IonCol,
-    IonToolbar,
-    IonItem,
-    IonImg,
-    IonLabel,
-    IonRippleEffect,
-    IonButton,
-    IonModal,
-    IonHeader,
-    IonButtons,
-    IonIcon,
-    IonTitle,
-    IonList,
-    IonDatetimeButton,
-    IonDatetime,
-    IonInput,
-    IonChip,
-    IonFooter,
-    IonAvatar,
-    IonSelect,
-    IonSelectOption,
-    CustomFooterComponent,
-    IonSpinner,
-  ],
   selector: 'app-home',
   templateUrl: './home.page.html',
   styleUrls: ['./home.page.scss'],
-  providers: [DatePipe],
+  imports: [
+    IonSegment, 
+    IonSegmentButton, 
+    IonCard, 
+    IonRippleEffect, 
+    IonCol, 
+    IonGrid, 
+    IonRefresherContent, 
+    IonRefresher, 
+    IonRow, 
+    IonProgressBar, 
+    IonImg, 
+    CommonModule, 
+    FormsModule, 
+    TranslateModule, 
+    RouterModule, 
+    IonLabel, 
+    IonItem, 
+    IonContent, 
+    CountUpPipe, 
+    SharedImportsModule
+  ],
+  standalone: true,
 })
 export class HomePage implements OnInit, OnDestroy {
-  @ViewChild('myChart', { static: false }) myChart!: ElementRef;
-  @ViewChild('modal') modal: IonModal;
+  
+  private modalCtrl = inject(ModalController);
+  private systemService = inject(SystemService);
+  private apollo = inject(Apollo);
+  private eventUtil = inject(EventUtilityService);
+  private chmsService = inject(CattleMonitoringService);
+  private dmsService = inject(DairyManagementService);
+  private cdr = inject(ChangeDetectorRef);
 
-  chart!: Chart;
+  @ViewChild('milkingChartCanvas', { static: false }) milkingChartCanvas!: ElementRef<HTMLCanvasElement>;
 
-  getAllAnimalsSub: Subscription;
-  authSub: Subscription;
+  progress: number = 0;
+  auth_user: any = null;
+  isLoading = signal(false);
 
-  dashboardQueryRef: QueryRef<any>;
-  milkQueryRef: QueryRef<any>;
-  counts$: Observable<any>;
+  startDate!: Date;
+  endDate!: Date;
+  today: Date = new Date();
 
-  milkEntryForm: FormGroup;
-  selectedCattle: string = '';
+  filter = {
+    targetPath: '',
+    farmId: '',
+    search: '',
+    startDate: '',
+    endDate: '',
+    eventType: null 
+  };
+  options = { limit: 100, offset: 0, sortBy: 'occurredAt', sortOrder: -1 };
 
-  isVisible: boolean = true;
-  isLoading: boolean = false;
-  language: string;
+  selectedPreset: string = '7days';
+  public processedMilkingEvents: any[] = [];
+  private privateMilkingChartInstance: Chart | null = null;
 
-  searchToggle: boolean = false;
-  toggleSearch = () => (this.searchToggle = !this.searchToggle);
+  private dashboardData$ = new BehaviorSubject<any>(null);
+  counts$: Observable<any> = this.dashboardData$.asObservable();
 
-  results: any[] = [];
-  animals: any[] = [];
+  private globalData$ = new BehaviorSubject<any>(null);
+  globalCounts$: Observable<any> = this.globalData$.asObservable();
 
-  milkData$: Observable<any>;
-  milk_target = { totalMilk: 0, numCows: 0, avgMilkPerCow: 0, efficiency: 0 };
-  totalMilkVolume$: any;
-  milkingEvents: any[] = [];
-  groupedEvents: any[] = [];
+  private dataFetchSub!: Subscription;
+  private subs = new Subscription();
 
-  maxDate = new Date().toISOString();
-
-  p: number = 1;
-  pageSize: number = 10;
-  userId: string = '';
-
-  @ViewChild('registercattleform') registercattleform: IonModal;
-
-  breed_options = [
-    'Gir',
-    'Red Sindhi',
-    'Sahiwal',
-    'Jersey',
-    'HF',
-    'Hallikar',
-    'Amritmahal',
-    'Khillari',
-    'Tharparkar',
-    'Hariana',
-    'Kankrej',
-    'Ongole',
-    'Krishna Valley',
-    'Deoni',
-    'Cross Breed',
-  ];
-
-  cattleGender: string = '';
-  // cattleAge: number | null = null;
-  cattleBirthDate: string = '';
-
-  cattleAgeDisplay: string = ''; // For showing "2 Years, 5 Months"
-  cattleAge: number | null = null; // For your category logic (e.g., 2.41)
-
-  constructor(
-    private authService: AuthService,
-    private dataService: DataService,
-    private fcmService: FcmService,
-    private toastController: ToastController,
-    private apollo: Apollo,
-    private datePipe: DatePipe,
-    private navCtrl: NavController,
-    private loadingController: LoadingController
-  ) {}
-
-  ngOnDestroy() {
-    if (this.authSub) this.authSub.unsubscribe();
-    if (this.getAllAnimalsSub) this.getAllAnimalsSub.unsubscribe();
-  }
+  private router = inject(Router);
+  private routerSub!: Subscription;
 
   ngOnInit() {
-    this.fcmService.initPush();
-    this.initMilkForm();
-    this.setupAuthSubscription();
-  }
+    this.initSyncs();
 
-  // This function triggers whenever the date changes
-  // onDateChange(event: any) {
-  //   const selectedDate = new Date(event.detail.value);
-  //   const today = new Date();
-
-  //   let age = today.getFullYear() - selectedDate.getFullYear();
-  //   const monthDiff = today.getMonth() - selectedDate.getMonth();
-
-  //   // Adjust age if the birthday hasn't occurred yet this year
-  //   if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < selectedDate.getDate())) {
-  //     age--;
-  //   }
-
-  //   // Set the age (you can also use decimals if you want more precision)
-  //   this.cattleAge = age < 0 ? 0 : age;
-  // }
-
-  // onDateChange(event: any) {
-  //   const dateValue = event.detail.value;
-
-  //   if (dateValue) {
-  //     const birthDate = new Date(dateValue);
-  //     const today = new Date();
-
-  //     let age = today.getFullYear() - birthDate.getFullYear();
-  //     const monthDiff = today.getMonth() - birthDate.getMonth();
-
-  //     // Refine age calculation based on month/day
-  //     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-  //       age--;
-  //     }
-
-  //     // Update the cattleAge variable used by your category logic
-  //     this.cattleAge = age < 0 ? 0 : age;
-  //   }
-  // }
-
-  onDateChange(event: any) {
-    const dateValue = event.detail.value;
-    if (!dateValue) return;
-
-    const birthDate = new Date(dateValue);
-    const today = new Date();
-
-    let years = today.getFullYear() - birthDate.getFullYear();
-    let months = today.getMonth() - birthDate.getMonth();
-
-    // Adjust if the current month is before the birth month
-    if (months < 0 || (months === 0 && today.getDate() < birthDate.getDate())) {
-      years--;
-      months += 12;
-    }
-
-    // Calculate remaining days roughly to adjust months if necessary
-    if (today.getDate() < birthDate.getDate()) {
-      months--;
-      if (months < 0) {
-        months = 11;
-        // years is already adjusted above
-      }
-    }
-
-    // 1. Update the numeric age for your category logic (using decimals)
-    // Example: 2 years and 6 months becomes 2.5
-    this.cattleAge = years + months / 12;
-
-    // 2. Update the display string
-    if (years === 0) {
-      this.cattleAgeDisplay = `${months} Months`;
-    } else {
-      this.cattleAgeDisplay = `${years} Years, ${months} Months`;
-    }
-  }
-
-  getCattleCategory(): string {
-    const gender = this.cattleGender.toLowerCase().trim();
-    const age = Number(this.cattleAge);
-
-    if (age < 1) {
-      return 'Calf (Young)';
-    }
-
-    if (gender === 'female' || gender === 'f') {
-      if (age >= 1 && age < 2.5) return 'Heifer (Juvenile)';
-      if (age >= 2.5 && age < 10) return 'Cow (Adult)';
-      return 'Senior Cow (Old)';
-    }
-
-    if (gender === 'male' || gender === 'm') {
-      if (age >= 1 && age < 10) return 'Bull (Adult)';
-      return 'Senior Bull (Old)';
-    }
-
-    return 'Unknown Category';
-  }
-
-  async registerCattle() {
-    const loadingEL = await this.loadingController.create({
-      animated: true,
-      translucent: true,
-      spinner: 'crescent',
-      message: 'Registering Cattle..',
-    });
-
-    await loadingEL.present();
-
-    setTimeout(() => {
-      const toast = {
-        header: 'Registeration Successfull !',
-        msg: `Cattle has been regisred successfully.`,
-        color: 'success',
-      };
-
-      this.showToast(toast);
-
-      this.registercattleform.dismiss();
-      loadingEL.dismiss();
-    }, 3000);
-  }
-
-  private setupAuthSubscription() {
-    this.authSub = this.authService.authenticatedUser$.subscribe((user) => {
-      if (user && user.id) {
-        this.userId = user.id;
-        this.initDashboard(user.id);
-        this.initMilkProductionGraph(user.id);
+    // 💡 Listen to Router NavigationEnd: Fires EVERY time user lands on home!
+    this.routerSub = this.router.events.pipe(
+      filter((event): event is NavigationEnd => event instanceof NavigationEnd)
+    ).subscribe((event: NavigationEnd) => {
+      // Check if current route is Home (or landed back on Home)
+      if (event.urlAfterRedirects.includes('/landing/tabs/home')) {
+        console.log('⚡ NavigationEnd detected: Refreshing HomePage...');
+        this.reinitializeAndRefresh();
       }
     });
+
   }
 
-  private initMilkForm() {
-    const date: any = new Date().toISOString();
-    this.milkEntryForm = new FormGroup({
-      eventDateTime: new FormControl(date),
-      animalId: new FormControl('', {
-        updateOn: 'blur',
-        validators: [Validators.required],
-      }),
-      morningVolume: new FormControl(0),
-      noonVolume: new FormControl(0),
-      eveningVolume: new FormControl(0),
-    });
+// home.page.ts
 
-    this.totalMilkVolume$ = this.milkEntryForm.valueChanges.pipe(
-      map((values) => {
-        return (
-          (values.morningVolume || 0) +
-          (values.noonVolume || 0) +
-          (values.eveningVolume || 0)
-        );
-      })
-    );
+handleRefresh(event: any) {
+  // Re-fetch counts and chart pipeline
+  this.loadManagedCounts();
+  
+  // Perform pipeline fetch
+  if (this.dataFetchSub) {
+    this.dataFetchSub.unsubscribe();
   }
 
-  ionViewWillEnter() {
-    if (this.dashboardQueryRef) {
-      this.dashboardQueryRef.refetch();
+  const hasFarm = this.filter.farmId && this.filter.farmId !== 'null';
+
+  this.dataFetchSub = this.dmsService.getMilkingLogs({
+    filter: {
+      farmId: hasFarm ? this.filter.farmId : null,
+      targetPath: hasFarm ? null : (this.filter.targetPath || null),
     }
+  }).pipe(
+    take(1),
+    finalize(() => {
+      // 💡 ALWAYS complete the event when the stream finishes or errors out
+      event.target.complete();
+      this.isLoading.set(false);
+      this.cdr.detectChanges();
+    })
+  ).subscribe({
+    next: (data) => {
+      this.syncHistoryLogs(data?.items || []);
+      this.renderMilkingChartInstance();
+    },
+    error: (err) => {
+      console.error('Refresher failed:', err);
+    }
+  });
+}
+
+  /**
+   * Ionic Lifecycle Hook:
+   * Triggers EVERY time the route/page becomes active (initial load + returning navigation)
+   */
+  // ionViewWillEnter() {
+    // this.reinitializeAndRefresh();
+  // }
+
+  // ✅ Use ionViewWillEnter — fires EVERY time navigation returns to Home:
+  // ionViewWillEnter() {
+  //   this.reinitializeAndRefresh();
+  //   this.refresh();
+  // }
+
+  /**
+   * Ionic Lifecycle Hook:
+   * Fires after view entry animations finish — ideal for initial chart canvas mounting
+   */
+  ionViewDidEnter() {
+    this.renderMilkingChartInstance();
   }
 
-  initDashboard(userId: string) {
-    this.dashboardQueryRef = this.apollo.watchQuery({
-      query: GET_DASHBOARD_ITEMS,
-      variables: { userId: userId },
-      pollInterval: 30000,
-      fetchPolicy: 'cache-and-network',
-    });
-
-    // this.counts$ = this.dashboardQueryRef.valueChanges.pipe(
-    //   map((res) => res.data["getDashboardCounts"]),
-    // );
-    // this.counts$ = this.dashboardQueryRef.valueChanges.pipe(
-    //   filter(res => !!res.data),
-    //   map((res) => res.data['getDashboardCounts']),
-    // );
-
-    this.counts$ = this.dashboardQueryRef.valueChanges.pipe(
-      filter((res) => !!res.data),
-      map((res) => res.data['getDashboardCounts']),
-      // Provide the 0 values here:
-      startWith({
-        totalHeats: 0,
-        totalHealths: 0,
-        totalAnimals: 0,
-        totalRecoveries: 0,
-        totalInseminations: 0,
-        totalPregnancies: 0,
-        totalDryoffEvents: 0,
-        totalCalvings: 0,
-      })
-    );
+  /**
+   * Ionic Lifecycle Hook:
+   * Fires when navigating away — cleans up active Chart instances to free GPU/Memory
+   */
+  ionViewDidLeave() {
+    this.destroyChartInstance();
   }
 
-  initMilkProductionGraph(userId: string) {
-    this.milkQueryRef = this.apollo.watchQuery({
-      query: GET_MILK_ENTRIES,
-      variables: {
-        userId: userId,
-        limit: 10,
-        offset: 0,
-        search: '',
+  ngOnDestroy() { 
+    this.destroyChartInstance();
+    this.subs.unsubscribe(); 
+    if (this.dataFetchSub) this.dataFetchSub.unsubscribe();
+  }
+
+  /**
+   * Reinitializes state & forces a full re-fetch of all component APIs & filters
+   */
+  private reinitializeAndRefresh() {
+    const auth_user = localStorage.getItem('chms-dms.mobile.user');
+    if (auth_user) this.auth_user = JSON.parse(auth_user);
+
+    this.syncSelections();
+    
+    // Reset parameters back to default ranges
+    this.calculatePresetDates(this.selectedPreset);
+    this.filter.startDate = this.startDate.toISOString();
+    this.filter.endDate = this.endDate.toISOString();
+
+    // Trigger API calls
+    this.refresh();
+  }
+
+  refresh() {
+    this.loadManagedCounts();
+    this.fetchChartDataPipeline();
+  }
+
+  setRange(months: number) {
+    const range = this.eventUtil.calculateRange(months);
+    this.filter.startDate = range.start;
+    this.filter.endDate = range.end;
+
+    this.startDate = range.start ? new Date(range.start) : new Date();
+    this.endDate = range.end ? new Date(range.end) : new Date();
+
+    this.refresh();
+  }
+
+  private initSyncs() {
+    this.subs.add(this.systemService.selectionChanged$.subscribe(() => {
+      this.syncSelections();
+      this.refresh();
+    }));
+  }
+
+  fetchChartDataPipeline() {
+    if (this.dataFetchSub) {
+      this.dataFetchSub.unsubscribe();
+    }
+
+    this.isLoading.set(true);
+    this.cdr.detectChanges(); 
+
+    const hasFarm = this.filter.farmId && this.filter.farmId !== 'null' && this.filter.farmId !== 'undefined';
+
+    const allEvents$ = this.dmsService.getMilkingLogs({
+      filter: {
+        farmId: hasFarm ? this.filter.farmId : null,
+        targetPath: hasFarm ? null : (this.filter.targetPath || null),
       },
-      pollInterval: 30000,
-      fetchPolicy: 'cache-and-network',
-    });
+    }).pipe(take(1), catchError(() => of({ items: [] })));
 
-    // this.milkData$ = this.milkQueryRef.valueChanges.pipe(
-    //   map((res) => {
-    //     const data = res.data["getMilkEntries"];
-    //     return data?.items || [];
-    //   }),
-    //   tap((entries) => {
-    //     this.milkingEvents = entries;
-    //     this.calculateMilkMetrics();
-    //     this.plotLineChart();
-    //   }),
-    // );
-
-    this.milkData$ = this.milkQueryRef.valueChanges.pipe(
-      filter((res) => !!res.data),
-      map((res) => {
-        const data = res.data['getMilkEntries'];
-        return data?.items || [];
-      }),
-      tap((entries) => {
-        this.milkingEvents = entries;
-        this.calculateMilkMetrics();
-        this.plotLineChart();
+    this.dataFetchSub = forkJoin([allEvents$]).pipe(
+      finalize(() => {
+        this.isLoading.set(false);
+        this.cdr.detectChanges(); 
+        this.renderMilkingChartInstance();
       })
-    );
-
-    this.milkData$.subscribe();
-  }
-
-  calculateMilkMetrics() {
-    if (!this.milkingEvents || this.milkingEvents.length === 0) return;
-
-    const totalMilk = this.milkingEvents.reduce(
-      (sum, entry) => sum + (entry.totalMilk || 0),
-      0
-    );
-
-    const uniqueCows = new Set(this.milkingEvents.map((e) => e.animal?.id))
-      .size;
-
-    const avgMilkPerCow = uniqueCows > 0 ? totalMilk / uniqueCows : 0;
-    const efficiency = (totalMilk / (uniqueCows * 20)) * 100;
-
-    this.milk_target = {
-      totalMilk,
-      numCows: uniqueCows,
-      avgMilkPerCow: parseFloat(avgMilkPerCow.toFixed(2)),
-      efficiency: parseFloat(efficiency.toFixed(1)),
-    };
-
-    const groups = {};
-    this.milkingEvents.forEach((entry) => {
-      const date = this.datePipe.transform(
-        parseInt(entry.eventDateTime),
-        'yyyy-MM-dd'
-      );
-      if (!groups[date]) groups[date] = { date, entries: [] };
-      groups[date].entries.push(entry);
-    });
-
-    this.groupedEvents = Object.values(groups).sort((a: any, b: any) =>
-      b.date.localeCompare(a.date)
-    );
-  }
-
-  handleRefresh(event?: any) {
-    const p1 = this.dashboardQueryRef?.refetch();
-    const p2 = this.milkQueryRef?.refetch();
-
-    Promise.all([p1, p2]).then(() => {
-      if (event) event.target.complete();
-    });
-  }
-
-  handleScrollStart() {
-    this.isVisible = false;
-  }
-
-  handleScrollEnd() {}
-
-  handleScroll(ev: CustomEvent<ScrollDetail>) {
-    if (ev.detail.scrollTop >= 100) {
-      this.isVisible = false;
-    } else if (ev.detail.scrollTop === 0) {
-      this.isVisible = true;
-    }
-  }
-
-  async onClickAnimals() {
-    await this.navCtrl.navigateForward('/animal-list');
-  }
-
-  async onClickHealth() {
-    await this.navCtrl.navigateForward('/health');
-  }
-
-  async onClickRecovery() {
-    await this.navCtrl.navigateForward('/recovery');
-  }
-
-  async onClickEvent() {
-    await this.navCtrl.navigateForward('/event');
-  }
-
-  async onClickHeat() {
-    await this.navCtrl.navigateForward('/heat');
-  }
-
-  async onClickPregnancyCheck() {
-    await this.navCtrl.navigateForward('/pregnancy-check');
-  }
-
-  async onClickPregnant() {
-    await this.navCtrl.navigateForward('/pregnant');
-  }
-
-  async onClickCalving() {
-    await this.navCtrl.navigateForward('/calving');
-  }
-
-  async onClickDryoff() {
-    await this.navCtrl.navigateForward('/dryoff');
-  }
-
-  async onClickDairy() {
-    await this.navCtrl.navigateForward('/dairy');
-  }
-
-  async showToast(data: any) {
-    const toast = await this.toastController.create({
-      swipeGesture: 'vertical',
-      icon: 'thumbs-up-sharp',
-      header: data.header,
-      message: data.msg,
-      color: data.color,
-      duration: 3000,
-    });
-    toast.present();
-  }
-
-  onSubmitMilkEntry() {
-    console.log('Milk Entry Form: ', this.milkEntryForm.value);
-    this.dataService
-      .submitMilkEntry(this.milkEntryForm.value)
-      .subscribe((data) => {
-        if (data) {
-          const totalMilk = data['data']['createMilkEntry']['totalMilk'];
-          if (totalMilk > 0) {
-            const toast = {
-              header: 'Flixdrop Dairy Management System',
-              msg: `Animal No.${
-                this.selectedCattle['collar']['collarId']
-              } Produced Total ${+data['data']['createMilkEntry'][
-                'totalMilk'
-              ]} Ltrs of Milk.`,
-              color: 'primary',
-            };
-
-            this.showToast(toast);
-
-            this.modal.dismiss().then(() => {
-              this.results = [];
-              this.selectedCattle = '';
-              this.milkEntryForm.reset();
-              this.handleRefresh();
-            });
-          }
+    ).subscribe({
+      next: ([eventsPayload]) => {
+        try {
+          this.syncHistoryLogs(eventsPayload?.items || []);
+        } catch (e) {
+          console.error("Pipeline breakdown processing events details:", e);
         }
-      });
+      }
+    });
   }
 
-  clearEntries() {
-    this.results = [];
-    this.selectedCattle = '';
-    this.milkEntryForm.reset();
+  onPresetChange(duration: string) {
+    this.selectedPreset = duration;
+    this.calculatePresetDates(duration);
+    this.fetchChartDataPipeline();
   }
 
-  selectOption(animal: string) {
-    this.selectedCattle = animal;
-    this.milkEntryForm.controls['animalId'].setValue(animal['id']);
-    this.results = [];
+  private calculatePresetDates(preset: string) {
+    this.endDate = new Date();
+    this.startDate = new Date();
+
+    if (preset === '1day') {
+      this.startDate.setDate(this.endDate.getDate() - 1);
+    } else if (preset === '7days') {
+      this.startDate.setDate(this.endDate.getDate() - 7);
+    } else if (preset === '30days') {
+      this.startDate.setMonth(this.endDate.getMonth() - 1);
+      this.startDate.setHours(0, 0, 0, 0);
+    } else if (preset === '90days') {
+      this.startDate.setMonth(this.endDate.getMonth() - 3);
+      this.startDate.setHours(0, 0, 0, 0);
+    }
+    this.endDate.setHours(23, 59, 59, 999);
   }
 
-  handleMilkEntryInput(event: any) {
-    this.results = [];
-    this.animals = [];
-    const query = event.target.value.toLowerCase();
-
-    const offset = (this.p - 1) * this.pageSize;
-
-    // this.dataService
-    //       .getAnimals(this.userId, this.pageSize, offset, query)
-    //       .pipe(first())
-    //       .subscribe({
-    //         next: (res: any) => {
-    //           if (res) {
-    //             console.log('Res: ', res);
-    //             this.animals = res.items;
-    //             this.results =  this.animals || [];
-    //           }
-    //           this.isLoading = false;
-    //         },
-    //         error: (err) => {
-    //           console.error("Error loading animals:", err);
-    //           this.results = [];
-    //           this.isLoading = false;
-    //         },
-    //       });
-
-    this.dataService
-      .getAnimals(this.pageSize, offset, query)
-      .pipe(first()) // Automatically unsubscribes after first result
-      .subscribe({
-        next: (res: any) => {
-          // Since our service returns 'data.getAnimals' directly now:
-          this.animals = res.items || [];
-          this.results = this.animals;
-          this.isLoading = false;
-        },
-        error: (err) => {
-          console.error('Error loading animals:', err);
-          this.results = [];
-          this.isLoading = false;
-        },
-      });
-
-    if (query.length == 0) {
-      this.animals = [];
-      this.results = [];
-    } else if (!this.animals || this.animals.length === 0) {
-      this.results = [];
+  syncHistoryLogs(rawMilkingLogs?: any[]) {
+    if (!rawMilkingLogs || !Array.isArray(rawMilkingLogs)) {
+      this.processedMilkingEvents = [];
       return;
     }
 
-    this.results = this.animals.filter((item) => {
-      return Object.values(item).some((value: any) => {
-        if (value && typeof value === 'string') {
-          return value.toLowerCase().includes(query);
-        } else if (value && typeof value === 'object') {
-          return Object.values(value).some((nestedValue: any) => {
-            if (nestedValue && typeof nestedValue === 'string') {
-              return nestedValue.toLowerCase().includes(query);
-            }
-            return false;
-          });
-        }
-        return false;
+    const startMs = DateTime.fromJSDate(this.startDate || new Date()).startOf('day').valueOf();
+    const endMs = DateTime.fromJSDate(this.endDate || new Date()).endOf('day').valueOf();
+
+    const filteredLogs = rawMilkingLogs.filter(log => {
+      if (!log || !log.occurredAt) return false;
+      const logMs = DateTime.fromISO(log.occurredAt).valueOf();
+      return logMs >= startMs && logMs <= endMs;
+    });
+
+    filteredLogs.sort((a, b) => DateTime.fromISO(a.occurredAt).valueOf() - DateTime.fromISO(b.occurredAt).valueOf());
+
+    this.processedMilkingEvents = filteredLogs.map(log => {
+      const dt = DateTime.fromISO(log.occurredAt);
+      const noonSlot = dt.set({ hour: 12, minute: 0, second: 0, millisecond: 0 });
+
+      return {
+        x: noonSlot.valueOf(),
+        morningMilk: log.morningMilk || 0,
+        afternoonMilk: log.afternoonMilk || 0,
+        eveningMilk: log.eveningMilk || 0,
+        totalMilk: log.totalMilk || 0
+      };
+    });
+  }
+
+  getProcessedPerformanceData() {
+    const dailyTotals: { dateStr: string; timestamp: number; totalYield: number }[] = [];
+    
+    const uniqueDays = Array.from(new Set(this.processedMilkingEvents.map(e => 
+      DateTime.fromMillis(e.x).toFormat('yyyy-MM-dd')
+    )));
+
+    uniqueDays.forEach(dateStr => {
+      const dayPoints = this.processedMilkingEvents.filter(e => 
+        DateTime.fromMillis(e.x).toFormat('yyyy-MM-dd') === dateStr
+      );
+      
+      const dayTotal = dayPoints.reduce((sum, p) => sum + (p.totalMilk || 0), 0);
+      
+      dailyTotals.push({
+        dateStr,
+        timestamp: DateTime.fromISO(dateStr).valueOf(),
+        totalYield: dayTotal
       });
     });
-  }
 
-  onSelectMilkingDate(event) {
-    const eventValue = event.detail.value;
-    this.milkEntryForm.controls['eventDateTime'].setValue(eventValue);
-  }
+    dailyTotals.sort((a, b) => a.timestamp - b.timestamp);
 
-  async plotLineChart() {
-    if (!this.milkingEvents || this.milkingEvents.length === 0) return;
+    return dailyTotals.map((currentDay, index, arr) => {
+      const startIdx = Math.max(0, index - 6);
+      const subset = arr.slice(startIdx, index + 1);
+      const averageBaseline = subset.reduce((sum, d) => sum + d.totalYield, 0) / subset.length;
 
-    const chartDataMap = new Map();
-    this.milkingEvents.forEach((event) => {
-      const date = this.datePipe.transform(
-        parseInt(event.eventDateTime),
-        'yyyy-MM-dd'
-      );
-      const currentTotal = chartDataMap.get(date) || 0;
-      chartDataMap.set(date, currentTotal + event.totalMilk);
+      const deviationThreshold = averageBaseline * 0.85;
+      const isAnomalousDrop = currentDay.totalYield > 0 && currentDay.totalYield < deviationThreshold;
+
+      return {
+        ...currentDay,
+        baseline: Math.round(averageBaseline * 10) / 10, 
+        isAnomalousDrop
+      };
     });
-
-    const sortedDates = Array.from(chartDataMap.keys()).sort();
-    const dataPoints = sortedDates.map((date) => chartDataMap.get(date));
-
-    if (this.chart) {
-      this.chart.destroy();
+  }
+  
+  private destroyChartInstance() {
+    if (this.privateMilkingChartInstance) {
+      this.privateMilkingChartInstance.destroy();
+      this.privateMilkingChartInstance = null;
     }
+  }
 
-    this.chart = new Chart(this.myChart.nativeElement, {
-      type: 'bar',
+  renderMilkingChartInstance() {
+    const canvas = this.milkingChartCanvas?.nativeElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    this.destroyChartInstance();
+
+    const chartData = this.getProcessedPerformanceData();
+    const pointColors = chartData.map(d => d.isAnomalousDrop ? '#ff4961' : '#3880ff');
+    const pointRadii = chartData.map(d => d.isAnomalousDrop ? 6 : 4);
+    const pointHoverRadii = chartData.map(d => d.isAnomalousDrop ? 8 : 6);
+
+    const areaGradient = ctx.createLinearGradient(0, 0, 0, 220);
+    areaGradient.addColorStop(0, 'rgba(56, 128, 255, 0.14)');
+    areaGradient.addColorStop(1, 'rgba(56, 128, 255, 0.00)');
+
+    const systemFont = {
+      family: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+      size: 11,
+      weight: '500' as const
+    };
+
+    this.privateMilkingChartInstance = new Chart(canvas, {
+      type: 'line',
       data: {
-        labels: ['Milk Production'],
         datasets: [
           {
-            label: 'Total Milk',
-            data: [+this.milk_target.totalMilk],
-            backgroundColor: ['#00B4DB'],
-            borderWidth: 2,
-            borderRadius: 5,
-            borderSkipped: false,
+            label: 'Daily Yield',
+            data: chartData.map(d => ({ x: d.timestamp, y: d.totalYield })),
+            borderColor: '#3880ff',
+            borderWidth: 3,
+            tension: 0.35,
+            fill: true,
+            backgroundColor: areaGradient,
+            pointBackgroundColor: pointColors,
+            pointBorderColor: '#ffffff',
+            pointBorderWidth: 1.5,
+            pointRadius: pointRadii,
+            pointHoverRadius: pointHoverRadii,
+            pointHoverBackgroundColor: pointColors,
+            pointHoverBorderColor: '#ffffff',
+            pointHoverBorderWidth: 2,
+            order: 1
           },
           {
-            label: 'No. of Cows',
-            data: [+this.milk_target.numCows],
-            backgroundColor: ['#FDFC47'],
-            borderWidth: 2,
-            borderRadius: 5,
-            borderSkipped: false,
-          },
-          {
-            label: 'Avg Milk',
-            data: [this.milk_target.avgMilkPerCow],
-            backgroundColor: ['#a17fe0'],
-            borderWidth: 2,
-            borderRadius: 5,
-            borderSkipped: false,
-          },
-          {
-            label: 'Efficiency',
-            data: [+this.milk_target.efficiency],
-            backgroundColor: ['#00F260'],
-            borderWidth: 2,
-            borderRadius: 5,
-            borderSkipped: false,
-          },
-        ],
+            label: '7-Day Baseline',
+            data: chartData.map(d => ({ x: d.timestamp, y: d.baseline })),
+            borderColor: '#687484',
+            borderWidth: 1.5,
+            borderDash: [5, 5],
+            fill: false,
+            pointRadius: 0,
+            pointHoverRadius: 0,
+            tension: 0.3,
+            order: 2
+          }
+        ]
       },
-
       options: {
         responsive: true,
-        maintainAspectRatio: true,
-        elements: {
-          point: {
-            radius: 0,
-          },
+        maintainAspectRatio: false,
+        layout: {
+          padding: { top: 12, bottom: 4, left: 6, right: 14 }
         },
-
         scales: {
           x: {
-            offset: true,
-            border: {
-              display: true,
+            type: 'time',
+            time: {
+              unit: 'day',
+              displayFormats: { day: 'dd MMM' }
             },
             grid: {
-              display: false,
+              display: false
             },
             ticks: {
+              color: '#8a94a6',
+              maxRotation: 0,
               autoSkip: true,
-            },
+              maxTicksLimit: 6
+            }
           },
           y: {
-            border: {
-              display: true,
-            },
+            type: 'linear',
+            beginAtZero: true,
+            grace: '10%',
             grid: {
-              display: false,
+              color: 'rgba(0, 0, 0, 0.04)',
+              tickLength: 0
             },
             ticks: {
-              autoSkip: true,
-              font: {
-                size: 10,
-              },
-              backdropColor: 'rgba(255, 255, 255)',
-              showLabelBackdrop: true,
-            },
-            title: {
-              display: true,
-              text: 'Production (Liters)',
-            },
-          },
+              color: '#8a94a6',
+              padding: 8,
+              callback: (value) => `${value}L`
+            }
+          }
         },
         plugins: {
           legend: {
@@ -773,30 +972,104 @@ export class HomePage implements OnInit, OnDestroy {
             position: 'top',
             align: 'end',
             labels: {
-              padding: 10,
-              textAlign: 'right',
-              font: {
-                weight: 'bolder',
-              },
+              boxWidth: 8,
+              boxHeight: 8,
               usePointStyle: true,
-              pointStyle: 'rect',
-            },
-            reverse: false,
-          },
-          title: {
-            padding: 10,
-            align: 'start',
-            position: 'top',
-            display: true,
-            font: {
-              weight: 'bolder',
-            },
+              pointStyle: 'circle',
+              color: '#444d56',
+              padding: 16
+            }
           },
           tooltip: {
-            position: 'average',
-          },
-        },
-      },
+            enabled: true,
+            mode: 'index',
+            intersect: false,
+            backgroundColor: 'rgba(25, 30, 40, 0.95)',
+            titleFont: { ...systemFont, size: 12, weight: 'bold' },
+            padding: 12,
+            cornerRadius: 8,
+            caretSize: 6,
+            displayColors: true,
+            boxWidth: 6,
+            boxHeight: 6,
+            boxPadding: 6,
+            callbacks: {
+              title: (items) => {
+                if (!items.length) return '';
+                return DateTime.fromMillis(items[0].parsed.x).toFormat('cccc, dd LLL');
+              },
+              label: (context) => {
+                const dataPoint = chartData[context.dataIndex];
+                const rawValue = context.parsed.y;
+                
+                if (context.datasetIndex === 0) {
+                  const alertPrefix = dataPoint.isAnomalousDrop ? '⚠️ ' : '';
+                  return ` ${alertPrefix}Yield: ${rawValue.toFixed(1)} Liters`;
+                }
+                return ` Target: ${rawValue.toFixed(1)} Liters`;
+              }
+            }
+          }
+        }
+      }
     });
+  }
+
+  private syncSelections() {
+    const selections = this.eventUtil.getSavedSelections();
+    if (selections) {
+      this.filter.targetPath = selections.targetPath || '';
+      this.filter.farmId = selections.farmId || '';
+    }
+  }
+
+  async loadManagedCounts() {
+    this.isLoading.set(true);
+
+    try {
+      const hasFarm = this.filter.farmId && this.filter.farmId !== 'null' && this.filter.farmId !== 'undefined';
+      
+      const res = await firstValueFrom(
+        this.apollo.query<any>({
+          query: DASHBOARD_ITEMS,
+          variables: {
+            filter: {
+              farmId: hasFarm ? this.filter.farmId : null,
+              targetPath: hasFarm ? null : (this.filter.targetPath || null),
+              startDate: this.filter.startDate || null,
+              endDate: this.filter.endDate || null
+            }
+          },
+          fetchPolicy: 'network-only' // Guarantees fresh server data without caching
+        })
+      );
+
+      if (res?.data?.getDashboardCounts) {
+        this.dashboardData$.next(res.data.getDashboardCounts);
+      }
+    } catch (err) {
+      console.error("Managed Load Error:", err);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async openDairyModal(type: string, entry?: any) {
+    const modal = await this.modalCtrl.create({
+      component: DairyModalComponent,
+      componentProps: {
+        type: type,
+        entry: entry
+      }
+    });
+
+    await modal.present();
+
+    const { data, role } = await modal.onDidDismiss();
+
+    if (role === 'confirm' && data?.updated) {
+      this.refresh();
+      this.renderMilkingChartInstance();
+    }
   }
 }

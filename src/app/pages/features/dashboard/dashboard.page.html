@@ -1,0 +1,167 @@
+
+<ion-content [fullscreen]="true">
+
+<div class="dashboard-scroll-container">
+<div class="parent">
+  <ion-item [button]="true" [detail]="true" routerLink="/home/animals" class="div1">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Animals' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalAnimals | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/healths" class="div3">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Healths' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalHealths | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/recoveries" class="div4">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Recoveries' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalRecoveries | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/heats" class="div2">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Heats' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalHeats | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/inseminations" class="div5">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Inseminations' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalInseminations | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/pregnancies" class="div6">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Pregnancies' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalPregnancies | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/dryoffs" class="div7">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Dryoffs' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalDryoffs | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/calvings" class="div8">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Calvings' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalCalvings | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/reproductions" class="div8">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Reproductions' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalReproductions | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+  <ion-item [button]="true" [detail]="true" routerLink="/home/lactations" class="div8">
+    <ion-label>
+      <div style="text-align: center;">
+        <h3>{{'Lactations' | translate}}</h3>
+        <h1>
+          <b>
+            <span class="count-display">
+              {{ (counts$ | async)?.totalLactations | countUp | async }}
+            </span>
+          </b>
+        </h1>
+      </div>
+    </ion-label>
+  </ion-item>
+
+</div>
+
+<!-- <div class="charts-grid-panel">
+
+  <app-heat class="chart-host-frame"></app-heat>
+  <app-health class="chart-host-frame"></app-health>
+
+</div> -->
+
+</div>
+
+</ion-content>

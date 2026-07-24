@@ -1,0 +1,395 @@
+<!-- <ion-content class="ion-padding">
+
+    <ion-header>
+    <ion-toolbar>
+      <ion-title>{{ 'Lactation Cycle' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div *ngIf="isLoading()" class="flex-center">
+    <ion-spinner name="lines-sharp"></ion-spinner>
+  </div>
+
+  <ion-modal #lactationfilter trigger="open-lactation-filter">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ 'Apply Filters' | translate }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-label><strong>{{ 'Presets' | translate }}</strong></ion-label>
+        <ion-toolbar class="ion-padding-vertical">
+          <ion-buttons slot="start">
+            <ion-button [fill]="activeRange === -1 ? 'solid' : 'outline'" color="medium" (click)="setRange(-1)">
+              {{ 'All'| translate }}</ion-button>
+            <ion-button [fill]="activeRange === 0.033 ? 'solid' : 'outline'" color="medium" (click)="setRange(0.033)">1
+              {{ 'Day' | translate }}</ion-button>
+            <ion-button [fill]="activeRange === 0.25 ? 'solid' : 'outline'" color="medium" (click)="setRange(0.25)">7 {{
+              'Days' | translate }}</ion-button>
+            <ion-button [fill]="activeRange === 1 ? 'solid' : 'outline'" color="medium" (click)="setRange(1)">1 {{
+              'Month' | translate }}</ion-button>
+            <ion-button fill="solid" color="warning" (click)="clearDates()">{{ 'Reset' | translate}}</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <ion-label *ngIf="activeRange !== -1"><strong>{{ 'Custom Range' | translate }}</strong></ion-label>
+        <ion-toolbar class="ion-padding-vertical" *ngIf="activeRange !== -1">
+          <ion-buttons slot="start">
+            <ion-button fill="clear" color="none">
+              <ion-label><strong>From :</strong></ion-label>
+              <ion-datetime-button datetime="start_dt"></ion-datetime-button>
+            </ion-button>
+            <ion-button fill="clear" color="none">
+              <ion-label><strong>Till :</strong></ion-label>
+              <ion-datetime-button datetime="end_dt"></ion-datetime-button>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-content>
+      <ion-footer>
+        <ion-toolbar>
+          <ion-buttons slot="end">
+            <ion-button color="success" fill="solid" (click)="lactationfilter.dismiss()">
+              <ion-label color="light">Ok</ion-label>
+            </ion-button>
+            <ion-button color="medium" fill="solid" (click)="lactationfilter.dismiss()">
+              <ion-label color="light">Cancel</ion-label>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="start_dt" presentation="date" [(ngModel)]="filter.startDate"
+        [showDefaultButtons]="true" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="end_dt" presentation="date" [(ngModel)]="filter.endDate"
+        [showDefaultButtons]="true" [min]="filter.startDate" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+  <ion-popover trigger="open-lactation-columns-selector" dismissOnSelect="false">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title>{{ 'Select Columns' | translate }}</ion-title>
+        </ion-toolbar>
+        <ion-list lines="full">
+          <ion-item *ngFor="let col of tableColumns" button (click)="toggleColumnVisibility(col.key)">
+            <ion-checkbox [checked]="col.visible" labelPlacement="start" justify="space-between">
+              {{ col.label | translate }}
+            </ion-checkbox>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+
+  <div class="toolbar-align-start">
+    <ion-searchbar class="search-input" [value]="filter.search" searchIcon="search-circle"
+      placeholder="{{'Search Animals' | translate}}" (ionInput)="handleInput($event)">
+    </ion-searchbar>
+    <ion-buttons slot="end">
+      <ion-button id="open-lactation-filter" color="medium" fill="solid">
+        <ion-label><strong>{{ 'Filter' | translate }}</strong></ion-label>
+        <ion-icon slot="end" name="filter-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </div>
+
+  <div class="table-container">
+     <div class="toolbar-align-end">
+      <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+      <ion-buttons slot="end">
+        <ion-button id="open-animal-columns-selector" color="medium" fill="outline">
+          <ion-label><strong>{{ 'Columns' | translate }}</strong></ion-label>
+          <ion-icon slot="end" name="eye-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
+    <table class="responsive-table">
+      <thead>
+        <tr>
+
+          <th (click)="toggleSort('animal.name')" class="sortable">
+            {{'Tag No. | Name' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'animal.name' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+          <th>{{'Collar Tag' | translate}}</th>
+          <th>{{'Status' | translate}}</th>
+          <th>{{'Milestones' | translate}}</th>
+
+        
+          <th (click)="toggleSort('window')" class="sortable">
+            {{'Event Window' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'window' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+
+          <th>{{'Lactation Number' | translate}}</th>
+
+          <th>{{'Expected Dryoff' | translate}}</th>
+
+          <th>{{'Expected Calving' | translate}}</th>
+
+        </tr>
+      </thead>
+      <tbody *ngIf="totalCount() > 0">
+        <tr
+          *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+          [routerLink]="['/charts', item.animal?.id]">
+        
+          <td [attr.data-label]="'Tag No. | Name' | translate">{{ item.animal?.tagNo }} {{ item.animal?.name ? '|' + item.animal?.name : ''}}</td>
+          <td [attr.data-label]="'Collar Tag' | translate">{{ item.animal?.activeTag?.deviceNo }}</td>
+          <td [attr.data-label]="'Status' | translate">
+            <ion-badge color="light">
+              {{ item.status }}
+            </ion-badge>
+          </td>
+          <td [attr.data-label]="'Milestones' | translate">
+             
+              <ion-chip color="secondary" *ngFor="let event of item.milestones">
+                <ion-label>
+                  <h3>
+                    <strong>{{ event.__typename }}</strong>
+                  </h3>
+                  <h3>
+                    <strong>{{ event.occurredAt }}</strong>
+                  </h3>
+                </ion-label>
+              </ion-chip>         
+            
+          </td>
+          <td [attr.data-label]="'Event Window' | translate">{{ item.startedAt | date: 'MMM d, y, h:mm a' }} - {{ item.endedAt | date: 'MMM d, y, h:mm a' }}</td>
+
+          <td [attr.data-label]="'Lactation Number' | translate">{{ item.lactationNumber }}</td>
+
+          <td [attr.data-label]="'Expected Dryoff' | translate">{{ item.expectedDryoffDate | date: 'MMM d, y, h:mm a' }}</td>
+
+          <td [attr.data-label]="'Expected Calving' | translate">{{ item.expectedCalvingDate | date: 'MMM d, y, h:mm a' }}</td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-footer">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </div>
+
+</ion-content> -->
+
+<ion-content class="ion-padding">
+
+    <ion-header>
+    <ion-toolbar>
+      <ion-title>{{ 'Lactation Cycle' | translate }}</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div *ngIf="isLoading()" class="flex-center">
+    <ion-spinner name="lines-sharp"></ion-spinner>
+  </div>
+
+  <ion-modal #lactationfilter trigger="open-lactation-filter">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>{{ 'Apply Filters' | translate }}</ion-title>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-label><strong>{{ 'Presets' | translate }}</strong></ion-label>
+        <ion-toolbar class="ion-padding-vertical">
+          <ion-buttons slot="start">
+            <ion-button [fill]="activeRange === -1 ? 'solid' : 'outline'" color="medium" (click)="setRange(-1)">
+              {{ 'All'| translate }}</ion-button>
+            <ion-button [fill]="activeRange === 0.033 ? 'solid' : 'outline'" color="medium" (click)="setRange(0.033)">1
+              {{ 'Day' | translate }}</ion-button>
+            <ion-button [fill]="activeRange === 0.25 ? 'solid' : 'outline'" color="medium" (click)="setRange(0.25)">7 {{
+              'Days' | translate }}</ion-button>
+            <ion-button [fill]="activeRange === 1 ? 'solid' : 'outline'" color="medium" (click)="setRange(1)">1 {{
+              'Month' | translate }}</ion-button>
+            <ion-button fill="solid" color="warning" (click)="clearDates()">{{ 'Reset' | translate}}</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+        <ion-label *ngIf="activeRange !== -1"><strong>{{ 'Custom Range' | translate }}</strong></ion-label>
+        <ion-toolbar class="ion-padding-vertical" *ngIf="activeRange !== -1">
+          <ion-buttons slot="start">
+            <ion-button fill="clear" color="none">
+              <ion-label><strong>From :</strong></ion-label>
+              <ion-datetime-button datetime="start_dt"></ion-datetime-button>
+            </ion-button>
+            <ion-button fill="clear" color="none">
+              <ion-label><strong>Till :</strong></ion-label>
+              <ion-datetime-button datetime="end_dt"></ion-datetime-button>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-content>
+      <ion-footer>
+        <ion-toolbar>
+          <ion-buttons slot="end">
+            <ion-button color="success" fill="solid" (click)="lactationfilter.dismiss()">
+              <ion-label color="light">Ok</ion-label>
+            </ion-button>
+            <ion-button color="medium" fill="solid" (click)="lactationfilter.dismiss()">
+              <ion-label color="light">Cancel</ion-label>
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-footer>
+    </ng-template>
+  </ion-modal>
+
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="start_dt" presentation="date" [(ngModel)]="filter.startDate"
+        [showDefaultButtons]="true" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+  <ion-popover [keepContentsMounted]="true">
+    <ng-template>
+      <ion-datetime id="end_dt" presentation="date" [(ngModel)]="filter.endDate"
+        [showDefaultButtons]="true" [min]="filter.startDate" (ionChange)="refresh()"></ion-datetime>
+    </ng-template>
+  </ion-popover>
+
+  <ion-popover trigger="open-lactation-columns-selector" dismissOnSelect="false">
+    <ng-template>
+      <ion-content>
+        <ion-toolbar>
+          <ion-title>{{ 'Select Columns' | translate }}</ion-title>
+        </ion-toolbar>
+        <ion-list lines="full">
+          <ion-item *ngFor="let col of tableColumns" button (click)="toggleColumnVisibility(col.key)">
+            <ion-checkbox [checked]="col.visible" labelPlacement="start" justify="space-between">
+              {{ col.label | translate }}
+            </ion-checkbox>
+          </ion-item>
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+
+  <div class="toolbar-align-start">
+    <ion-searchbar class="search-input" [value]="filter.search" searchIcon="search-circle"
+      placeholder="{{'Search Animals' | translate}}" (ionInput)="handleInput($event)">
+    </ion-searchbar>
+    <ion-buttons slot="end">
+      <ion-button id="open-lactation-filter" color="medium" fill="solid">
+        <ion-label><strong>{{ 'Filter' | translate }}</strong></ion-label>
+        <ion-icon slot="end" name="filter-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </div>
+
+  <div class="table-container">
+     <div class="toolbar-align-end">
+      <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+      <ion-buttons slot="end">
+        <ion-button id="open-lactation-columns-selector" color="medium" fill="outline">
+          <ion-label><strong>{{ 'Columns' | translate }}</strong></ion-label>
+          <ion-icon slot="end" name="eye-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+    </div>
+    <table class="responsive-table">
+      <thead>
+        <tr>
+
+          <th *ngIf="isColumnVisible('tagNo')" (click)="toggleSort('tagNo')" class="sortable">
+            {{'Tag No. | Name' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'tagNo' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+          <th *ngIf="isColumnVisible('deviceNo')" (click)="toggleSort('deviceNo')" class="sortable">
+            {{'Collar Tag' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'deviceNo' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+          <th *ngIf="isColumnVisible('status')" (click)="toggleSort('status')" class="sortable">
+            {{'Status' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'status' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+          <th *ngIf="isColumnVisible('milestones')">{{'Milestones' | translate}}</th>
+
+        
+          <th *ngIf="isColumnVisible('startedAt')" (click)="toggleSort('startedAt')" class="sortable">
+            {{'Event Window' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'startedAt' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+
+          <th *ngIf="isColumnVisible('lactationNumber')" (click)="toggleSort('lactationNumber')" class="sortable">
+            {{'Lactation Number' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'lactationNumber' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+
+          <th *ngIf="isColumnVisible('expectedDryoffDate')" (click)="toggleSort('expectedDryoffDate')" class="sortable">
+            {{'Expected Dryoff' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'expectedDryoffDate' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+
+          <th *ngIf="isColumnVisible('expectedCalvingDate')" (click)="toggleSort('expectedCalvingDate')" class="sortable">
+            {{'Expected Calving' | translate}}
+            <ion-icon
+              [name]="options.sortBy === 'expectedCalvingDate' ? (options.sortOrder === 1 ? 'arrow-up' : 'arrow-down') : 'swap-vertical'"></ion-icon>
+          </th>
+
+        </tr>
+      </thead>
+      <tbody *ngIf="totalCount() > 0">
+        <tr
+          *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+          [routerLink]="['/charts', item.animal?.id]">
+        
+          <td *ngIf="isColumnVisible('tagNo')" [attr.data-label]="'Tag No. | Name' | translate">{{ item.animal?.tagNo }} {{ item.animal?.name ? '|' + item.animal?.name : ''}}</td>
+          <td *ngIf="isColumnVisible('collar')" [attr.data-label]="'Collar Tag' | translate">{{ item.animal?.activeTag?.deviceNo }}</td>
+          <td *ngIf="isColumnVisible('status')" [attr.data-label]="'Status' | translate">
+            <ion-badge color="light">
+              {{ item.status }}
+            </ion-badge>
+          </td>
+          <td *ngIf="isColumnVisible('milestones')" [attr.data-label]="'Milestones' | translate">
+              
+              <ion-chip color="secondary" *ngFor="let event of item.milestones">
+                <ion-label>
+                  <h3>
+                    <strong>{{ event.__typename }}</strong>
+                  </h3>
+                  <h3>
+                    <strong>{{ event.occurredAt | date: 'MMM d, y, h:mm a' }}</strong>
+                  </h3>
+                </ion-label>
+              </ion-chip>         
+            
+          </td>
+          <td *ngIf="isColumnVisible('window')" [attr.data-label]="'Event Window' | translate">{{ item.startedAt | date: 'MMM d, y, h:mm a' }} - {{ item.endedAt | date: 'MMM d, y, h:mm a' }}</td>
+
+          <td *ngIf="isColumnVisible('lactationNo')" [attr.data-label]="'Lactation Number' | translate">{{ item.lactationNumber }}</td>
+
+          <td *ngIf="isColumnVisible('expDryoff')" [attr.data-label]="'Expected Dryoff' | translate">{{ item.expectedDryoffDate | date: 'MMM d, y, h:mm a' }}</td>
+
+          <td *ngIf="isColumnVisible('expCalving')" [attr.data-label]="'Expected Calving' | translate">{{ item.expectedCalvingDate | date: 'MMM d, y, h:mm a' }}</td>
+
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-footer">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </div>
+
+</ion-content>

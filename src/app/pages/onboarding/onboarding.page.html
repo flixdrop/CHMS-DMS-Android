@@ -1,0 +1,94 @@
+<ion-content [fullscreen]="true" class="onboarding-content">
+  <div class="onboarding-container">
+
+    <!-- SWIPER CONTAINER -->
+    <swiper-container #swiper [pagination]="true" class="onboarding-swiper">
+
+      <!-- SLIDE 1 -->
+      <swiper-slide>
+        <div class="slide-wrapper">
+          <img src="../../../assets/icons/chms-logo.png"
+            style="width: auto; height: auto; aspect-ratio: 2/1; margin-bottom: 1rem;" />
+          <h2><strong> Welcome to CHMS </strong> </h2>
+          <p>Your complete livestock, health, and farm management platform in one place.</p>
+        </div>
+      </swiper-slide>
+
+      <!-- SLIDE 2 -->
+      <swiper-slide>
+        <div class="slide-wrapper">
+          <div class="icon-bubble">
+            <ion-icon name="radio" size="large" color="medium"></ion-icon>
+          </div>
+          <h2> <strong> Real-Time Tracking </strong> </h2>
+          <p>Monitor milk production entries, health events, and herd metrics seamlessly.</p>
+        </div>
+      </swiper-slide>
+
+      <!-- SLIDE 3 -->
+      <swiper-slide>
+        <div class="slide-wrapper">
+          <div class="icon-bubble highlight">
+            <ion-icon name="notifications" size="large" color="warning"></ion-icon>
+          </div>
+          <h2><strong> Never Miss an Alert </strong> </h2>
+          <p>Receive immediate alerts for urgent animal health events, tasks, and system updates.</p>
+
+          <div class="permission-box">
+            @if (notificationStatus === 'idle') {
+            <ion-button expand="block" color="medium" fill="solid" (click)="requestNotifications()">
+              <ion-icon name="notifications" class="ion-margin-end"></ion-icon>
+              <ion-label class="ion-text-capitalize">
+                Enable Notifications
+              </ion-label>
+            </ion-button>
+            } @else if (notificationStatus === 'loading') {
+            <ion-button expand="block" color="medium" fill="clear" disabled>
+              <ion-spinner slot="start" class="ion-margin-end"></ion-spinner>
+              <ion-label class="ion-text-capitalize">
+                Enabling...
+              </ion-label>
+            </ion-button>
+            } @else if (notificationStatus === 'granted') {
+            <ion-button color="success" fill="clear">
+              <ion-icon name="checkmark" class="ion-margin-end"></ion-icon>
+              <ion-label class="ion-text-capitalize">Notifications Enabled!</ion-label>
+            </ion-button>
+            } @else {
+            <ion-button color="warning" fill="clear">
+              <ion-icon name="alert-circle" class="ion-margin-end"></ion-icon>
+              <ion-label class="ion-text-capitalize">Disabled (Enable in Settings anytime)</ion-label>
+            </ion-button>
+            }
+          </div>
+        </div>
+      </swiper-slide>
+
+    </swiper-container>
+
+    <ion-toolbar class="ion-padding" style="margin-bottom: var(--ion-safe-area-bottom);">
+      <ion-buttons slot="start">
+
+        <ion-button shape="round" fill="clear" (click)="finishOnboarding()">
+          <ion-label color="medium" style="text-decoration: 1px solid var(--ion-color-medium) underline;">
+            <strong class="ion-text-capitalize">
+              Skip
+            </strong>
+          </ion-label>
+        </ion-button>
+      </ion-buttons>
+
+      <ion-buttons slot="end">
+        <ion-button shape="round" fill="solid" color="secondary" (click)="nextOrFinish()">
+          <ion-label color="light">
+            <strong class="ion-text-capitalize">
+              {{ isLastSlide ? 'Get Started' : 'Continue' }}
+            </strong>
+          </ion-label>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+
+  </div>
+
+</ion-content>

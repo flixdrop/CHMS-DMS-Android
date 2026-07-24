@@ -1,0 +1,131 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button fill="clear" strong="true" routerDirection="back" (click)="closeModal()">
+        <ion-icon slot="icon-only" aria-hidden="true" name="chevron-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      {{ (type === 'create' ? 'Account Registration' : type === 'edit' ? 'Edit Profile' : 'Delete Profile') | translate
+      }}
+    </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <form *ngIf="userForm" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+
+    <ion-list lines="inset">
+
+      <ion-item>
+        <ion-input labelPlacement="stacked" type="text" formControlName="name"
+          placeholder="{{ 'e.g. Ramesh Kumar' | translate }}">
+          <div slot="label">{{ 'Name' | translate }}</div>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input labelPlacement="stacked" type="text" formControlName="username"
+          placeholder="{{ 'e.g. vaishnaoprasad' | translate }}">
+          <div slot="label">{{ 'Username' | translate }}</div>
+        </ion-input>
+      </ion-item>
+
+      <ion-item *ngIf="type !== 'delete'">
+        <ion-input labelPlacement="stacked" type="password" formControlName="password"
+          placeholder="{{ type === 'create' ? 'Secure access credential *' : 'New Password ?' | translate }}">
+          <div slot="label">{{ (type === 'create' ? 'Password *' : 'Update Password') | translate }}</div>
+        </ion-input>
+      </ion-item>
+
+      <!-- <ion-item>
+        <ion-select interface="popover" labelPlacement="stacked" formControlName="accessLevel">
+          <div slot="label">{{ 'Access System Level' | translate }}</div>
+
+          <ion-select-option *ngIf="userForm.get('accessLevel')?.value === 'ACCOUNT_HOLDER'" value="ACCOUNT_HOLDER">
+            {{ 'Account Holder' | translate }}
+          </ion-select-option>
+
+          <ion-select-option value="ADMIN">{{ 'Admin' | translate }}</ion-select-option>
+          <ion-select-option value="MANAGER">{{ 'Manager' | translate }}</ion-select-option>
+          <ion-select-option value="STAFF">{{ 'Staff' | translate }}</ion-select-option>
+        </ion-select>
+      </ion-item> -->
+
+      <!-- <ion-item>
+        <ion-input labelPlacement="stacked" type="number" formControlName="accountTier"
+          placeholder="{{ 'Unassigned tier configuration' | translate }}">
+          <div slot="label">{{ 'Account Tier' | translate }}</div>
+        </ion-input>
+      </ion-item> -->
+
+      <ion-item>
+        <ion-input labelPlacement="stacked" type="email" formControlName="email"
+          placeholder="{{ 'Not configured' | translate }}">
+          <div slot="label">{{ 'Email Address' | translate }}</div>
+        </ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input labelPlacement="stacked" type="tel" formControlName="contact"
+          placeholder="{{ 'Not configured' | translate }}">
+          <div slot="label">{{ 'Contact No.' | translate }}</div>
+        </ion-input>
+      </ion-item>
+
+      <ion-item lines="none" class="ion-margin-top ion-margin-bottom">
+        <div class="profile-upload-container">
+
+          <div class="avatar-frame-wrapper">
+            <ion-avatar class="logo-preview-avatar">
+              <img [src]="userForm.get('logo')?.value || ''" (error)="$any($event.target).src = ''" />
+            </ion-avatar>
+
+            <div *ngIf="processingPhoto()" class="avatar-spinner-overlay">
+              <ion-spinner name="crescent" color="light"></ion-spinner>
+            </div>
+          </div>
+
+          <input type="file" #photoPickerHidden accept="image/*" style="display: none"
+            (change)="onFileSelected($event)" />
+
+          <div class="action-buttons-column">
+            <ion-button type="button" size="small" fill="outline" color="primary"
+              [disabled]="processingPhoto() || submitting()" (click)="photoPickerHidden.click()">
+              <ion-icon slot="start" name="camera-outline"></ion-icon>
+              {{ (userForm.get('logo')?.value ? 'Change Profile Photo' : 'Upload Profile Photo') | translate }}
+            </ion-button>
+            <p class="upload-hint-text">{{ 'Image will instantly be optimized locally to a 400x400 JPEG string.' |
+              translate }}</p>
+          </div>
+
+        </div>
+      </ion-item>
+
+    </ion-list>
+  </form>
+</ion-content>
+
+<ion-footer>
+  <form *ngIf="userForm" [formGroup]="userForm" (ngSubmit)="onSubmit()">
+    <ion-toolbar class="ion-padding">
+      <ion-buttons slot="end">
+        <ion-button *ngIf="type !== 'delete'" type="submit" expand="block" [disabled]="submitting() || userForm.invalid"
+          fill="solid">
+          <ion-spinner *ngIf="submitting()"></ion-spinner>
+          <ion-label *ngIf="!submitting()">
+            <strong>{{ (type === 'edit' ? 'Update User' : 'Registration User') | translate }}</strong>
+          </ion-label>
+        </ion-button>
+
+        <ion-button *ngIf="type === 'delete'" type="button" expand="block" fill="solid" color="danger"
+          [disabled]="submitting()" (click)="onDelete()">
+          <ion-spinner *ngIf="submitting()"></ion-spinner>
+          <ion-label *ngIf="!submitting()"><strong>{{ 'Delete Account' | translate
+              }}</strong></ion-label>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </form>
+</ion-footer>

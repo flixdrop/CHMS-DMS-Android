@@ -1,0 +1,210 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="closeModal()" fill="clear">
+        <ion-icon name="chevron-back" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Insemination</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding" *ngIf="heatForm">
+  <!-- Top level formGroup binding fixes NG01053 -->
+  <form [formGroup]="heatForm" (ngSubmit)="onSubmit()">
+
+       <ion-grid>
+        <ion-row>
+          <ion-col>
+
+            <ion-text>
+              <h4>
+                <strong class="ion-text-uppercase">
+                  {{heat.animal.tagNo}}
+                </strong>
+              </h4>
+            </ion-text>
+
+            <p>
+              <ion-text>
+                <ion-icon name="time-outline"></ion-icon>
+              </ion-text>
+              {{heat?.startedAt | daysSince}}
+            </p>
+
+            <p>
+              <ion-text>
+                <ion-icon color="warning" name="radio-sharp"></ion-icon>
+              </ion-text>
+              <ion-label [color]="+heat.heatStrength >= 75 ? 'success' : 'warning'">
+                {{heat?.heatStrength+"%"}}
+              </ion-label>
+            </p>
+
+          </ion-col>
+        </ion-row>
+
+
+      </ion-grid>
+
+    <!-- INSEMINATION / CONFIRM FORM SECTION -->
+    <div formGroupName="inseminationInput" *ngIf="type === 'confirm'">
+
+      <ion-item-group>
+        <ion-item-divider>
+          <ion-label>
+            <strong>
+              Insemination Details
+            </strong>
+          </ion-label>
+        </ion-item-divider>
+
+        <ion-list [lines]="true">
+
+          <!-- Process Selection -->
+          <ion-item>
+            <ion-label position="stacked">Breeding Method *</ion-label>
+            <ion-select formControlName="process" interface="popover">
+              <ion-select-option value="Artificial">Artificial Insemination (AI)</ion-select-option>
+              <ion-select-option value="Natural">Natural Service (Bull)</ion-select-option>
+            </ion-select>
+          </ion-item>
+
+          <!-- Insemination Date & Time -->
+          <ion-item>
+            <ion-label position="stacked">Insemination Date & Time *</ion-label>
+            <ion-input type="datetime-local" formControlName="occurredAt" [max]="maxDate"></ion-input>
+          </ion-item>
+
+          <!-- Technician Name -->
+          <ion-item>
+            <ion-label position="stacked">Technician / AI Worker Name</ion-label>
+            <ion-input formControlName="technicianName" placeholder="e.g. Ramesh Kumar"></ion-input>
+          </ion-item>
+
+          <!-- Natural Mating Specific Field -->
+          <ion-item *ngIf="heatForm.get('inseminationInput.process')?.value === 'Natural'">
+            <ion-label position="stacked">Bull Tag or Name *</ion-label>
+            <ion-input formControlName="bullName" placeholder="Enter Bull Tag No or Name"></ion-input>
+          </ion-item>
+        </ion-list>
+
+
+        <!-- ARTIFICIAL INSEMINATION PRESETS & DROPDOWNS -->
+        <div formGroupName="semenDetails" *ngIf="heatForm.get('inseminationInput.process')?.value === 'Artificial'">
+          <ion-item-divider>
+            <ion-label>
+              <strong>
+                Semen Straw Specifications
+              </strong>
+            </ion-label>
+          </ion-item-divider>
+
+          <ion-list [lines]="true">
+            <!-- Breed Selection -->
+            <ion-item>
+              <ion-label position="stacked">Semen Breed *</ion-label>
+              <ion-select formControlName="breed" interface="popover" placeholder="Select Breed">
+                <ion-select-option *ngFor="let breed of cattleBreeds" [value]="breed">
+                  {{ breed }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <!-- Custom Breed Input (Reveals when 'Other / Indigenous' selected) -->
+            <ion-item *ngIf="heatForm.get('inseminationInput.semenDetails.breed')?.value === 'Other / Indigenous'">
+              <ion-label position="stacked">Specify Custom Breed *</ion-label>
+              <ion-input formControlName="customBreed" placeholder="e.g. Deoni, Bargur, Kasaragod Dwarf">
+              </ion-input>
+            </ion-item>
+
+            <!-- Semen Agency / Firm -->
+            <ion-item>
+              <ion-label position="stacked">Distribution Agency / Firm *</ion-label>
+              <ion-select formControlName="company" interface="popover" placeholder="Select Semen Supplier">
+                <ion-select-option *ngFor="let company of semenCompanies" [value]="company">
+                  {{ company }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <!-- Custom Agency Input (Reveals when 'Private Local Agency / Other' selected) -->
+            <ion-item
+              *ngIf="heatForm.get('inseminationInput.semenDetails.company')?.value === 'Private Local Agency / Other'">
+              <ion-label position="stacked">Specify Agency / Firm Name *</ion-label>
+              <ion-input formControlName="customCompany" placeholder="e.g. Local Dairy Union / Private Vet">
+              </ion-input>
+            </ion-item>
+
+            <!-- Semen Technology / Straw Type -->
+            <ion-item>
+              <ion-label position="stacked">Straw Type</ion-label>
+              <ion-select formControlName="type" interface="popover" placeholder="Select Straw Type">
+                <ion-select-option *ngFor="let type of semenTypes" [value]="type">
+                  {{ type }}
+                </ion-select-option>
+              </ion-select>
+            </ion-item>
+
+            <!-- Straw Batch Number -->
+            <ion-item>
+              <ion-label position="stacked">Straw Batch / Bull Code Number</ion-label>
+              <ion-input formControlName="batchNumber" placeholder="e.g. B-10492-Gir"></ion-input>
+            </ion-item>
+          </ion-list>
+        </div>
+
+      </ion-item-group>
+
+
+    </div>
+
+    <!-- CANCELLATION PRESETS SECTION -->
+    <div formGroupName="cancellationInput" *ngIf="type === 'cancel'">
+      <ion-item-group>
+        <ion-item-divider>
+          <ion-label>
+            <strong>
+              Any reasons for not inseminating ?
+            </strong>
+          </ion-label>
+        </ion-item-divider>
+
+        <!-- Quick Preset Chips -->
+
+        <ion-list [lines]="true">
+
+          <ion-item *ngFor="let preset of presetRemarks" [color]="selectedPreset() === preset ? 'secondary' : 'light'"
+            (click)="selectPreset(preset)">
+            <ion-icon slot="start" [name]="selectedPreset() === preset ? 'checkmark-circle' : 'add-circle-outline'"
+              [color]="selectedPreset() === preset ? 'light' : 'medium'"></ion-icon>
+            <ion-label [color]="selectedPreset() === preset ? 'light' : 'medium'">{{ preset }}</ion-label>
+          </ion-item>
+
+          <ion-item class="ion-margin-vertical">
+            <ion-label position="stacked">Action Notes / Reason *</ion-label>
+            <ion-textarea formControlName="remarks" placeholder="Tap a preset above or type custom reasons..."
+              (ionInput)="onManualRemarkInput($event)" [rows]="3" [autoGrow]="true">
+            </ion-textarea>
+          </ion-item>
+        </ion-list>
+      </ion-item-group>
+    </div>
+
+  </form>
+</ion-content>
+
+<ion-footer>
+
+  <form [formGroup]="heatForm" (ngSubmit)="onSubmit()">
+    <ion-toolbar class="ion-padding">
+      <ion-buttons slot="end">
+        <ion-button expand="block" type="submit" [disabled]="submitting()" fill="solid">
+          <ion-spinner *ngIf="submitting()"></ion-spinner>
+          <ion-label *ngIf="!submitting()"><strong>Submit</strong></ion-label>
+        </ion-button>
+      </ion-buttons>
+    </ion-toolbar>
+  </form>
+
+</ion-footer>

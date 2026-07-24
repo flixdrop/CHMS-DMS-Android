@@ -4,25 +4,18 @@
 
     <ion-buttons slot="start">
       <ion-button fill="clear" strong="true" routerDirection="back" (click)="goBack()">
-        <ion-icon slot="icon-only" aria-hidden="true" name="arrow-back"></ion-icon>
+        <ion-icon slot="icon-only" aria-hidden="true" name="chevron-back"></ion-icon>
       </ion-button>
     </ion-buttons>
 
     <ion-title>Account Summary</ion-title>
 
-    <ion-buttons slot="end">
-        <ion-button size="small" expand="block" style=" background-color: #dc143c70 !important;
-      background: #dc143c70 !important;
-      --background: #dc143c70 !important; color: white !important;" (click)="onLogout()">
-        <ion-label>
-          <b>
-            {{'buttons.2.label'| translate}}
-          </b>
-        </ion-label>
-        <ion-icon aria-hidden="true" name="log-out-outline" style="margin-left: 8px;"></ion-icon>
+    <ion-buttons slot="end" (click)="openUserModal('edit', user)">
+      <ion-button>
+        <ion-label>Edit</ion-label>
+        <ion-icon name="create"></ion-icon>
       </ion-button>
     </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
 
@@ -31,159 +24,92 @@
   <ion-grid *ngIf="!isLoading">
     <ion-row>
       <ion-col size-md="6" offset-md="3">
-        <ion-toolbar>
-          <ion-item button>
-            <ion-icon class="ripple" style="height: 100px !important; width: 100px !important;" slot="end" color="primary"
-            name="person"></ion-icon>
-          </ion-item>
-          </ion-toolbar>
+        <ng-container *ngIf="safeLogo(); else fallbackChipLogo">
+          <ion-thumbnail style="margin: auto; width: 100px; height: 100px; aspect-ratio: 1/1;">
+            <img [src]="safeLogo()">
+          </ion-thumbnail>
+        </ng-container>
+        <ng-template #fallbackChipLogo>
+          <ion-thumbnail style="margin: auto; width: 100px; height: 100px; aspect-ratio: 1/1;">
+            <ion-icon name="person-circle-outline" style="width: 100px; height: 100px; aspect-ratio: 1/1;"
+              color="medium"></ion-icon>
+          </ion-thumbnail>
+        </ng-template>
+
       </ion-col>
     </ion-row>
 
-     <!-- <ion-row class="row-2">
-            <ion-col>
-              <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Account Name'| translate}}
-                  </h2>
-                    <h2>
-                    {{user.username }}
-                    </h2>
+    <ion-row>
+      <ion-col>
+
+        <ion-item-group>
+
+          <ion-list lines="inset">
+            <ion-item>
+              <ion-input label="Account Name" label-placement="stacked" value="{{user.name}}" disabled="true">
+                <ion-icon color="medium" slot="start" name="person"></ion-icon>
+              </ion-input>
+              <ion-button color="warning" fill="clear">
+                <ion-label>
+                  <strong>
+                    {{user.accessLevel}}
+                  </strong>
                 </ion-label>
-              </ion-item>
-              
+              </ion-button>
+            </ion-item>
 
-            </ion-col>
-          </ion-row> -->
+            <ion-item>
+              <ion-input type="email" label="Email" label-placement="stacked" value="{{user.email}}" disabled="true">
+                <ion-icon color="medium" slot="start" name="mail"></ion-icon>
+              </ion-input>
+            </ion-item>
+
+            <ion-item>
+              <ion-input type="tel" label="Contact" label-placement="stacked" value="{{user.contact}}" disabled="true">
+                <ion-icon color="medium" slot="start" name="phone-portrait"></ion-icon>
+              </ion-input>
+            </ion-item>
+
+          </ion-list>
+
+          <ion-item-divider>
+            <ion-label>
+              <strong>
+                Notification Settings
+              </strong>
+            </ion-label>
+          </ion-item-divider>
 
 
-           <ion-row *ngIf="user.username === 'NikhilPatil'" class="row-2">
-            <ion-col>
-              <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Account Name'| translate}}
-                  </h2>
-                    <h2>
-                    Nikhil Patil
-                    </h2>
-                </ion-label>
-              </ion-item>
+          <ion-list lines="inset">
 
-              <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Email'| translate}}
-                  </h2>
-                    <h2>
-                    nikpatil2727@gmail.com
-                    </h2>
-                </ion-label>
-              </ion-item>
-              
-               <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Phone no.'| translate}}
-                  </h2>
-                    <h2>
-                    91+ 9545838560
-                    </h2>
-                </ion-label>
-              </ion-item>
+            <ion-item>
+              <ion-label>
+                <ion-icon class="ion-margin-end" slot="start" color="medium" name="notifications"></ion-icon>
+                Enable Notifications
+              </ion-label>
+              <ion-toggle slot="end" [checked]="notificationsEnabled" (ionChange)="onToggleChange($event)"></ion-toggle>
+            </ion-item>
 
-              <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Location'| translate}}
-                  </h2>
-                    <h2>
-                    Gujarat 
-                    </h2>
-                </ion-label>
-              </ion-item>
-
-            </ion-col>
-          </ion-row>
+          </ion-list>
+        </ion-item-group>
 
 
 
-           <ion-row *ngIf="user.username === 'Nm1'" class="row-2">
-            <ion-col>
-              <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Account Name'| translate}}
-                  </h2>
-                    <h2>
-                    RajashakharJalla
-                    </h2>
-                </ion-label>
-              </ion-item>
-
-              <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Email'| translate}}
-                  </h2>
-                    <h2>
-                    rajashakarjalla@gmail.com
-                    </h2>
-                </ion-label>
-              </ion-item>
-              
-               <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Phone no.'| translate}}
-                  </h2>
-                    <h2>
-                    91+ 9535066386
-                    </h2>
-                </ion-label>
-              </ion-item>
-
-              <ion-item button>
-                <ion-label
-                  style="display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start;">
-                  <h2 style="font-weight: bolder;">
-                    {{'Location'| translate}}
-                  </h2>
-                    <h2>
-                    Karnataka
-                    </h2>
-                </ion-label>
-              </ion-item>
-
-            </ion-col>
-          </ion-row>
+      </ion-col>
+    </ion-row>
 
 
   </ion-grid>
 </ion-content>
 
-<!-- <ion-footer>
-  <ion-toolbar>
-      <div style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
-      <ion-button size="small" expand="block" style=" background-color: #dc143c70 !important;
-      background: #dc143c70 !important;
-      --background: #dc143c70 !important; color: white !important;" (click)="onLogout()">
-        <ion-label>
-          <b>
-            {{'buttons.2.label'| translate}}
-          </b>
-        </ion-label>
-        <ion-icon aria-hidden="true" name="log-out-outline" style="margin-left: 8px;"></ion-icon>
+<ion-footer>
+  <ion-toolbar class="ion-padding">
+    <ion-buttons slot="end">
+      <ion-button size="small" color="danger" fill="clear" (click)="onClickLogout()">
+        <ion-label>{{'buttons.2.label'| translate}}</ion-label>
+        <ion-icon name="log-out-outline" class="ion-padding-start"></ion-icon>
       </ion-button>
-    </div>
+    </ion-buttons>
   </ion-toolbar>
-</ion-footer> -->
+</ion-footer>

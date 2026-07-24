@@ -29,16 +29,6 @@ export class UtcToIstPipe implements PipeTransform {
 
       if (isNaN(dateObj.getTime())) return 'Invalid Date';
 
-      // return new Intl.DateTimeFormat('en-IN',  {
-      //   timeZone: 'Asia/Kolkata',
-      //   day: '2-digit',
-      //   month: '2-digit',
-      //   year: '2-digit',
-      //   hour: '2-digit',
-      //   minute: '2-digit',
-      //   hour12: true
-      // }).format(dateObj).toUpperCase();
-
       return new Intl.DateTimeFormat('en-IN', {
   timeZone: 'Asia/Kolkata',
   day: '2-digit',

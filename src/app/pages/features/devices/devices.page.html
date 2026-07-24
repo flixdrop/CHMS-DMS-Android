@@ -1,0 +1,230 @@
+<!-- <ion-header>
+  <app-custom-header title="Devices" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <ion-toolbar>
+    <ion-title>
+      <strong>{{totalCount()}}</strong> {{totalCount() === 1 ? ' Animal': ' Animals' | translate }}
+    </ion-title>
+    <ion-buttons slot="end">
+
+      <ion-button color="medium" fill="clear" (click)="toggleSort('tagNo')">
+        <ion-label>Tag no.</ion-label>
+        <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline"
+          class="sort-placeholder-icon"></ion-icon>
+        <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+          class="sort-active-icon"></ion-icon>
+      </ion-button>
+
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+
+  <ion-list lines="true" *ngIf="!isLoading() && totalCount() > 0">
+
+    <ion-item class="ion-padding" lines="full"
+      *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      [routerLink]="['/', 'animals-insights', { id: item?.animal?.id, tagNo: item?.animal?.tagNo, deviceNo: item?.animal?.activeTag?.deviceNo }]"
+      button>
+
+      <ion-icon name="hardware-chip-outline" slot="start" style="width: 40px;"></ion-icon>
+
+      <div
+        style="width: 100% !important; display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 8px;">
+
+        <ion-label>
+          <strong class="ion-text-uppercase">
+            {{item?.deviceNo}}
+          </strong>
+        </ion-label>
+
+        <ion-label>
+          Animal:
+          <strong class="ion-text-uppercase">
+            {{item?.animal?.tagNo}}
+          </strong>
+        </ion-label>
+
+        <ion-label *ngIf="item?.lastSeenAt" color="medium"
+          style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          Last Seen: {{ item?.lastSeenAt | daysSince }}
+        </ion-label>
+
+        <ion-label [color]="item?.online ? 'success' : 'danger'"
+          style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          <ion-icon [name]="item?.online ? 'wifi' : 'alert-circle'" [color]="item?.online ? 'success' : 'danger'"
+            style="margin-right: 8px;"></ion-icon>
+          <strong>{{ item?.online ? ('Online' | translate) : ('Offline' | translate) }}</strong>
+        </ion-label>
+
+        <ion-label
+          [color]="item!.batteryRemaining <= 25 ? 'danger' : (item!.batteryRemaining <= 50 ? 'warning' : 'success')"
+          *ngIf="item?.batteryRemaining !== undefined && item?.batteryRemaining !== null"
+          style="display: flex; align-items: flex-start; justify-content: flex-start;">
+          <ion-icon name="battery-full"
+            [color]="item!.batteryRemaining <= 25 ? 'danger' : (item!.batteryRemaining <= 50 ? 'warning' : 'success')"
+            style="margin-right: 8px;"></ion-icon>
+          <strong>{{ item?.batteryRemaining }}%</strong>
+        </ion-label>
+
+      </div>
+
+      <ion-button slot="end" (click)="openAnimalModal('assign-collar', item?.animal)"
+        [color]="item.animal?.id ? 'warning':'success'" fill="outline">
+        <ion-icon [name]="item.animal?.activeTag ? 'link' : 'unlink'" style="margin-right: 8px;"></ion-icon>
+        <ion-label>{{ item.animal?.activeTag ? 'Unpair' : 'Pair' }}</ion-label>
+      </ion-button>
+    </ion-item>
+  </ion-list>
+
+  <ion-item class="ion-padding" lines="none" *ngIf="!isLoading() && results().length === 0">
+    <ion-chip class="ion-padding" color="light">
+      <ion-icon name="alert-circle"></ion-icon>
+      <ion-label color="medium">
+        <strong>
+          {{ 'list.placeholder' | translate }}
+        </strong>
+      </ion-label>
+    </ion-chip>
+  </ion-item>
+
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer> -->
+
+
+
+<ion-header>
+  <app-custom-header title="Devices" [isLoading]="isLoading()" searchPlaceholder="Search Animals"
+    (searchEvent)="handleInput($event)">
+  </app-custom-header>
+
+  <p class="ion-float-start">
+    <ion-title>
+      <strong>{{ totalCount() }}</strong> {{ totalCount() === 1 ? ' Animal' : ' Animals' | translate }}
+    </ion-title>
+  </p>
+  <ion-buttons class="ion-float-end">
+    <ion-button fill="clear" (click)="toggleSort('tagNo')">
+      <ion-label>Tag no.</ion-label>
+      <ion-icon *ngIf="options.sortBy !== 'tagNo'" name="swap-vertical-outline" class="sort-placeholder-icon">
+      </ion-icon>
+      <ion-icon *ngIf="options.sortBy === 'tagNo'" [name]="options.sortOrder === 1 ? 'arrow-up' : 'arrow-down'"
+        class="sort-active-icon">
+      </ion-icon>
+    </ion-button>
+  </ion-buttons>
+</ion-header>
+
+<ion-content>
+  <ion-list lines="full">
+    @if (!isLoading() && totalCount() > 0) {
+    <ion-item
+      *ngFor="let item of results() | paginate: { itemsPerPage: options.limit, currentPage: p(), totalItems: totalCount() }"
+      button>
+
+      <ion-thumbnail slot="start">
+        <ion-icon name="hardware-chip-outline" style="font-size: 32px;"></ion-icon>
+      </ion-thumbnail>
+
+      <ion-grid>
+        <!-- Item Container & Navigation -->
+        <ion-row
+          [routerLink]="['/', 'animals-insights', { id: item?.animal?.id, tagNo: item?.animal?.tagNo, deviceNo: item?.animal?.activeTag?.deviceNo }]">
+          <ion-col>
+
+            <ion-text>
+              <h4>
+                <strong class="ion-text-uppercase">
+                  {{item.deviceNo}}
+                </strong>
+              </h4>
+            </ion-text>
+
+            <p>
+              <ion-text>
+                <ion-icon name="paw-outline"></ion-icon>
+              </ion-text>
+              Animal:
+              <ion-label class="ion-text-uppercase">
+                {{ item?.animal?.tagNo }}
+              </ion-label>
+            </p>
+
+            @if (item?.lastSeenAt) {
+            <p>
+              <ion-text>
+                <ion-icon name="time-outline"></ion-icon>
+              </ion-text>
+              Last Seen: {{ item?.lastSeenAt | daysSince }}
+            </p>
+            }
+
+            <p>
+              <ion-text [color]="item?.online ? 'success' : 'danger'">
+                <ion-icon [name]="item?.online ? 'wifi' : 'alert-circle-outline'"></ion-icon>
+              </ion-text>
+              <ion-label [color]="item?.online ? 'success' : 'danger'">
+                {{ item?.online ? ('Online' | translate) : ('Offline' | translate) }}
+              </ion-label>
+            </p>
+
+            @if (item?.batteryRemaining !== undefined && item?.batteryRemaining !== null) {
+            <p>
+              <ion-text
+                [color]="item!.batteryRemaining <= 25 ? 'danger' : (item!.batteryRemaining <= 50 ? 'warning' : 'success')">
+                <ion-icon name="battery-full"></ion-icon>
+              </ion-text>
+              <ion-label
+                [color]="item!.batteryRemaining <= 25 ? 'danger' : (item!.batteryRemaining <= 50 ? 'warning' : 'success')">
+                {{ item?.batteryRemaining }}%
+              </ion-label>
+            </p>
+            }
+
+            <ion-buttons class="ion-margin-vertical">
+              <ion-button size="small" fill="outline" [color]="item.animal?.id ? 'warning' : 'success'"
+                (click)="openAnimalModal('assign-collar', item?.animal); $event.stopPropagation()">
+                <ion-icon [name]="item.animal?.activeTag ? 'link' : 'unlink'" slot="start">
+                </ion-icon>
+                <ion-label>{{ item.animal?.activeTag ? 'Unpair' : 'Pair' }}</ion-label>
+              </ion-button>
+            </ion-buttons>
+
+          </ion-col>
+        </ion-row>
+
+
+      </ion-grid>
+    </ion-item>
+    }
+
+    @else if (!isLoading() && results().length === 0) {
+    <ion-item class="ion-padding" style="margin: auto;">
+      <ion-buttons slot="end">
+        <ion-button>
+          <ion-icon slot="icon-only" name="alert-circle-outline"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>
+        No Devices Available
+      </ion-title>
+    </ion-item>
+    }
+
+
+  </ion-list>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar *ngIf="!isLoading() && totalCount() > 0">
+    <pagination-controls (pageChange)="onPageChange($event)"></pagination-controls>
+  </ion-toolbar>
+</ion-footer>

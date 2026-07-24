@@ -1,0 +1,81 @@
+// ion-card {   
+//     ion-item {
+//         // --background: transparent !important;
+//         // background: transparent !important;
+//         // background-color: transparent !important;
+//     }
+
+//     .row-2 {
+//         ion-label {
+//             display: flex;
+//             align-items: center;
+//             justify-content: center;
+//             text-align: center;
+//             text-align-last: center;
+//             white-space: nowrap;
+
+//             h2 {
+//                 color: var(--ion-color-dark) !important;
+//                 font-weight: bold !important;
+//                 font-size: small !important;
+//                 white-space: pre-line;
+//             }
+
+//             .tagNo{
+//                 text-transform: uppercase !important;
+//             }
+
+//         }
+
+//         .datetime{
+//             display: flex;
+//             align-items: center;
+//             justify-content: center;
+//             text-align: center;
+//             text-align-last: center;
+//             white-space: pre-line;
+
+//             h2 {
+//                 color: var(--ion-color-dark) !important;
+//                 font-weight: bold !important;
+//             }
+//         }
+//     }
+// }
+
+// ion-fab-button {
+//     --box-shadow: none !important;
+// }
+
+// ion-accordion {
+//     border-bottom: 2px dashed #eee;
+//     --background: transparent !important;
+//     background: transparent !important;
+//     background-color: transparent !important;
+//     font-size: small !important;
+
+//     ion-item {
+//         --background: transparent !important;
+//         background: transparent !important;
+//         background-color: transparent !important;
+//     }
+
+//     ion-icon {
+//         font-size: small !important;
+//     }
+// }
+
+// ion-radio {
+// 	--border-radius: 4px;
+// 	--inner-border-radius: 4px;
+// 	--color: #ddd;
+// }
+
+
+
+p{
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start; 
+    gap: 10px;
+}
