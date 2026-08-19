@@ -1,37 +1,39 @@
 <ion-header>
-
   <ion-toolbar>
     <ion-buttons slot="start">
       <ion-menu-button autoHide="false" menu="left-menu">
-        <ion-icon slot="icon-only" size="large" [name]="isMenuOpen ? 'arrow-undo' : 'menu'" color="dark"></ion-icon>
+        <ion-icon
+          slot="icon-only"
+          size="large"
+          [name]="isMenuOpen() ? 'arrow-undo' : 'menu'"
+          color="dark">
+        </ion-icon>
       </ion-menu-button>
     </ion-buttons>
 
     <ion-buttons slot="end">
-
       <ion-button fill="clear" (click)="onClickProfile()">
         <ion-label color="medium">
           <strong class="ion-text-capitalize">
-            {{user?.name}}
+            {{ user()?.name }}
           </strong>
         </ion-label>
 
         <ng-container slot="end" *ngIf="safeLogo(); else fallbackChipLogo">
-          <img [src]="safeLogo()"
-            style="height: 32px; width: 32px; aspect-ratio: 1/1; object-fit: cover; margin-left: 4px;">
+          <img
+            [src]="safeLogo()"
+            style="height: 32px; width: 32px; aspect-ratio: 1/1; object-fit: cover; margin-left: 4px;" />
         </ng-container>
 
         <ng-template slot="end" #fallbackChipLogo>
-
-          <ion-icon name="person-circle-outline" color="medium"
-            style="height: 32px; width: 32px; aspect-ratio: 1/1; object-fit: contain; margin-left: 4px;"></ion-icon>
-
+          <ion-icon
+            name="person-circle-outline"
+            color="medium"
+            style="height: 32px; width: 32px; aspect-ratio: 1/1; object-fit: contain; margin-left: 4px;">
+          </ion-icon>
         </ng-template>
-
       </ion-button>
-
     </ion-buttons>
-
   </ion-toolbar>
 
   <ion-toolbar>
@@ -39,7 +41,7 @@
       <ion-button fill="clear" id="chatbot">
         <ion-icon slot="icon-only" size="large" name="logo-ionitron" color="secondary"></ion-icon>
       </ion-button>
-      <ion-button fill="clear" id="chatbot">
+      <ion-button fill="clear" routerLink="/notification">
         <ion-icon slot="icon-only" size="large" name="notifications" color="warning"></ion-icon>
       </ion-button>
     </ion-buttons>
@@ -50,94 +52,79 @@
   <ion-router-outlet></ion-router-outlet>
 </ion-content>
 
-<ion-menu #leftmenu class="left-menu" side="start" menuId="left-menu" contentId="main">
+<ion-menu
+  #leftmenu
+  class="left-menu"
+  side="start"
+  menuId="left-menu"
+  contentId="main"
+  (ionWillOpen)="onMenuToggle(true)"
+  (ionWillClose)="onMenuToggle(false)">
 
   <ion-header>
     <ion-toolbar>
       <ion-buttons slot="start">
         <ion-menu-toggle>
           <ion-button>
-            <ion-icon slot="icon-only" name='arrow-undo' color="medium"></ion-icon>
+            <ion-icon slot="icon-only" name="arrow-undo" color="medium"></ion-icon>
           </ion-button>
         </ion-menu-toggle>
       </ion-buttons>
     </ion-toolbar>
 
-    <ion-grid *ngIf="!isLoading">
-    <ion-row>
-      <ion-col size-md="6" offset-md="3">
-        <ng-container *ngIf="safeLogo(); else fallbackChipLogo">
-          <ion-thumbnail style="margin: auto; width: 100px; height: 100px; aspect-ratio: 1/1;">
-            <img [src]="safeLogo()">
-          </ion-thumbnail>
-        </ng-container>
-        <ng-template #fallbackChipLogo>
-          <ion-thumbnail style="margin: auto; width: 100px; height: 100px; aspect-ratio: 1/1;">
-            <!-- <ion-icon name="person-circle-outline" style="width: 100px; height: 100px; aspect-ratio: 1/1;"
-              color="medium"></ion-icon> -->
-                          <img src="../../../assets/icons/fd.png">
+    <ion-grid *ngIf="!isLoading()">
+      <ion-row>
+        <ion-col size-md="6" offset-md="3">
+          <ng-container *ngIf="safeLogo(); else fallbackChipLogo">
+            <ion-thumbnail style="margin: auto; width: 100px; height: 100px; aspect-ratio: 1/1;">
+              <img [src]="safeLogo()" />
+            </ion-thumbnail>
+          </ng-container>
 
-          </ion-thumbnail>
-        </ng-template>
-
-      </ion-col>
-    </ion-row>
+          <ng-template #fallbackChipLogo>
+            <ion-thumbnail style="margin: auto; width: 100px; height: 100px; aspect-ratio: 1/1;">
+              <img src="../../../assets/icons/fd.png" />
+            </ion-thumbnail>
+          </ng-template>
+        </ion-col>
+      </ion-row>
     </ion-grid>
 
-      <!-- <ion-img style="margin: auto;" src="../../assets/icons/fd.png"
-        style="width: 100px; height: 100px; aspect-ratio: 1/1"></ion-img> -->
-
-          <ion-item>
-            <ion-input label="Account Name" label-placement="stacked" value="{{user.name}}" disabled="true">
-            </ion-input>
-            <ion-button color="warning" fill="clear">
-              <ion-label>
-                <strong>
-                  {{user.accessLevel}}
-                </strong>
-              </ion-label>
-            </ion-button>
-          </ion-item>
-          
-        
-
+    <ion-item>
+      <ion-input
+        label="Account Name"
+        label-placement="stacked"
+        [value]="user()?.name || ''"
+        [disabled]="true">
+      </ion-input>
+      <ion-button color="warning" fill="clear">
+        <ion-label>
+          <strong>{{ user()?.accessLevel }}</strong>
+        </ion-label>
+      </ion-button>
+    </ion-item>
   </ion-header>
 
   <ion-content class="ion-padding" [fullscreen]="true">
-
-    <!-- <div style="display: flex; align-items: center; justify-content: center;"
-      class="ion-activatable ripple-parent">
-      <ion-ripple-effect></ion-ripple-effect>
-
-      <ion-img aria-hidden="true" src="../../assets/icons/fd.png"
-        style="height: auto; width: 40%; aspect-ratio: 1/1 !important;"></ion-img>
-    </div>
-
-      <div *ngIf="!isLoading" style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
-      <ion-label>
-        <p style="padding: 0; margin: 0;">{{'app.account-name'| translate}} :</p>
-        <ion-note>
-          <b>
-            {{user['email']}}
-          </b>
-        </ion-note>
-      </ion-label>
-    </div> -->
-
     <ion-list class="left-menu-list">
-
       <app-selection></app-selection>
 
       <ion-item>
         <ion-icon name="language" color="light"></ion-icon>
-        <ion-select class="never-flip" [okText]="'buttons.5.label' | translate"
-          [cancelText]="'buttons.6.label'| translate" title="{{'landing.items.1.label' | translate}}" label="Language"
-          label-placement="stacked" [ngModel]="language" (ionChange)="changeLanguageTo($event)"
+        <ion-select
+          class="never-flip"
+          [okText]="'buttons.5.label' | translate"
+          [cancelText]="'buttons.6.label' | translate"
+          [title]="'landing.items.1.label' | translate"
+          label="Language"
+          label-placement="stacked"
+          [ngModel]="language()"
+          (ionChange)="changeLanguageTo($event)"
           interface="action-sheet">
-          <ion-select-option value="en" selected-text="language == 'en'">ENGLISH</ion-select-option>
-          <ion-select-option value="hi" selected-text="language == 'hi'">हिंदी</ion-select-option>
-          <ion-select-option value="ka" selected-text="language == 'ka'">ಕನ್ನಡ</ion-select-option>
-          <ion-select-option value="ml" selected-text="language == 'ml'">മലയാളം</ion-select-option>
+          <ion-select-option value="en">ENGLISH</ion-select-option>
+          <ion-select-option value="hi">हिंदी</ion-select-option>
+          <ion-select-option value="ka">ಕನ್ನಡ</ion-select-option>
+          <ion-select-option value="ml">മലയാളം</ion-select-option>
         </ion-select>
       </ion-item>
 
@@ -145,9 +132,7 @@
         <ion-icon name="home" color="light"></ion-icon>
         <ion-menu-toggle autoHide="false">
           <ion-label>
-            <p>
-              {{'landing.items.2.label' | translate}}
-            </p>
+            <p>{{ 'landing.items.2.label' | translate }}</p>
           </ion-label>
         </ion-menu-toggle>
       </ion-item>
@@ -156,9 +141,7 @@
         <ion-icon name="list" color="light"></ion-icon>
         <ion-menu-toggle autoHide="false">
           <ion-label>
-            <p>
-              All Animals
-            </p>
+            <p>All Animals</p>
           </ion-label>
         </ion-menu-toggle>
       </ion-item>
@@ -167,9 +150,7 @@
         <ion-icon name="hardware-chip-outline" color="light"></ion-icon>
         <ion-menu-toggle autoHide="false">
           <ion-label>
-            <p>
-              All Devices
-            </p>
+            <p>All Devices</p>
           </ion-label>
         </ion-menu-toggle>
       </ion-item>
@@ -178,9 +159,7 @@
         <ion-img src="../assets/icons/eos-icons_activate-subscriptions.svg"></ion-img>
         <ion-menu-toggle autoHide="false">
           <ion-label>
-            <p>
-              {{'landing.items.3.label' | translate}}
-            </p>
+            <p>{{ 'landing.items.3.label' | translate }}</p>
           </ion-label>
         </ion-menu-toggle>
       </ion-item>
@@ -189,9 +168,7 @@
         <ion-img src="../assets/icons/Group.svg"></ion-img>
         <ion-menu-toggle autoHide="false">
           <ion-label>
-            <p>
-              {{'landing.items.4.label' | translate}}
-            </p>
+            <p>{{ 'landing.items.4.label' | translate }}</p>
           </ion-label>
         </ion-menu-toggle>
       </ion-item>
@@ -200,9 +177,7 @@
         <ion-img src="../assets/icons/ri_customer-service-2-fill.svg"></ion-img>
         <ion-menu-toggle autoHide="false">
           <ion-label>
-            <p>
-              {{'landing.items.5.label' | translate}}
-            </p>
+            <p>{{ 'landing.items.5.label' | translate }}</p>
           </ion-label>
         </ion-menu-toggle>
       </ion-item>
@@ -211,9 +186,7 @@
         <ion-img src="../../assets/icons/fluent_person-feedback-16-filled.svg"></ion-img>
         <ion-menu-toggle autoHide="false">
           <ion-label>
-            <p>
-              {{'landing.items.6.label' | translate}}
-            </p>
+            <p>{{ 'landing.items.6.label' | translate }}</p>
           </ion-label>
         </ion-menu-toggle>
       </ion-item>
@@ -222,9 +195,7 @@
         <ion-img src="../assets/icons/camera-reverse-outline.svg"></ion-img>
         <ion-menu-toggle disabled="true" autoHide="false">
           <ion-label>
-            <p>
-              {{'landing.items.7.label' | translate}}
-            </p>
+            <p>{{ 'landing.items.7.label' | translate }}</p>
           </ion-label>
         </ion-menu-toggle>
       </ion-item>
@@ -233,39 +204,29 @@
 
   <ion-footer>
     <ion-toolbar class="ion-padding">
-
-    <!-- <div *ngIf="!isLoading" style="display: flex; align-items: center; justify-content: center; padding: 1rem;">
-      <ion-label>
-        <p style="padding: 0; margin: 0;">{{'app.account-name'| translate}} :</p>
-        <ion-note>
-          <b>
-            {{user['email']}}
-          </b>
-        </ion-note>
-      </ion-label>
-    </div> -->
-
-    <div style="display: flex; align-items: center; justify-content: center;">
-      <ion-button size="small" expand="block" color="danger" fill="clear" (click)="onClickLogout()">
-        <ion-label>
-          <b>
-            {{'buttons.2.label'| translate}}
-          </b>
-        </ion-label>
-        <ion-icon aria-hidden="true" name="log-out-outline" style="margin-left: 8px;"></ion-icon>
-      </ion-button>
-    </div>
+      <div style="display: flex; align-items: center; justify-content: center;">
+        <ion-button size="small" expand="block" color="danger" fill="clear" (click)="onClickLogout()">
+          <ion-label>
+            <b>{{ 'buttons.2.label' | translate }}</b>
+          </ion-label>
+          <ion-icon aria-hidden="true" name="log-out-outline" style="margin-left: 8px;"></ion-icon>
+        </ion-button>
+      </div>
 
       <ion-item lines="none">
         <ion-note slot="end" color="medium">Flixdrop-CHMS 1.1.0</ion-note>
       </ion-item>
     </ion-toolbar>
   </ion-footer>
-
 </ion-menu>
 
-<ion-modal [isOpen]="isChatbotOpen" #chatbot [keepContentsMounted]="true" trigger="chatbot" [initialBreakpoint]="1"
-  [breakpoints]="[0,1]">
+<ion-modal
+  [isOpen]="isChatbotOpen()"
+  #chatbot
+  [keepContentsMounted]="true"
+  trigger="chatbot"
+  [initialBreakpoint]="1"
+  [breakpoints]="[0, 1]">
   <ng-template>
     <ion-toolbar>
       <ion-item>

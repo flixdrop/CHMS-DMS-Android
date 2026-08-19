@@ -1,23 +1,24 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { AlertController, IonButton, IonCheckbox, IonContent, IonFooter, IonIcon, IonInput, IonItem, IonLabel, IonToolbar, LoadingController, NavController, ToastController, IonChip, IonFab, IonHeader, IonList, IonGrid, IonAvatar, IonRow, IonCol, Platform } from '@ionic/angular/standalone';
-import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
-import { finalize, Subscription } from 'rxjs';
+
+
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TranslateModule } from '@ngx-translate/core';
-import { SharedImportsModule } from 'src/app/shared/shared-imports';
-import { AuthService } from 'src/app/services/auth/auth.service';
-import { RouterModule, RouterLink } from '@angular/router';
-import { StatusBar } from '@capacitor/status-bar';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Subscription, finalize } from 'rxjs';
 import { Preferences } from '@capacitor/preferences';
+import { AlertController, LoadingController, NavController, ToastController, IonToolbar, IonContent, IonItem, IonIcon, IonInput, IonCheckbox, IonButton, IonLabel, IonFooter, IonChip, IonFab, IonFabButton, IonThumbnail, IonImg } from '@ionic/angular/standalone';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { AuthService } from 'src/app/services/auth/auth.service';
+import { SharedImportsModule } from 'src/app/shared/shared-imports';
 
 export type AuthenticationViewMode = 'LOGIN' | 'SIGNUP' | 'FORGOT' | 'RESET';
+const KEEP_LOGGED_IN_KEY = 'chms-dms.mobile.keep_me_logged_in';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [IonCol, IonRow, IonGrid,
+  imports: [IonImg, IonFabButton, IonFab,
     CommonModule,
-    FormsModule,
     TranslateModule,
     ReactiveFormsModule,
     IonToolbar,
@@ -29,107 +30,101 @@ export type AuthenticationViewMode = 'LOGIN' | 'SIGNUP' | 'FORGOT' | 'RESET';
     IonButton,
     IonLabel,
     IonFooter,
-    IonChip,
-    IonList,
-    IonAvatar, IonHeader, SharedImportsModule, 
-    RouterModule, RouterLink
-  ],
+    IonChip, IonThumbnail, SharedImportsModule],
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
 })
 export class LoginPage implements OnInit, OnDestroy {
-  // Collection pipeline managing system allocations safely 
-  private subscriptions: Subscription[] = [];
+  private readonly fb = inject(FormBuilder).nonNullable;
+  private readonly authService = inject(AuthService);
+  private readonly navControl = inject(NavController);
+  private readonly alertCtrl = inject(AlertController);
+  private readonly loadingCtrl = inject(LoadingController);
+  private readonly toastCtrl = inject(ToastController);
 
-  // Reactive State Parameters
-  authMode: AuthenticationViewMode = 'LOGIN';
-  passwordVisible: boolean = false;
-  keepMeLoggedIn: boolean = false;
+  private readonly subscriptions: Subscription[] = [];
 
-  // View Form Groups mapping interface targets completely
-  loginForm!: FormGroup;
-  signupForm!: FormGroup;
-  forgotForm!: FormGroup;
-  resetForm!: FormGroup;
+  // Reactive Signals for UI state
+  readonly authMode = signal<AuthenticationViewMode>('LOGIN');
+  readonly passwordVisible = signal<boolean>(false);
+  readonly keepMeLoggedIn = signal<boolean>(false);
 
-  constructor(
-    private toastController: ToastController,
-    public loadingController: LoadingController,
-    private navControl: NavController,
-    private alertCtrl: AlertController,
-    private authService: AuthService,
-    private platform: Platform,
-  ) { }
+  // Strongly-typed Form Architectures
+  readonly loginForm = this.fb.group({
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required]],
+  });
 
-  ngOnInit() {
+  readonly signupForm = this.fb.group({
+    name: ['', [Validators.required, Validators.minLength(2)]],
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    email: ['', [Validators.required, Validators.email]],
+    contact: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+  });
 
-       this.platform.ready().then(() => {
-      StatusBar.setOverlaysWebView({ overlay: false }).catch((error) => {
-        console.log(
-          "%c Status Bar works only on native android and ios devices",
-          "color: silver; font-size: 10px;"
-        );
-      });
-      StatusBar.setBackgroundColor({ color: "#ffffff" }).catch((error) => {
-        console.log(
-          "%c Status Bar works only on native android and ios devices",
-          "color: silver; font-size: 10px;"
-        );
-      });
-    });
+  readonly forgotForm = this.fb.group({
+    identifier: ['', [Validators.required]],
+  });
 
-    this.initializeFormArchitectures();
+  readonly resetForm = this.fb.group({
+    token: ['', [Validators.required]],
+    newPassword: ['', [Validators.required, Validators.minLength(6)]],
+  });
+
+  async ngOnInit(): Promise<void> {
+    await this.loadPreferences();
   }
 
-  ngOnDestroy() {
-    // Structural termination cleaning every single listener down the block on exit
-    this.subscriptions.forEach(sub => sub && sub.unsubscribe());
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(sub => sub?.unsubscribe());
   }
 
-  /**
-   * Constructs all form validation rule scopes internally matching schema boundaries
-   */
-  private initializeFormArchitectures() {
-    this.loginForm = new FormGroup({
-      username: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required]),
-    });
-
-    this.signupForm = new FormGroup({
-      name: new FormControl('', [Validators.required, Validators.minLength(2)]),
-      username: new FormControl('', [Validators.required, Validators.minLength(3)]),
-      email: new FormControl('', [Validators.required, Validators.email]),
-      contact: new FormControl('', [Validators.required]),
-      password: new FormControl('', [Validators.required, Validators.minLength(6)]),
-    });
-
-    this.forgotForm = new FormGroup({
-      identifier: new FormControl('', [Validators.required])
-    });
-
-    this.resetForm = new FormGroup({
-      token: new FormControl('', [Validators.required]),
-      newPassword: new FormControl('', [Validators.required, Validators.minLength(6)])
-    });
+private async loadPreferences(): Promise<void> {
+    try {
+      const { value } = await Preferences.get({ key: KEEP_LOGGED_IN_KEY });
+      
+      // Safely convert the string "true" or "false" to a real boolean
+      if (value !== null) {
+        this.keepMeLoggedIn.set(value === 'true');
+      } else {
+        // First time user: Default to false
+        this.keepMeLoggedIn.set(false);
+      }
+    } catch (e) {
+      console.warn('[LOGIN] Failed to restore keep-logged-in preference:', e);
+      // Failsafe if storage crashes
+      this.keepMeLoggedIn.set(false); 
+    }
   }
 
   /**
-   * Changes the visible context module instantly while clearing dirty cache validations
+   * Switches the visible auth flow context and resets dirty states
    */
-  switchMode(targetMode: AuthenticationViewMode) {
-    this.authMode = targetMode;
+  switchMode(targetMode: AuthenticationViewMode): void {
+    this.authMode.set(targetMode);
+    
+    // Clear validation states on mode switches
+    this.loginForm.reset();
+    this.signupForm.reset();
+    this.forgotForm.reset();
+    this.resetForm.reset();
   }
 
-  showPassword() {
-    this.passwordVisible = !this.passwordVisible;
+  togglePasswordVisibility(): void {
+    this.passwordVisible.update(visible => !visible);
   }
 
-  onClickRememberMe(event: any) {
-    this.keepMeLoggedIn = event.detail.checked;
-    localStorage.setItem('chms-dms.mobile.keep_me_logged_in', JSON.stringify(this.keepMeLoggedIn));
+  async onClickRememberMe(event: CustomEvent): Promise<void> {
+    const checked = event.detail.checked;
+    this.keepMeLoggedIn.set(checked);
+    await Preferences.set({
+      key: KEEP_LOGGED_IN_KEY,
+      value: JSON.stringify(checked),
+    });
   }
 
-  async displayAlertMessage(heading: string, detailedMessage: string) {
+  async displayAlertMessage(heading: string, detailedMessage: string): Promise<void> {
     const alert = await this.alertCtrl.create({
       header: heading,
       message: detailedMessage,
@@ -138,161 +133,149 @@ export class LoginPage implements OnInit, OnDestroy {
     await alert.present();
   }
 
-  async showToast(data: { header: string, msg: string }) {
-    const toast = await this.toastController.create({
+  async showToast(data: { header: string; msg: string }): Promise<void> {
+    const toast = await this.toastCtrl.create({
       swipeGesture: 'vertical',
       icon: 'lock-open-outline',
       header: data.header,
       message: data.msg,
       duration: 3000,
     });
-    toast.present();
+    await toast.present();
   }
 
-  // async onClickLogin() {
-  //   if (this.loginForm.invalid) return;
-  //   const { username, password } = this.loginForm.value;
+  showPassword() {
+  this.passwordVisible.update(visible => !visible);
+}
 
-  //   const loadingEL = await this.loadingController.create({
-  //     spinner: 'crescent',
-  //     message: 'Verifying Session Context...',
-  //   });
-  //   await loadingEL.present();
-
-  //   const sub = this.authService.signIn(username, password)
-  //     .pipe(finalize(() => loadingEL.dismiss()))
-  //     .subscribe({
-  //       next: (res) => {
-  //         this.showToast({
-  //           header: 'Access Granted',
-  //           msg: `Welcome back to your workspace.`,
-  //         });
-  //         // this.navControl.navigateRoot('/home');
-  //                   this.navControl.navigateRoot('/landing/tabs/home');
-
-  //       },
-  //       error: (err) => {
-  //         this.displayAlertMessage('Authentication Barrier', err?.message || 'Access denied. Verify your credentials and try again.');
-  //       }
-  //     });
-
-  //   this.subscriptions.push(sub);
-  // }
-
-
-  async onClickLogin() {
+ async onClickLogin() {
     if (this.loginForm.invalid) return;
     const { username, password } = this.loginForm.value;
 
-    const loadingEL = await this.loadingController.create({
+    const loadingEL = await this.loadingCtrl.create({
       spinner: 'crescent',
       message: 'Verifying Session Context...',
     });
     await loadingEL.present();
 
-    const sub = this.authService.signIn(username, password)
-      .pipe(finalize(() => loadingEL.dismiss()))
-      .subscribe({
-        next: async (res) => {
-          this.showToast({
-            header: 'Access Granted',
-            msg: `Welcome back to your workspace.`,
-          });
+    try {
 
-          // Check if the user has completed onboarding
-          const { value } = await Preferences.get({ key: 'chms_onboarding_completed' });
-
-          if (value === 'true') {
-            // Returning user -> go directly to home tabs
-            this.navControl.navigateRoot('/landing/tabs/home');
-          } else {
-            // First time after install -> go to onboarding
-            this.navControl.navigateRoot('/onboarding');
-          }
-        },
-        error: (err) => {
-          this.displayAlertMessage(
-            'Authentication Barrier', 
-            err?.message || 'Access denied. Verify your credentials and try again.'
-          );
-        }
+      const shouldKeep = this.keepMeLoggedIn(); // <-- Adjust based on your TS file
+      
+      await Preferences.set({
+        key: 'chms-dms.mobile.keep_me_logged_in',
+        value: shouldKeep ? 'true' : 'false'
       });
 
-    this.subscriptions.push(sub);
+      // 1. Strictly await backend sign-in and storage persistence
+      await this.authService.signIn(username, password);
+
+      this.showToast({
+        header: 'Access Granted',
+        msg: `Welcome back to your workspace.`,
+      });
+
+      // 2. Check if the user has completed onboarding safely from storage
+      const { value } = await Preferences.get({ key: 'chms_onboarding_completed' });
+
+      if (value === 'true') {
+        // Returning user -> go directly to home tabs
+        await this.navControl.navigateRoot('/landing/tabs/home');
+      } else {
+        // First time after install -> go to onboarding
+        await this.navControl.navigateRoot('/onboarding');
+      }
+    } catch (err: any) {
+      this.displayAlertMessage(
+        'Authentication Barrier', 
+        err?.message || 'Access denied. Verify your credentials and try again.'
+      );
+    } finally {
+      await loadingEL.dismiss();
+    }
   }
 
-  async onClickSignup() {
-    if (this.signupForm.invalid) return;
 
-    const loadingEL = await this.loadingController.create({
+  async onClickSignup(): Promise<void> {
+    if (this.signupForm.invalid) {
+      this.signupForm.markAllAsTouched();
+      return;
+    }
+
+    const loading = await this.loadingCtrl.create({
       spinner: 'crescent',
-      message: 'Provisioning Account Profile...',
+      message: 'Provisioning account profile...',
     });
-    await loadingEL.present();
+    await loading.present();
 
-    // Invokes your backend createUser query signature pattern directly
-    const sub = this.authService.createUser(this.signupForm.value)
-      .pipe(finalize(() => loadingEL.dismiss()))
+    const sub = this.authService.createUser(this.signupForm.getRawValue())
+      .pipe(finalize(() => loading.dismiss()))
       .subscribe({
-        next: (res) => {
-          this.displayAlertMessage('Registration Success', 'Your account pipeline was built successfully. You can now authenticate.');
-          this.signupForm.reset();
+        next: () => {
+          this.displayAlertMessage('Registration Successful', 'Your account has been created. You may now log in.');
           this.switchMode('LOGIN');
         },
         error: (err) => {
-          this.displayAlertMessage('Registration Interrupted', err?.message || 'Failed to submit initialization payload profiles.');
+          this.displayAlertMessage('Registration Interrupted', err?.message || 'Failed to complete registration.');
         }
       });
 
     this.subscriptions.push(sub);
   }
 
-  async onClickForgot() {
-    if (this.forgotForm.invalid) return;
-    const { identifier } = this.forgotForm.value;
+  async onClickForgot(): Promise<void> {
+    if (this.forgotForm.invalid) {
+      this.forgotForm.markAllAsTouched();
+      return;
+    }
 
-    const loadingEL = await this.loadingController.create({
+    const { identifier } = this.forgotForm.getRawValue();
+    const loading = await this.loadingCtrl.create({
       spinner: 'crescent',
-      message: 'Routing Reset Token Request...',
+      message: 'Sending password reset request...',
     });
-    await loadingEL.present();
+    await loading.present();
 
     const sub = this.authService.forgotPassword(identifier)
-      .pipe(finalize(() => loadingEL.dismiss()))
+      .pipe(finalize(() => loading.dismiss()))
       .subscribe({
-        next: (res) => {
-          this.displayAlertMessage('Dispatched Secure Token', 'If an alignment exists inside the ledger array profiles, a token string was pushed out.');
-          this.forgotForm.reset();
-          this.switchMode('RESET'); // Automatically advance the form state machine to token intake
+        next: () => {
+          this.displayAlertMessage(
+            'Token Dispatched',
+            'If an account exists for that identifier, a reset token has been generated.'
+          );
+          this.switchMode('RESET');
         },
         error: (err) => {
-          this.displayAlertMessage('Transmission Blocked', err?.message || 'Failed to route recovery requirements.');
+          this.displayAlertMessage('Request Failed', err?.message || 'Could not process password recovery.');
         }
       });
 
     this.subscriptions.push(sub);
   }
 
-  async onClickReset() {
-    if (this.resetForm.invalid) return;
-    const { token, newPassword } = this.resetForm.value;
+  async onClickReset(): Promise<void> {
+    if (this.resetForm.invalid) {
+      this.resetForm.markAllAsTouched();
+      return;
+    }
 
-    const loadingEL = await this.loadingController.create({
+    const { token, newPassword } = this.resetForm.getRawValue();
+    const loading = await this.loadingCtrl.create({
       spinner: 'crescent',
-      message: 'Applying Structural Passwords...',
+      message: 'Updating security credentials...',
     });
-    await loadingEL.present();
+    await loading.present();
 
     const sub = this.authService.resetPassword(token, newPassword)
-      .pipe(finalize(() => loadingEL.dismiss()))
+      .pipe(finalize(() => loading.dismiss()))
       .subscribe({
-        next: (res) => {
-          this.displayAlertMessage('Profile Mutated Cleanly', 'Your security keys have updated successfully. Please log back in using your new credentials.');
-          this.resetForm.reset();
+        next: () => {
+          this.displayAlertMessage('Password Updated', 'Your credentials have been updated successfully. Please log in.');
           this.switchMode('LOGIN');
         },
         error: (err) => {
-          this.displayAlertMessage('Mutation Interrupted', err?.message || 'Token matching failed validation limits.');
+          this.displayAlertMessage('Update Interrupted', err?.message || 'Token validation failed.');
         }
       });
 

@@ -1,0 +1,172 @@
+<!-- <ion-toolbar>
+  <ion-back-button slot="start" icon="chevron-back" defaultHref="/landing/tabs/home" text=""></ion-back-button>
+
+  <ion-title>
+    Notifications
+  </ion-title>
+
+  <ion-buttons slot="end">
+    <ion-button (click)="markAllAsRead()">
+      <ion-icon slot="icon-only" name="checkmark-circle" color="medium"></ion-icon>
+    </ion-button>
+  </ion-buttons>
+
+  @if (isLoading) {
+  <ion-progress-bar type="indeterminate" name="lines-sharp"></ion-progress-bar>
+  }
+</ion-toolbar>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshList($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+   @if (!isLoading && notifications.length === 0) {
+    <ion-item class="ion-padding">
+      <ion-buttons slot="start">
+        <ion-button>
+          <ion-icon slot="icon-only" name="notifications"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+      <ion-title>
+        No Notifications Available.
+      </ion-title>
+    </ion-item>
+    }
+
+  <ion-list *ngIf="!isLoading && notifications.length > 0">
+    <ion-item-sliding *ngFor="let item of notifications">
+      <ion-item button (click)="onNotificationClick(item)" [class.unread]="!item.isRead">
+        <ion-icon slot="start" [name]="getTypeIcon(item.type)" [color]="!item.isRead ? 'primary' : 'medium'"></ion-icon>
+
+        <ion-label>
+          <h2>{{ item.title }}</h2>
+          <p>{{ item.body }}</p>
+          <ion-note color="medium">{{ item.createdAt | date:'short' }}</ion-note>
+        </ion-label>
+
+        <ion-badge slot="end" color="primary" *ngIf="!item.isRead">New</ion-badge>
+      </ion-item>
+
+      <ion-item-options side="end" *ngIf="!item.isRead">
+        <ion-item-option color="success" (click)="markAsRead(item)">
+          <ion-icon slot="icon-only" name="checkmark-done-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content loadingSpinner="bubbles" loadingText="Loading more..."></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+</ion-content> -->
+
+
+
+
+<ion-header>
+  <ion-toolbar>
+    <ion-back-button slot="start" icon="chevron-back" defaultHref="/landing/tabs/home" text=""></ion-back-button>
+    
+    <ion-title>Notifications</ion-title>
+    
+    <ion-buttons slot="end">
+      <ion-button (click)="markAllAsRead()">
+        <ion-icon slot="icon-only" name="checkmark-circle" color="medium"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    
+    @if (isLoading) {
+      <ion-progress-bar type="indeterminate"></ion-progress-bar>
+    }
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="refreshList($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Main initial loading spinner -->
+  <div *ngIf="isLoading" class="ion-text-center ion-padding">
+    <ion-spinner name="crescent"></ion-spinner>
+  </div>
+
+  @if (!isLoading && notifications.length === 0) {
+  <ion-item class="ion-padding">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon slot="icon-only" name="notifications"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>No Notifications Available.</ion-title>
+  </ion-item>
+  }
+
+  <ion-list *ngIf="!isLoading && notifications.length > 0">
+    <ion-item-sliding *ngFor="let item of notifications">
+
+      <!-- Click opens the detail modal -->
+      <ion-item button (click)="openDetailModal(item)" [class.unread]="!item.isRead">
+        <ion-icon slot="start" [name]="getTypeIcon(item.type)" [color]="!item.isRead ? 'primary' : 'medium'"></ion-icon>
+
+        <ion-label>
+          <h2>{{ item.title }}</h2>
+          <p class="text-truncate">{{ item.body }}</p>
+          <ion-note color="medium">{{ item.createdAt | date:'short' }}</ion-note>
+        </ion-label>
+
+        <ion-badge slot="end" color="primary" *ngIf="!item.isRead">New</ion-badge>
+      </ion-item>
+
+      <ion-item-options side="end" *ngIf="!item.isRead">
+        <ion-item-option color="success" (click)="markAsRead(item)">
+          <ion-icon slot="icon-only" name="checkmark-done-outline"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="loadMore($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+  <!-- 🚀 Notification Detail Modal -->
+  <ion-modal [isOpen]="isModalOpen" (didDismiss)="closeDetailModal()" [initialBreakpoint]="0.5"
+    [breakpoints]="[0, 0.5, 0.85]">
+    <ng-template>
+      <ion-toolbar class="ion-padding-vertical">
+        <ion-title>Notification Details</ion-title>
+      </ion-toolbar>
+
+      <ion-content class="ion-padding" *ngIf="selectedNotification">
+        <div class="notification-modal-content">
+          <div class="header-row ion-margin-bottom">
+            <ion-icon [name]="getTypeIcon(selectedNotification.type)" color="primary" size="large"></ion-icon>
+            <div class="header-text">
+              <h2>{{ selectedNotification.title }}</h2>
+              <ion-note color="medium">{{ selectedNotification.createdAt | date:'medium' }}</ion-note>
+            </div>
+          </div>
+
+          <div class="body-box ion-padding">
+            <p>{{ selectedNotification.body }}</p>
+          </div>
+
+          <!-- DeepLink CTA Action -->
+          <!-- <div *ngIf="selectedNotification.deepLink" class="ion-margin-top">
+            <ion-button expand="block" color="primary" (click)="navigateToLink(selectedNotification.deepLink)">
+              View Related Details
+              <ion-icon slot="end" name="arrow-forward-outline"></ion-icon>
+            </ion-button>
+          </div> -->
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

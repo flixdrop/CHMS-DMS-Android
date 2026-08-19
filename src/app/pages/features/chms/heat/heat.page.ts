@@ -151,7 +151,7 @@ export class HeatPage implements OnInit, OnDestroy {
   async loadMaleCattleInventory() {
     try {
       const res = await firstValueFrom(this.animalService.getAnimals({
-        filter: { farmId: this.filter.farmId, gender: 'MALE' },
+        filter: { farmId: this.filter.farmId },
         options: { limit: 100, offset: 0 }
       }));
       this.farmBulls.set(res?.items ?? []);
@@ -372,7 +372,7 @@ getCurrentProgress(window: any): number {
   async loadFemaleCattleInventory() {
     try {
       const res = await firstValueFrom(this.animalService.getAnimals({
-        filter: { farmId: this.filter.farmId, gender: 'FEMALE' },
+        filter: { farmId: this.filter.farmId },
         options: { limit: 250, offset: 0 } // Large limit to catch herd tags
       }));
       this.femaleCattleInventory.set(res?.items ?? []);

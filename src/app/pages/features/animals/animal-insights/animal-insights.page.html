@@ -783,6 +783,44 @@
     </ng-template>
   </ion-popover>
 
+
+        <ion-accordion-group animated="false" value="first">
+          <ion-accordion value="first">
+         
+              <ion-toolbar slot="header">
+    <ion-buttons slot="start">
+      <ion-button>
+        <ion-icon name="information-circle" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>
+      Animal Details
+    </ion-title>
+
+  </ion-toolbar>
+
+            <div *ngIf="animal" slot="content">
+              <ion-item lines="none">
+                <ion-icon slot="start" name="pricetag"></ion-icon>
+                <ion-label>
+                  <ion-note>Tag no.</ion-note><br />
+                  <ion-note>{{ animal.tagNo }}</ion-note>
+                </ion-label>
+              </ion-item>
+
+                <ion-item lines="none">
+                <ion-icon slot="start" name="hardware-chip"></ion-icon>
+                <ion-label>
+                  <ion-note>Device no.</ion-note><br />
+                  <ion-note>{{ animal?.activeTag?.deviceNo }}</ion-note>
+                </ion-label>
+              </ion-item>
+
+            </div>
+          </ion-accordion>
+        </ion-accordion-group>
+
+
 </ion-content>
 
 <ion-footer>

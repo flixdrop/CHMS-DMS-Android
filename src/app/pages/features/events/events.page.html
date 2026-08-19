@@ -220,7 +220,7 @@
       </ion-thumbnail>
 
       <ion-grid>
-        <ion-row>
+        <ion-row [routerLink]="['/', 'animals-insights', { id: event?.animal?.id, tagNo: event?.animal?.tagNo, deviceNo: event?.animal?.activeTag?.deviceNo }]">
           <ion-col>
             <ion-text>
               <h4>

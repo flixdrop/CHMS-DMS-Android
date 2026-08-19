@@ -370,7 +370,6 @@ import {
 } from "@ionic/angular/standalone";
 import { FormsModule } from "@angular/forms";
 import { RouterModule } from "@angular/router";
-import { NavigationComponent } from "src/app/pages/components/navigation/navigation.component";
 import { Apollo } from "apollo-angular";
 import { EventUtilityService } from "src/app/utils/event-util/event-util.service";
 import { DASHBOARD_ITEMS } from "src/app/graphql/queries/dashboard.queries";
@@ -393,7 +392,6 @@ import { HealthPage } from "../chms/health/health.page";
     IonSpinner,
     IonChip,
     IonToolbar,
-    NavigationComponent,
     IonHeader,
     IonGrid,
     IonRow,

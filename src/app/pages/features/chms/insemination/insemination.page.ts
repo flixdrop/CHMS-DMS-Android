@@ -109,9 +109,9 @@ public tableColumns: ColumnConfig[] = [
 
   async loadAssetInventories() {
     try {
-      const male = await firstValueFrom(this.animalService.getAnimals({ filter: { farmId: this.filter.farmId, gender: 'MALE' }, options: { limit: 100, offset: 0 } }));
+      const male = await firstValueFrom(this.animalService.getAnimals({ filter: { farmId: this.filter.farmId }, options: { limit: 100, offset: 0 } }));
       this.farmBulls.set(male?.items || []);
-      const female = await firstValueFrom(this.animalService.getAnimals({ filter: { farmId: this.filter.farmId, gender: 'FEMALE' }, options: { limit: 300, offset: 0 } }));
+      const female = await firstValueFrom(this.animalService.getAnimals({ filter: { farmId: this.filter.farmId }, options: { limit: 300, offset: 0 } }));
       this.femaleCattleInventory.set(female?.items || []);
     } catch (e) { console.error(e); }
   }

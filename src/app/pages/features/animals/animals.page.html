@@ -224,7 +224,7 @@
 
             <p>
               <ion-text>
-                <ion-icon name="hardware-chip"></ion-icon>
+                <ion-icon name="hardware-chip" color="medium"></ion-icon>
               </ion-text>
               {{ animal?.activeTag?.deviceNo }}
             </p>
@@ -255,7 +255,7 @@
               <ion-button (click)="downloadAnimalReport(animal)"
                 [disabled]="isGeneratingAnimalReportId() === animal.id">
                 <ion-spinner *ngIf="isGeneratingAnimalReportId() === animal.id"></ion-spinner>
-                <ion-icon *ngIf="isGeneratingAnimalReportId() !== animal.id" name="download"
+                <ion-icon *ngIf="isGeneratingAnimalReportId() !== animal.id" name="download" color="medium"
                   slot="icon-only"></ion-icon>
               </ion-button>
             </ion-buttons>

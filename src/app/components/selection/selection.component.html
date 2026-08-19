@@ -1,108 +1,4 @@
-<!-- <div class="selection-grid">
-
-  @if (auth_user?.accountTier === 1 && users.length > 0) {
-    <ion-button fill="solid" id="open-primary" color="light" class="select-btn">
-      <div class="btn-content">
-        <div class="btn-labels">
-          <small class="category-title">Admin</small>
-          <span class="selection-value text-truncate">{{ getLabel('primary') }}</span>
-        </div>
-        <ion-icon name="chevron-down-circle" color="medium"></ion-icon>
-      </div>
-    </ion-button>
-
-    <ion-popover trigger="open-primary" #primaryuserpopover (willPresent)="resetFilters('primary')" class="filter-popover">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-searchbar placeholder="Search admins..." (ionInput)="handleSearch($event, 'primary')"></ion-searchbar>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="popover-list-content">
-          <ion-list lines="none">
-            <ion-item button (click)="selectItem('primary', '', primaryuserpopover)">
-              <ion-label>All Admins</ion-label>
-            </ion-item>
-            <ion-item button *ngFor="let u of filteredUsers"
-              (click)="selectItem('primary', u.path + u.id + ',', primaryuserpopover)">
-              <ion-label>{{ u.username }}</ion-label>
-            </ion-item>
-          </ion-list>
-        </ion-content>
-      </ng-template>
-    </ion-popover>
-  }
-
-  @if (managed_users.length > 0) {
-    <ion-button fill="solid" id="open-managed" color="light" class="select-btn">
-      <div class="btn-content">
-        <div class="btn-labels">
-          <small class="category-title">Managed User</small>
-          <span class="selection-value text-truncate">{{ getLabel('managed') }}</span>
-        </div>
-        <ion-icon name="chevron-down-circle" color="medium"></ion-icon>
-      </div>
-    </ion-button>
-
-    <ion-popover trigger="open-managed" #manageduserpopover (willPresent)="resetFilters('managed')" class="filter-popover">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-searchbar placeholder="Search managed users..." (ionInput)="handleSearch($event, 'managed')"></ion-searchbar>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="popover-list-content">
-          <ion-list lines="none">
-            <ion-item button (click)="selectItem('managed', '', manageduserpopover)">
-              <ion-label>All Managed Users</ion-label>
-            </ion-item>
-            <ion-item button *ngFor="let m of filteredManaged"
-              (click)="selectItem('managed', m.path + m.id + ',', manageduserpopover)">
-              <ion-label>{{ m.username }}</ion-label>
-            </ion-item>
-          </ion-list>
-        </ion-content>
-      </ng-template>
-    </ion-popover>
-  }
-
-  @if (farms.length > 0) {
-    <ion-button fill="solid" id="open-farm" color="light" class="select-btn">
-      <div class="btn-content">
-        <div class="btn-labels">
-          <small class="category-title">Farm</small>
-          <span class="selection-value text-truncate">{{ getLabel('farm') }}</span>
-        </div>
-        <ion-icon name="chevron-down-circle" color="medium"></ion-icon>
-      </div>
-    </ion-button>
-
-    <ion-popover trigger="open-farm" #managedfarmpopover (willPresent)="resetFilters('farm')" class="filter-popover">
-      <ng-template>
-        <ion-header>
-          <ion-toolbar>
-            <ion-searchbar placeholder="Search farms..." (ionInput)="handleSearch($event, 'farm')"></ion-searchbar>
-          </ion-toolbar>
-        </ion-header>
-        <ion-content class="popover-list-content">
-          <ion-list lines="none">
-            <ion-item button (click)="selectItem('farm', '', managedfarmpopover)">
-              <ion-label>All Branch Farms</ion-label>
-            </ion-item>
-            <ion-item button *ngFor="let f of filteredFarms" (click)="selectItem('farm', f.id, managedfarmpopover)">
-              <ion-label>{{ f.name }}</ion-label>
-            </ion-item>
-          </ion-list>
-        </ion-content>
-      </ng-template>
-    </ion-popover>
-  }
-
-</div> -->
-
-
-
-  @if (users.length > 0) {
+  <!-- @if (users.length > 0) {
     <ion-item fill="solid" id="open-primary" color="light" class="select-btn ion-margin-bottom" button="true">
       <div class="btn-content">
         <div class="btn-labels">
@@ -202,4 +98,110 @@
         </ion-content>
       </ng-template>
     </ion-popover>
-  }
+  } -->
+
+
+
+
+
+  @if (users.length > 0) {
+  <ion-item fill="solid" id="open-primary" color="light" class="select-btn ion-margin-bottom" button="true">
+    <div class="btn-content">
+      <div class="btn-labels">
+        <small class="category-title">Admin</small>
+        <span class="selection-value text-truncate">{{ getLabel('primary') }}</span>
+      </div>
+      <ion-icon name="chevron-down-circle" color="medium"></ion-icon>
+    </div>
+  </ion-item>
+
+  <ion-popover trigger="open-primary" #primaryUserPopover class="filter-popover">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-searchbar placeholder="Search admins..." (ionInput)="handleSearch($event, 'primary')"></ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="popover-list-content">
+        <ion-list lines="none">
+          <ion-item button (click)="selectItem('primary', '', primaryUserPopover)">
+            <ion-label>All Admins</ion-label>
+          </ion-item>
+          @for (u of filteredUsers; track (u.id || u._id)) {
+            <ion-item button (click)="selectItem('primary', getFormattedUserPath(u), primaryUserPopover)">
+              <ion-label>{{ u.username }}</ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+}
+
+@if (managed_users.length > 0) {
+  <ion-item fill="solid" id="open-managed" color="light" class="select-btn ion-margin-bottom" button="true">
+    <div class="btn-content">
+      <div class="btn-labels">
+        <small class="category-title">Managed User</small>
+        <span class="selection-value text-truncate">{{ getLabel('managed') }}</span>
+      </div>
+      <ion-icon name="chevron-down-circle" color="medium"></ion-icon>
+    </div>
+  </ion-item>
+
+  <ion-popover trigger="open-managed" #managedUserPopover class="filter-popover">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-searchbar placeholder="Search managed users..." (ionInput)="handleSearch($event, 'managed')"></ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="popover-list-content">
+        <ion-list lines="none">
+          <ion-item button (click)="selectItem('managed', '', managedUserPopover)">
+            <ion-label>All Managed Users</ion-label>
+          </ion-item>
+          @for (m of filteredManaged; track (m.id || m._id)) {
+            <ion-item button (click)="selectItem('managed', getFormattedUserPath(m), managedUserPopover)">
+              <ion-label>{{ m.username }}</ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+}
+
+@if (farms.length > 0) {
+  <ion-item fill="solid" id="open-farm" color="light" class="select-btn ion-margin-bottom" button="true">
+    <div class="btn-content">
+      <div class="btn-labels">
+        <small class="category-title">Farm</small>
+        <span class="selection-value text-truncate">{{ getLabel('farm') }}</span>
+      </div>
+      <ion-icon name="chevron-down-circle" color="medium"></ion-icon>
+    </div>
+  </ion-item>
+
+  <ion-popover trigger="open-farm" #managedFarmPopover class="filter-popover">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-searchbar placeholder="Search farms..." (ionInput)="handleSearch($event, 'farm')"></ion-searchbar>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="popover-list-content">
+        <ion-list lines="none">
+          <ion-item button (click)="selectItem('farm', '', managedFarmPopover)">
+            <ion-label>All Branch Farms</ion-label>
+          </ion-item>
+          @for (f of filteredFarms; track (f.id || f._id)) {
+            <ion-item button (click)="selectItem('farm', f.id || f._id, managedFarmPopover)">
+              <ion-label>{{ f.name }}</ion-label>
+            </ion-item>
+          }
+        </ion-list>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+}

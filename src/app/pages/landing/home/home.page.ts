@@ -525,6 +525,7 @@ import zoomPlugin from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-luxon';
 import { DateTime } from 'luxon';
 import { DairyModalComponent } from "../../features/dms/dairy/dairy-modal/dairy-modal.component";
+import { Preferences } from "@capacitor/preferences";
 
 Chart.register(...registerables);
 Chart.register(zoomPlugin);
@@ -695,20 +696,20 @@ handleRefresh(event: any) {
   /**
    * Reinitializes state & forces a full re-fetch of all component APIs & filters
    */
-  private reinitializeAndRefresh() {
-    const auth_user = localStorage.getItem('chms-dms.mobile.user');
-    if (auth_user) this.auth_user = JSON.parse(auth_user);
+  // private reinitializeAndRefresh() {
+  //   const auth_user = localStorage.getItem('chms-dms.mobile.user');
+  //   if (auth_user) this.auth_user = JSON.parse(auth_user);
 
-    this.syncSelections();
+  //   this.syncSelections();
     
-    // Reset parameters back to default ranges
-    this.calculatePresetDates(this.selectedPreset);
-    this.filter.startDate = this.startDate.toISOString();
-    this.filter.endDate = this.endDate.toISOString();
+  //   // Reset parameters back to default ranges
+  //   this.calculatePresetDates(this.selectedPreset);
+  //   this.filter.startDate = this.startDate.toISOString();
+  //   this.filter.endDate = this.endDate.toISOString();
 
-    // Trigger API calls
-    this.refresh();
-  }
+  //   // Trigger API calls
+  //   this.refresh();
+  // }
 
   refresh() {
     this.loadManagedCounts();
@@ -1072,4 +1073,26 @@ handleRefresh(event: any) {
       this.renderMilkingChartInstance();
     }
   }
+
+  // Replace this inside home.page.ts
+private async reinitializeAndRefresh() {
+  const { value } = await Preferences.get({ key: 'chms-dms.mobile.user' });
+  if (value) {
+    try {
+      this.auth_user = JSON.parse(value);
+    } catch (e) {
+      console.error('Failed to parse auth user in Home:', e);
+    }
+  }
+
+  this.syncSelections();
+  
+  // Reset parameters back to default ranges
+  this.calculatePresetDates(this.selectedPreset);
+  this.filter.startDate = this.startDate.toISOString();
+  this.filter.endDate = this.endDate.toISOString();
+
+  // Trigger API calls
+  this.refresh();
+}
 }

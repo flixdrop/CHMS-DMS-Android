@@ -83,7 +83,7 @@
 
 //     try {
 //       // 2. Trigger native permission & backend token sync
-//       await this.authService.registerFcmTokenAfterLogin();
+//       await this.authService.registerDeviceTokenAfterLogin();
 
 //       // 3. Update status on success
 //       this.notificationStatus = 'granted';
@@ -117,6 +117,8 @@ import { IonicModule } from '@ionic/angular';
 import { register } from 'swiper/element/bundle';
 
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { PushNotifications } from '@capacitor/push-notifications';
+import { FcmService } from 'src/app/services/fcm/fcm.service';
 
 // Register Swiper Web Components
 register();
@@ -139,7 +141,8 @@ export class OnboardingPage implements AfterViewInit {
     private navCtrl: NavController,
     private router: Router,
     private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private fcmService: FcmService
   ) { }
 
   ngAfterViewInit() {
@@ -182,7 +185,7 @@ export class OnboardingPage implements AfterViewInit {
     this.cdr.detectChanges();
 
     try {
-      await this.authService.registerFcmTokenAfterLogin();
+      await this.authService.registerDeviceTokenAfterLogin();
       this.notificationStatus = 'granted';
     } catch (error) {
       console.warn('User denied notifications or error occurred:', error);
@@ -192,8 +195,23 @@ export class OnboardingPage implements AfterViewInit {
     }
   }
 
-  async finishOnboarding() {
+async finishOnboarding() {
+    // 1. Mark onboarding as complete in Capacitor Preferences immediately
     await Preferences.set({ key: 'chms_onboarding_completed', value: 'true' });
-    this.navCtrl.navigateRoot('/landing/tabs/home');
+
+    // 2. Navigate into the main application tabs immediately so the user is never blocked
+    await this.navCtrl.navigateRoot('/landing/tabs/home');
+
+    // 3. Request FCM token and sync in the background (non-blocking)
+    this.fcmService.requestPermissionAndGetToken()
+      .then(async (token) => {
+        if (token) {
+          await this.authService.silentdeviceTokenSync();
+        }
+      })
+      .catch((err) => {
+        console.warn('⚠️ [ONBOARDING] Background FCM token setup postponed:', err);
+      });
   }
+
 }

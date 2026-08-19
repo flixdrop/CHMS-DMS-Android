@@ -136,7 +136,7 @@ export class EventsPage implements OnInit, OnDestroy {
     try {
       const res = await firstValueFrom(
         this.animalService.getAnimals({
-          filter: { farmId: this.filter.farmId, gender: 'MALE' },
+          filter: { farmId: this.filter.farmId },
           options: { limit: 100, offset: 0 },
         })
       );
@@ -152,7 +152,7 @@ export class EventsPage implements OnInit, OnDestroy {
     try {
       const res = await firstValueFrom(
         this.animalService.getAnimals({
-          filter: { farmId: this.filter.farmId, gender: 'FEMALE' },
+          filter: { farmId: this.filter.farmId },
           options: { limit: 250, offset: 0 },
         })
       );

@@ -1,260 +1,3 @@
-<!-- <ion-content [fullscreen]="true">
-
-  <div class="outer-div">
-
-    <div class="company-logo">
-      <ion-chip>
-        <img src="../../assets/images/fd.png" alt="flixdrop.com">
-      </ion-chip>
-    </div>
-
-    <form *ngIf="authMode === 'LOGIN'" [formGroup]="loginForm" (ngSubmit)="onClickLogin()">
-      <fieldset style="border: none !important;">
-        <div class="brand-wrapper">
-          <ion-chip color="light">
-            <img src="../../assets/images/fd.png" alt="flixdrop.com" class="brand-logo">
-          </ion-chip>
-        </div>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="person-circle-sharp" class="field-icon"></ion-icon>
-            <ion-input id="username" name="Username" label="User ID" label-placement="stacked" type="text"
-              inputmode="text" placeholder="Enter Email ID / Mobile No." formControlName="username" [clearInput]="true"
-              [counter]="true" [maxlength]="25">
-            </ion-input>
-          </div>
-        </ion-item>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="key-sharp" class="field-icon"></ion-icon>
-            <ion-input id="password" name="Password" label="Password" label-placement="stacked"
-              [type]="passwordVisible ? 'text' : 'password'" placeholder="Enter Password" formControlName="password"
-              [counter]="true" [maxlength]="25">
-            </ion-input>
-            <ion-icon name="{{passwordVisible ? 'eye-sharp':'eye-off-sharp'}}" (click)="showPassword()"
-              class="password-toggle"></ion-icon>
-          </div>
-        </ion-item>
-
-        <div class="option-row">
-          <div>
-            <ion-button fill="clear" color="light" class="keep-logged-in-button">
-              <ion-label color="light" class="keep-logged-in-label">
-                <h4><b style="text-transform: capitalize !important;">Keep me logged in</b></h4>
-              </ion-label>
-              <ion-checkbox (ionChange)="onClickRememberMe($event)" color="secondary"
-                style="margin: 0 4px;"></ion-checkbox>
-              <ion-icon slot="end" name="{{keepMeLoggedIn === true ? 'thumbs-up-sharp': 'thumbs-down-sharp'}}"
-                color="warning"></ion-icon>
-            </ion-button>
-          </div>
-        </div>
-
-        <div class="action-row">
-          <div>
-            <ion-button fill="solid" (click)="switchMode('FORGOT')">
-              <ion-label style="text-transform: capitalize !important;">
-                <h4><b>Forgot Password?</b></h4>
-              </ion-label>
-              <ion-icon slot="end" name="help-circle"></ion-icon>
-            </ion-button>
-          </div>
-
-        </div>
-
-        <div class="submit-row">
-          <div>
-            <ion-button size="large" expand="block" type="submit" color="success" [disabled]="!loginForm.valid">
-              <ion-label color="light">
-                <h3><b>LOGIN</b></h3>
-              </ion-label>
-              <ion-icon slot="end" name="log-in" color="light"></ion-icon>
-            </ion-button>
-          </div>
-        </div>
-
-      </fieldset>
-    </form>
-
-    <form *ngIf="authMode === 'SIGNUP'" [formGroup]="signupForm" (ngSubmit)="onClickSignup()">
-      <fieldset style="border: none !important;">
-        <legend style="color: goldenrod; font-weight: bold; font-size: 1.2rem; margin-bottom: 12px;">Registration
-          Pipeline</legend>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="text-sharp" style="color: goldenrod; margin-right: 8px;"></ion-icon>
-            <ion-input label="Full Name" label-placement="stacked" type="text" placeholder="Enter Full Name"
-              formControlName="name" [clearInput]="true"></ion-input>
-          </div>
-        </ion-item>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="at-sharp" style="color: goldenrod; margin-right: 8px;"></ion-icon>
-            <ion-input label="Username" label-placement="stacked" type="text" placeholder="Desired Username"
-              formControlName="username" [clearInput]="true"></ion-input>
-          </div>
-        </ion-item>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="mail-sharp" style="color: goldenrod; margin-right: 8px;"></ion-icon>
-            <ion-input label="Email Address" label-placement="stacked" type="email" placeholder="name@domain.com"
-              formControlName="email" [clearInput]="true"></ion-input>
-          </div>
-        </ion-item>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="call-sharp" style="color: goldenrod; margin-right: 8px;"></ion-icon>
-            <ion-input label="Contact Number" label-placement="stacked" type="tel" placeholder="Mobile Number String"
-              formControlName="contact" [clearInput]="true"></ion-input>
-          </div>
-        </ion-item>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="lock-closed-sharp" style="color: goldenrod; margin-right: 8px;"></ion-icon>
-            <ion-input label="Secret Password" label-placement="stacked" [type]="passwordVisible ? 'text' : 'password'"
-              placeholder="Define Password" formControlName="password"></ion-input>
-          </div>
-        </ion-item>
-
-        <div class="action-row">
-          <ion-button fill="clear" (click)="switchMode('LOGIN')">
-            <ion-label style="text-transform: capitalize !important;">
-              <h4><b>Back to Login</b></h4>
-            </ion-label>
-          </ion-button>
-          <ion-button type="submit" color="success" [disabled]="!signupForm.valid">
-            <ion-label color="light">
-              <h3><b>Register</b></h3>
-            </ion-label>
-            <ion-icon slot="end" name="checkmark-circle-sharp"></ion-icon>
-          </ion-button>
-        </div>
-      </fieldset>
-    </form>
-
-    <form *ngIf="authMode === 'FORGOT'" [formGroup]="forgotForm" (ngSubmit)="onClickForgot()">
-      <fieldset style="border: none !important;">
-        <legend style="color: goldenrod; font-weight: bold; font-size: 1.2rem; margin-bottom: 12px;">Recover Password
-        </legend>
-        <p style="color: var(--ion-color-light); font-size: 0.9rem; font-weight: bold; padding: 0 8px;">Enter your system identifier
-          below. We will push a single cryptographic validation token payload downstream.</p>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="search-sharp" style="color: goldenrod; margin-right: 8px;"></ion-icon>
-            <ion-input label="Account Identifier" label-placement="stacked" type="text"
-              placeholder="Username, Email or Mobile" formControlName="identifier" [clearInput]="true"></ion-input>
-          </div>
-        </ion-item>
-
-        <div class="action-row">
-          <ion-button fill="solid" (click)="switchMode('LOGIN')">
-            <ion-label style="text-transform: capitalize !important;">
-              <h4><b>Cancel</b></h4>
-            </ion-label>
-          </ion-button>
-          <ion-button type="submit" color="warning" [disabled]="!forgotForm.valid">
-            <ion-label color="dark">
-              <h3><b>Send Code</b></h3>
-            </ion-label>
-            <ion-icon slot="end" name="paper-plane-sharp" color="dark"></ion-icon>
-          </ion-button>
-        </div>
-      </fieldset>
-    </form>
-
-    <form *ngIf="authMode === 'RESET'" [formGroup]="resetForm" (ngSubmit)="onClickReset()">
-      <fieldset style="border: none !important;">
-        <legend style="color: silver; font-weight: bold; font-size: 1.2rem; margin-bottom: 12px;">Set New Password
-        </legend>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="keypad-sharp" style="color: silver; margin-right: 8px;"></ion-icon>
-            <ion-input label="Recovery Token" label-placement="stacked" type="text"
-              placeholder="Paste Token From SMS/Console" formControlName="token" [clearInput]="true"></ion-input>
-          </div>
-        </ion-item>
-
-        <ion-item lines="none" class="field-item">
-          <div class="field-row">
-            <ion-icon size="large" name="lock-open-sharp" style="color: silver; margin-right: 8px;"></ion-icon>
-            <ion-input label="New Password" label-placement="stacked" type="password"
-              placeholder="Define New Secure Key" formControlName="newPassword"></ion-input>
-          </div>
-        </ion-item>
-
-        <div class="action-row">
-          <ion-button fill="clear" (click)="switchMode('LOGIN')">
-            <ion-label style="text-transform: capitalize !important;">
-              <h4><b>Abandone</b></h4>
-            </ion-label>
-          </ion-button>
-          <ion-button type="submit" color="danger" [disabled]="!resetForm.valid">
-            <ion-label color="light">
-              <h3><b>Save changes</b></h3>
-            </ion-label>
-            <ion-icon slot="end" name="save-sharp"></ion-icon>
-          </ion-button>
-        </div>
-      </fieldset>
-    </form>
-
-  </div>
-</ion-content>
-
-<ion-footer>
-
-  <div class="feedback-row">
-    <ion-label color="danger" *ngIf="loginForm.controls['username'].invalid && loginForm.controls['username'].touched">
-      <h4><b>Please enter a valid username/email identifier string.</b></h4>
-    </ion-label>
-    <ion-label color="danger" *ngIf="loginForm.controls['password'].invalid && loginForm.controls['password'].touched">
-      <h4><b>Please enter your verification password keys.</b></h4>
-    </ion-label>
-    <ion-label color="success" *ngIf="loginForm.valid && loginForm.dirty">
-      <h4><b>Form configuration is valid. ready to submit.</b></h4>
-    </ion-label>
-  </div>
-
-  <ion-toolbar>
-    <div class="footer-row">
-      <img src="../../assets/images/fd.png" alt="flixdrop.com" class="footer-logo">
-      <p>&copy; Flixdrop Techologies Pvt. Ltd. - 2026 . All Rights Reserved.
-        <span style="color: var(--ion-color-warning) !important;">
-          Developed by Flixdrop_Technologies&#64;2023
-        </span>
-      </p>
-    </div>
-  </ion-toolbar>
-</ion-footer> -->
-
-
-
-
-<!-- <ion-header>
-  <ion-toolbar>
-    <ion-item>
-      <ion-icon name="language" color="light"></ion-icon>
-      <ion-select class="never-flip" [okText]="'Select' | translate" [cancelText]="'Cancel' | translate"
-        title="Language" label="Language" label-placement="stacked" [ngModel]="language"
-        (ionChange)="changeLanguageTo($event)" interface="action-sheet">
-        <ion-select-option value="en" selected-text="language == 'en'">ENGLISH</ion-select-option>
-        <ion-select-option value="hi" selected-text="language == 'hi'">हिंदी</ion-select-option>
-        <ion-select-option value="ka" selected-text="language == 'ka'">ಕನ್ನಡ</ion-select-option>
-        <ion-select-option value="ml" selected-text="language == 'ml'">മലയാളം</ion-select-option>
-      </ion-select>
-    </ion-item>
-  </ion-toolbar>
-</ion-header> -->
-
 <ion-content slot="fixed" [fullscreen]="false">
 
    <ion-thumbnail style="margin: auto; --size: 140px; --border-radius: 14px;">
@@ -271,17 +14,8 @@
     <ion-grid>
       <ion-row>
         <ion-col>
-          <form *ngIf="authMode === 'LOGIN'" [formGroup]="loginForm" (ngSubmit)="onClickLogin()">
-          
-              <!-- <ion-thumbnail style="margin: auto; --size: 140px; --border-radius: 14px;">
-                <img alt="Flixdrop-Logo" src="../../assets/icons/fd.png"/>
-              </ion-thumbnail> -->
-              
-            <!-- <div class="brand-logo">
-              <ion-avatar class="ion-margin">
-                <img style="transform: scale(2);" alt="Flixdrop-Logo" src="../../assets/icons/fd.png" />
-              </ion-avatar>
-            </div> -->
+          <form *ngIf="authMode() === 'LOGIN'" [formGroup]="loginForm" (ngSubmit)="onClickLogin()">
+        
             <ion-list lines="none">
               <ion-item class="ion-margin-vertical">
                 <ion-input class="custom" id="username" label="{{ 'login.inputs.1.label' | translate }}"
@@ -293,18 +27,18 @@
                 </ion-input>
               </ion-item>
               <ion-item class="ion-margin-vertical">
-                <ion-input type="{{passwordVisible? 'text': 'password'}}" class="custom" id="password"
+                <ion-input type="{{passwordVisible() ? 'text': 'password'}}" class="custom" id="password"
                   label="{{ 'login.inputs.2.label' | translate }}" label-placement="stacked" fill="solid"
                   placeholder="{{ 'login.inputs.2.placeholder' | translate }}" formControlName="password"
                   [counter]="true" [maxlength]="25" [helperText]="'login.inputs.2.helper-text' | translate"
                   [errorText]="'login.inputs.2.error-text' | translate">
                   <ion-icon color="medium" size="large" slot="start" name="key-outline" aria-hidden="true"></ion-icon>
                   <ion-icon size="small" color="medium" slot="end" (click)="showPassword()"
-                    name="{{passwordVisible ? 'eye': 'eye-off'}}"></ion-icon>
+                    name="{{passwordVisible() ? 'eye': 'eye-off'}}"></ion-icon>
                 </ion-input>
               </ion-item>
               <ion-toolbar class="ion-margin-horizontal">
-                <ion-checkbox slot="start" justify="start" [checked]="keepMeLoggedIn === true"
+                <ion-checkbox slot="start" justify="start" [checked]="keepMeLoggedIn() === true"
                   (ionChange)="onClickRememberMe($event)" style="font-weight: bold;">
                   {{ 'login.radios.1.label' | translate }}
                 </ion-checkbox>
@@ -321,7 +55,7 @@
           </form>
 
 
-          <form *ngIf="authMode === 'FORGOT'" [formGroup]="forgotForm" (ngSubmit)="onClickForgot()">
+          <form *ngIf="authMode() === 'FORGOT'" [formGroup]="forgotForm" (ngSubmit)="onClickForgot()">
             <fieldset style="border: none !important;">
               <legend style="color: goldenrod; font-weight: bold; font-size: 1.2rem; margin-bottom: 12px;">Recover
                 Password
@@ -355,7 +89,7 @@
             </fieldset>
           </form>
 
-          <form *ngIf="authMode === 'RESET'" [formGroup]="resetForm" (ngSubmit)="onClickReset()">
+          <form *ngIf="authMode() === 'RESET'" [formGroup]="resetForm" (ngSubmit)="onClickReset()">
             <fieldset style="border: none !important;">
               <legend style="color: silver; font-weight: bold; font-size: 1.2rem; margin-bottom: 12px;">Set New Password
               </legend>

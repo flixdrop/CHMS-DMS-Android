@@ -144,7 +144,28 @@ export class DairyManagementService {
       );
   }
 
-  private fetchApolloQuery<T>(
+//   private fetchApolloQuery<T>(
+//   query: any,
+//   variables: any,
+//   dataKey: string,
+// ): Observable<T> {
+//   return this.apollo
+//     .query<any>({
+//       query,
+//       variables,
+//       fetchPolicy: 'network-only', // 👈 Guarantees a fresh HTTP network request every time
+//     })
+//     .pipe(
+//       filter((result) => !!result.data && result.data[dataKey] !== undefined),
+//       map((result) => result.data[dataKey] as T),
+//       catchError((error) => {
+//         console.error(`[API Error] Active dairy yield query failed for ${dataKey}:`, error);
+//         return throwError(() => error);
+//       })
+//     );
+// }
+
+private fetchApolloQuery<T>(
   query: any,
   variables: any,
   dataKey: string,
@@ -153,13 +174,17 @@ export class DairyManagementService {
     .query<any>({
       query,
       variables,
-      fetchPolicy: 'network-only', // 👈 Guarantees a fresh HTTP network request every time
+      fetchPolicy: 'network-only',
     })
     .pipe(
       filter((result) => !!result.data && result.data[dataKey] !== undefined),
       map((result) => result.data[dataKey] as T),
       catchError((error) => {
-        console.error(`[API Error] Active dairy yield query failed for ${dataKey}:`, error);
+        // 🟢 Suppress noisy abort errors triggered during forced client logouts/teardowns
+        const errorMsg = error?.message || '';
+        if (!errorMsg.includes('stopped while query was in flight')) {
+          console.error(`[API Error] Active dairy yield query failed for ${dataKey}:`, error);
+        }
         return throwError(() => error);
       })
     );

@@ -362,6 +362,13 @@ export const GET_ANIMAL = gql`
       status
       lactationStatus
       reproductionStatus
+
+      activeTag {
+        id
+        name
+        deviceNo
+      }
+
       currentLactation {
         daysAgo
         daysInMilk

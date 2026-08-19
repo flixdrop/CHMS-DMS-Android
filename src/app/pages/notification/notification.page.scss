@@ -1,0 +1,78 @@
+// .unread {
+//   --background: var(--ion-color-light);
+//   font-weight: 500;
+// }
+
+// .empty-state {
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   height: 60vh;
+
+//   ion-icon {
+//     font-size: 64px;
+//     color: var(--ion-color-medium);
+//     margin-bottom: 12px;
+//   }
+
+//   p {
+//     margin: 0;
+//     font-size: 16px;
+//   }
+// }
+
+// ion-label {
+//   h2 {
+//     font-size: 1rem;
+//     margin-bottom: 4px;
+//   }
+//   p {
+//     font-size: 0.875rem;
+//     margin-bottom: 4px;
+//   }
+//   ion-note {
+//     font-size: 0.75rem;
+//   }
+// }
+
+
+ion-item.unread {
+  --background: var(--ion-color-light-tint, #f4f5f8);
+  font-weight: 600;
+}
+
+.text-truncate {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notification-modal-content {
+  .header-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .header-text {
+      h2 {
+        margin: 0 0 4px 0;
+        font-size: 1.15rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .body-box {
+    background: var(--ion-color-light, #f8f9fa);
+    border-radius: 12px;
+    
+    p {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.5;
+      color: var(--ion-color-dark, #222428);
+      white-space: pre-wrap; // Preserves line breaks in message text
+    }
+  }
+}

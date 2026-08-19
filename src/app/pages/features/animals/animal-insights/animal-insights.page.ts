@@ -7,7 +7,7 @@ import { Chart, registerables } from 'chart.js';
 import { SharedImportsModule } from 'src/app/shared/shared-imports';
 import zoomPlugin from 'chartjs-plugin-zoom';
 import 'chartjs-adapter-luxon';
-import { IonBackButton, IonNote, IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonCard, IonProgressBar, IonRange, IonCardHeader, IonCardTitle, IonCardContent } from '@ionic/angular/standalone';
+import { IonBackButton, IonNote, IonSegment, IonSegmentButton, IonGrid, IonRow, IonCol, IonCard, IonProgressBar, IonRange, IonCardHeader, IonCardTitle, IonCardContent, IonAccordionGroup, IonAccordion } from '@ionic/angular/standalone';
 import { DateTime } from 'luxon';
 import { AnimalService } from 'src/app/services/animal/animal.service';
 import { DairyManagementService } from 'src/app/services/dms/dms.service';
@@ -20,7 +20,7 @@ Chart.register(zoomPlugin);
   templateUrl: './animal-insights.page.html',
   styleUrls: ['./animal-insights.page.scss'],
   standalone: true,
-  imports: [IonCardContent, IonCardTitle, IonCardHeader, IonRange, IonProgressBar, SharedImportsModule, IonBackButton, IonSegment, IonSegmentButton, IonNote, IonGrid, IonRow, IonCol, IonCard]
+  imports: [IonAccordion, IonAccordionGroup, IonCardContent, IonCardTitle, IonCardHeader, IonRange, IonProgressBar, SharedImportsModule, IonBackButton, IonSegment, IonSegmentButton, IonNote, IonGrid, IonRow, IonCol, IonCard]
 })
 export class AnimalInsightsPage implements OnInit, OnDestroy {
   @ViewChild('myChartCanvas', { static: false }) myChartCanvas!: ElementRef<HTMLCanvasElement>;
